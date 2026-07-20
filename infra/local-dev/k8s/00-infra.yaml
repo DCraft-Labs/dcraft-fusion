@@ -42,7 +42,51 @@ data:
   00-init.sql: |
     SELECT 'ok' WHERE current_database() = 'fusion';
     CREATE DATABASE fusion_cdc_metadata;
+    -- CDC source DB (pg-source alias) — mirrors scripts/seed-admin.sql expectations.
+    CREATE DATABASE source_db;
+    CREATE DATABASE fusion_dw;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'cdc_user') THEN
+        CREATE ROLE cdc_user WITH LOGIN REPLICATION PASSWORD 'cdc_password';
+      END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'dw_user') THEN
+        CREATE ROLE dw_user WITH LOGIN PASSWORD 'dw_password';
+      END IF;
+    END
+    $$;
+  01-source-db.sql: |
+    \c source_db
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS orders (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      amount NUMERIC(12,2) NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO cdc_user;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO cdc_user;
+    DROP PUBLICATION IF EXISTS fusion_pub;
+    CREATE PUBLICATION fusion_pub FOR TABLE users, orders;
+  02-fusion-dw.sql: |
+    \c fusion_dw
+    GRANT ALL ON SCHEMA public TO dw_user;
 ---
+# NOTE: A PersistentVolumeClaim for postgres data was attempted here but the
+# cluster's built-in `storage-provisioner` (kube-system) is itself stuck in a
+# permanent CrashLoopBackOff — it repeatedly loses its leader-election lease
+# because API server round-trips exceed the 15s lease-renew deadline under
+# this Docker Desktop VM's CPU pressure (see docker stats: coredns/kube-proxy/
+# kube-controller-manager/storage-provisioner all >35% CPU sustained).
+# PVCs stay Pending forever as a result ("unbound immediate PersistentVolume
+# Claims. not found"). Until that's resolved (more CPU for the Docker Desktop
+# VM, or a different storage class), postgres data remains ephemeral — it
+# resets on every pod restart/recreate. Re-run scripts/seed-admin.sql and
+# `alembic upgrade head` after any postgres restart.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -61,6 +105,17 @@ spec:
       containers:
         - name: postgres
           image: postgres:16-alpine
+          # wal_level=logical is required for the pg-source CDC connector
+          # (pgoutput plugin + fusion_pub publication). Baked into the
+          # command so it survives pod restarts even though there's no
+          # postgresql.conf override file.
+          args:
+            - "-c"
+            - "wal_level=logical"
+            - "-c"
+            - "max_wal_senders=10"
+            - "-c"
+            - "max_replication_slots=10"
           ports:
             - containerPort: 5432
           env:
@@ -78,6 +133,15 @@ spec:
               command: ["pg_isready", "-U", "fusion", "-d", "fusion"]
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "fusion", "-d", "fusion"]
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 6
       volumes:
         - name: init
           configMap:
@@ -151,3 +215,25 @@ metadata:
 spec:
   type: ExternalName
   externalName: fusion-cdc-control-plane.dcraft-local.svc.cluster.local
+---
+# pg-source alias: the seed-admin.sql source DSN is pg-source:5432/source_db.
+# Alias to the shared postgres service so the DSN resolves without a second
+# Postgres deployment. The source_db database is created by deploy.ps1.
+apiVersion: v1
+kind: Service
+metadata:
+  name: pg-source
+  namespace: dcraft-local
+spec:
+  type: ExternalName
+  externalName: postgres.dcraft-local.svc.cluster.local
+---
+# postgres-dest alias: the seed-admin.sql destination DSN is postgres-dest:5432/fusion_dw.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-dest
+  namespace: dcraft-local
+spec:
+  type: ExternalName
+  externalName: postgres.dcraft-local.svc.cluster.local

@@ -90,14 +90,21 @@ kubectl -n dcraft-local rollout status deploy/fusion-dcraft-fusion-web --timeout
 
 Write-Host "==> seeding CDC default admin + connectors (admin / Admin@123)"
 $seedSql = "$root\.tmp\fusion-cdc-engine-private\scripts\seed-admin.sql"
-if (Test-Path $seedSql) {
-  Get-Content -Raw $seedSql |
-    kubectl -n dcraft-local exec -i deploy/postgres -- psql -U fusion -d fusion_cdc_metadata 2>&1 | Out-Null
-} else {
+if (-not (Test-Path $seedSql)) {
   Write-Host "WARN: $seedSql not found — falling back to local seed-cdc-admin.sql"
-  Get-Content -Raw "$PSScriptRoot\seed-cdc-admin.sql" |
-    kubectl -n dcraft-local exec -i deploy/postgres -- psql -U fusion -d fusion_cdc_metadata 2>&1 | Out-Null
+  $seedSql = "$PSScriptRoot\seed-cdc-admin.sql"
 }
+# NOTE: piping [System.IO.File]::ReadAllBytes(...) into `kubectl exec -i` via
+# PowerShell's pipeline does NOT send a raw byte stream — PowerShell formats
+# each byte object as text, corrupting the SQL (and mangling the → arrow,
+# U+2192, into "???"). `kubectl cp` + `psql -f` (run entirely inside the pod)
+# preserves the file's UTF-8 bytes exactly and is the only reliable way to do
+# this from Windows PowerShell.
+$pgPod = (kubectl -n dcraft-local get pods -l app=postgres -o jsonpath='{.items[0].metadata.name}').Trim()
+Push-Location (Split-Path $seedSql -Parent)
+kubectl cp (Split-Path $seedSql -Leaf) "dcraft-local/${pgPod}:/tmp/seed-admin.sql" 2>&1 | Out-Null
+Pop-Location
+kubectl -n dcraft-local exec $pgPod -- psql -U fusion -d fusion_cdc_metadata -f /tmp/seed-admin.sql 2>&1 | Out-Null
 $ErrorActionPreference = $prevEap
 
 Write-Host "==> pods"
