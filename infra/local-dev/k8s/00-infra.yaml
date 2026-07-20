@@ -1,0 +1,153 @@
+# Local smoke stack: Postgres + Redis for DCraft Fusion / Fusion CDC
+# Namespace: dcraft-local
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dcraft-local
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fusion-secrets
+  namespace: dcraft-local
+type: Opaque
+stringData:
+  POSTGRES_DSN: postgres://fusion:fusion_local@postgres:5432/fusion?sslmode=disable
+  FUSION_SEED_FOUNDER_EMAIL: founder@dcraftlabs.com
+  FUSION_SEED_FOUNDER_PASSWORD: changeme-founder
+  FUSION_SEED_SUPERADMIN_EMAIL: superadmin@dcraftlabs.com
+  FUSION_SEED_SUPERADMIN_PASSWORD: changeme-superadmin
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fusion-cdc-secrets
+  namespace: dcraft-local
+type: Opaque
+stringData:
+  DATABASE_URL: postgresql://fusion:fusion_local@postgres:5432/fusion_cdc_metadata
+  REDIS_URL: redis://redis:6379/0
+  SECRET_KEY: local-dev-secret-key-change-me
+  ENCRYPTION_KEY: CHANGE_ME_ENCRYPTION_KEY_32C!!
+  WORKER_TOKEN_SECRET: local-worker-token-secret
+  WORKER_TOKEN: local-worker-token
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: dcraft-local
+data:
+  00-init.sql: |
+    SELECT 'ok' WHERE current_database() = 'fusion';
+    CREATE DATABASE fusion_cdc_metadata;
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: dcraft-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: fusion
+            - name: POSTGRES_USER
+              value: fusion
+            - name: POSTGRES_PASSWORD
+              value: fusion_local
+          volumeMounts:
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "fusion", "-d", "fusion"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: init
+          configMap:
+            name: postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: dcraft-local
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: dcraft-local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            initialDelaySeconds: 3
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: dcraft-local
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+---
+# nginx upstream aliases baked into published images (DNS names != Helm service names)
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-plane-kernel
+  namespace: dcraft-local
+spec:
+  type: ExternalName
+  externalName: fusion-dcraft-fusion-control-plane-kernel.dcraft-local.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fusion-control-plane-svc
+  namespace: dcraft-local
+spec:
+  type: ExternalName
+  externalName: fusion-cdc-control-plane.dcraft-local.svc.cluster.local

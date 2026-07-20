@@ -1,0 +1,78 @@
+# Local Docker Desktop overrides for fusion-cdc (fits ~3Gi VM).
+# Transform worker alone requests 2Gi — leave it off locally.
+transformWorker:
+  enabled: false
+
+controlPlane:
+  image:
+    tag: "1.1.1"
+  podDisruptionBudget:
+    enabled: false
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    fsGroup: 999
+    seccompProfile:
+      type: RuntimeDefault
+  # Image default is 4 uvicorn workers — OOM under ~384Mi on Docker Desktop.
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: ["ALL"]
+  startupProbe:
+    enabled: true
+    failureThreshold: 36
+    periodSeconds: 10
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+
+frontend:
+  image:
+    tag: "1.1.1"
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    fsGroup: 101
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: ["ALL"]
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+cdcWorkers:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 2000
+    fsGroup: 2000
+    seccompProfile:
+      type: RuntimeDefault
+  postgres:
+    enabled: true
+    replicas: 1
+    storage: 1Gi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 384Mi
+  mysql:
+    enabled: false
+  mongodb:
+    enabled: false

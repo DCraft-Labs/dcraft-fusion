@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-connectors
+  namespace: fusion
+  labels:
+    app.kubernetes.io/name: fusion-cdc
+    app.kubernetes.io/component: seed
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fusion-cdc
+        app.kubernetes.io/component: seed
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: postgres:16-alpine
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fusion-secrets
+                  key: POSTGRES_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Running connector + admin seed..."
+              psql -h postgres-meta -U fusion_user -d fusion_cdc_metadata \
+                -v ON_ERROR_STOP=1 \
+                -f /seed/seed-admin.sql
+              echo "Seed complete."
+          volumeMounts:
+            - name: seed-sql
+              mountPath: /seed
+              readOnly: true
+      volumes:
+        - name: seed-sql
+          configMap:
+            name: seed-connectors-sql
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seed-connectors-sql
+  namespace: fusion
+  labels:
+    app.kubernetes.io/name: fusion-cdc
+    app.kubernetes.io/component: seed
+data:
+  seed-admin.sql: |
+    /* See scripts/seed-admin.sql in the fusion-cdc-engine repo for the canonical
+       seed SQL. This ConfigMap is hydrated by the deploy script
+       (infra/local-dev/k8s/deploy.ps1) which base64-encodes the file into the
+       ConfigMap before applying. Keeping the source of truth in the repo
+       avoids drift between the SQL and the ConfigMap. */
