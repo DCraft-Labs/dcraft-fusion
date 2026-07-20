@@ -38,7 +38,7 @@ controlPlane:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -147,7 +147,7 @@ cdcWorkers:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -232,7 +232,7 @@ sparkConsumer:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -301,7 +301,7 @@ frontend:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -389,7 +389,7 @@ transformWorker:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 

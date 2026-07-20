@@ -27,8 +27,8 @@ jobs:
       - name: Login to GHCR (OCI)
         shell: bash
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io \
-            -u "${{ github.actor }}" --password-stdin
+          echo "${{ secrets.GHCR_TOKEN }}" | helm registry login ghcr.io \
+            -u "${{ github.repository_owner }}" --password-stdin
 
       - name: Package and push charts
         shell: bash

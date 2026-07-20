@@ -87,23 +87,8 @@ services:
     volumes:
       - fusion-cdc-worker-data:/var/lib/cdc
 
-  cdc-spark-consumer:
-    profiles: [cdc]
-    image: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer:latest
-    environment:
-      REDIS_URL: redis://cdc-redis:6379/0
-      CONTROL_PLANE_URL: http://cdc-control-plane:8000
-      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-CHANGE_ME_WORKER_TOKEN}
-      SPARK_CHECKPOINT_DIR: /tmp/spark-checkpoints
-      CONSUMER_GROUP: fusion-spark
-      CONSUMER_NAME: spark-consumer-local-1
-    depends_on:
-      cdc-redis:
-        condition: service_healthy
-      cdc-control-plane:
-        condition: service_started
-    volumes:
-      - fusion-cdc-spark-checkpoints:/tmp/spark-checkpoints
+# Default CDC profile — no Spark.
+# Spark is optional / legacy; enable with --profile cdc-spark if you ever need it.
 
   cdc-transform-worker:
     profiles: [cdc]
@@ -122,6 +107,25 @@ services:
         condition: service_healthy
       cdc-control-plane:
         condition: service_started
+
+  # Optional Spark landing path (not recommended — prefer transform-worker / DuckDB).
+  cdc-spark-consumer:
+    profiles: [cdc-spark]
+    image: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer:latest
+    environment:
+      REDIS_URL: redis://cdc-redis:6379/0
+      CONTROL_PLANE_URL: http://cdc-control-plane:8000
+      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-CHANGE_ME_WORKER_TOKEN}
+      SPARK_CHECKPOINT_DIR: /tmp/spark-checkpoints
+      CONSUMER_GROUP: fusion-spark
+      CONSUMER_NAME: spark-consumer-local-1
+    depends_on:
+      cdc-redis:
+        condition: service_healthy
+      cdc-control-plane:
+        condition: service_started
+    volumes:
+      - fusion-cdc-spark-checkpoints:/tmp/spark-checkpoints
 
   cdc-frontend:
     profiles: [cdc]

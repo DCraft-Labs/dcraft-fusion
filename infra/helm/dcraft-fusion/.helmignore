@@ -3,7 +3,6 @@
 .gitignore
 *.tgz
 *.md
-!README.md
 charts/
 tmpcharts/
 examples/

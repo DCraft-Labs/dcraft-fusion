@@ -43,7 +43,7 @@ controlPlaneKernel:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-control-plane-kernel
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -130,7 +130,7 @@ web:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-web
-    tag: "1.0.1"
+    tag: "1.1.1"
     digest: ""
     pullPolicy: IfNotPresent
 

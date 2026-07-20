@@ -15,7 +15,8 @@ Community users run CDC via **public GHCR images** and the public Helm chart:
 | Control plane | `ghcr.io/dcraft-labs/fusion-cdc-control-plane` |
 | Worker | `ghcr.io/dcraft-labs/fusion-cdc-worker` |
 | Frontend | `ghcr.io/dcraft-labs/fusion-cdc-frontend` |
-| Spark consumer | `ghcr.io/dcraft-labs/fusion-cdc-spark-consumer` |
+| Transform worker (DuckDB) | `ghcr.io/dcraft-labs/fusion-cdc-transform-worker` |
+| Spark consumer (optional / legacy) | `ghcr.io/dcraft-labs/fusion-cdc-spark-consumer` — not in default compose/Helm; prefer transform-worker |
 | Transform worker | `ghcr.io/dcraft-labs/fusion-cdc-transform-worker` |
 
 Install: `oci://ghcr.io/dcraft-labs/charts/fusion-cdc` — see [`infra/helm/fusion-cdc`](../infra/helm/fusion-cdc/).
