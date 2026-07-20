@@ -19,4 +19,4 @@ cdc:
   sparkConsumer:
     enabled: false
   transformWorker:
-    enabled: false
+    enabled: true

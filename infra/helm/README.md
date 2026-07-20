@@ -40,14 +40,14 @@ kubectl -n fusion-cdc create secret generic fusion-cdc-secrets \
 
 # ── 1. Control plane ──────────────────────────────────────────────────────────
 helm install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion \
-  --version 1.0.1 \
+  --version 1.1.2 \
   --namespace dcraft-fusion \
   -f dcraft-fusion/examples/values-minimal.yaml \
   --set externalRedis.addr=redis:6379
 
 # ── 2. CDC (image-only) ───────────────────────────────────────────────────────
 helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
-  --version 1.0.1 \
+  --version 1.1.2 \
   --namespace fusion-cdc \
   -f fusion-cdc/examples/values-minimal.yaml
 ```

@@ -16,7 +16,7 @@ controlPlane:
   replicaCount: 3
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: "1.0.1"
+    tag: "1.1.1"
     # digest: sha256:REPLACE_ME
   resources:
     requests:
@@ -58,7 +58,7 @@ cdcWorkers:
   enabled: true
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: "1.0.1"
+    tag: "1.1.1"
     # digest: sha256:REPLACE_ME
   postgres:
     enabled: true
@@ -77,11 +77,11 @@ cdcWorkers:
     storageClass: fast-ssd
 
 sparkConsumer:
-  enabled: true
+  enabled: false
   replicaCount: 1
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: "1.0.1"
+    tag: "1.1.1"
     # digest: sha256:REPLACE_ME
   storage:
     size: 50Gi
@@ -99,7 +99,7 @@ frontend:
   replicaCount: 2
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: "1.0.1"
+    tag: "1.1.1"
     # digest: sha256:REPLACE_ME
   hpa:
     enabled: true
@@ -125,7 +125,7 @@ transformWorker:
   replicaCount: 1
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: "1.0.1"
+    tag: "1.1.1"
     # digest: sha256:REPLACE_ME
   keda:
     enabled: false
