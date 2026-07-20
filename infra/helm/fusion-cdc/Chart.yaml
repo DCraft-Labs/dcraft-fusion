@@ -2,7 +2,8 @@ apiVersion: v2
 name: fusion-cdc
 description: >
   Fusion CDC Engine — multi-tenant Change Data Capture platform.
-  Deploys control-plane, cdc-workers, spark-consumer, frontend, optional transform-worker, and Redis.
+  Deploys control-plane, cdc-workers, spark-consumer, frontend, optional transform-worker.
+  Bring your own Redis/Postgres via values.
 type: application
 version: 2.0.0
 appVersion: "2.0.0"
@@ -18,8 +19,3 @@ sources:
 maintainers:
   - name: DCraft Fusion Platform Team
     email: platform@dcraftlabs.com
-dependencies:
-  - name: redis
-    version: "^19.0.0"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: redis.enabled

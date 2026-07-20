@@ -2,7 +2,7 @@ apiVersion: v2
 name: dcraft-fusion
 description: >
   DCraft Fusion control plane — kernel API and web UI.
-  Optional Bitnami Postgres/Redis; disable and point at external services via values.
+  Bring your own Postgres/Redis via values (recommended for production).
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
@@ -16,12 +16,3 @@ sources:
 maintainers:
   - name: DCraft Labs
     email: platform@dcraftlabs.com
-dependencies:
-  - name: postgresql
-    version: "^16.0.0"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: postgresql.enabled
-  - name: redis
-    version: "^19.0.0"
-    repository: "https://charts.bitnami.com/bitnami"
-    condition: redis.enabled
