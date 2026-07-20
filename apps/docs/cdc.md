@@ -1,31 +1,32 @@
 # CDC
 
-Change Data Capture (CDC) is included in the **Community** edition of DCraft Fusion. You do not need Enterprise to run the Fusion CDC engine.
+Fusion CDC is the first official **execution muscle** for DCraft Fusion.
+
+## Public vs private
+
+| Artifact | Access |
+| --- | --- |
+| Control plane source | Apache 2.0 (this repo) |
+| CDC Helm chart | Public — [`infra/helm/fusion-cdc`](https://github.com/DCraft-Labs/dcraft-fusion/tree/main/infra/helm/fusion-cdc) |
+| CDC images | Public — `ghcr.io/dcraft-labs/fusion-cdc-*` |
+| CDC / connector **source** | Private — not in this repository |
 
 ## How CDC fits
 
 1. Operators register sources and pipelines through the Fusion control plane.
-2. The **Fusion CDC engine** captures inserts, updates, and deletes from supported databases.
-3. Events stream to warehouses, analytics systems, or other consumers with checkpoints and operational controls.
+2. Official CDC images capture changes from supported databases.
+3. Events stream to warehouses or other consumers with checkpoints and controls.
 4. Run state, metadata, and audit remain visible in the control plane.
 
-CDC is one muscle under the Fusion control plane — not a separate product license for Community users.
+## Install
 
-## Engine documentation
+```bash
+helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
+  --version 1.0.1 \
+  --namespace fusion-cdc \
+  --create-namespace
+```
 
-Authoritative CDC docs live with the engine:
+Compose (images only): `infra/local-dev/docker-compose.cdc.yml`
 
-**[engines/fusion-cdc-engine/docs](https://github.com/DCraft-Labs/dcraft-fusion/tree/main/engines/fusion-cdc-engine/docs)**
-
-Start at the index:
-
-- [00_INDEX.md](https://github.com/DCraft-Labs/dcraft-fusion/blob/main/engines/fusion-cdc-engine/docs/00_INDEX.md) — documentation map
-- [01_ARCHITECTURE.md](https://github.com/DCraft-Labs/dcraft-fusion/blob/main/engines/fusion-cdc-engine/docs/01_ARCHITECTURE.md) — CDC architecture
-- [02_DATA_FLOW.md](https://github.com/DCraft-Labs/dcraft-fusion/blob/main/engines/fusion-cdc-engine/docs/02_DATA_FLOW.md) — pipelines and event flow
-- [04_OPERATIONS_RUNBOOK.md](https://github.com/DCraft-Labs/dcraft-fusion/blob/main/engines/fusion-cdc-engine/docs/04_OPERATIONS_RUNBOOK.md) — operations
-
-Helm chart source for CDC: `engines/fusion-cdc-engine/helm/fusion-cdc` (also published under `oci://ghcr.io/dcraft-labs/charts/...`).
-
-## Open core note
-
-Community includes CDC integration. Enterprise gates identity, isolation, and commercial offerings — not CDC itself. See [Open core](/open-core).
+See [Install → Helm](/install/helm) and [Open core](/open-core).

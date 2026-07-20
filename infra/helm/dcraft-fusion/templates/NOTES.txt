@@ -1,59 +1,94 @@
-DCraft Fusion has been deployed.
+═══════════════════════════════════════════════════════════════════
+  DCraft Fusion {{ .Chart.AppVersion }}
+═══════════════════════════════════════════════════════════════════
 
   Release:   {{ .Release.Name }}
   Namespace: {{ .Release.Namespace }}
   Chart:     {{ .Chart.Name }}-{{ .Chart.Version }}
+  Edition:   {{ .Values.global.edition }}
 
-Quick install (from repo root):
+This chart deploys the open-source control plane (kernel + web).
+Bring your own Postgres and Redis — no databases are bundled.
 
-  helm dependency update infra/helm/dcraft-fusion
-  helm upgrade --install fusion infra/helm/dcraft-fusion \
-    --namespace dcraft-fusion --create-namespace \
-    --set secrets.seedFounderPassword="$(openssl rand -base64 24)" \
-    --set secrets.seedSuperadminPassword="$(openssl rand -base64 24)" \
-    --set postgresql.auth.password="$(openssl rand -base64 24)"
-
-OCI install (after publish):
+───────────────────────────────────────────────────────────────────
+OCI install
+───────────────────────────────────────────────────────────────────
 
   helm install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion \
     --version {{ .Chart.Version }} \
     --namespace dcraft-fusion --create-namespace \
-    -f my-secrets.yaml
+    -f my-values.yaml
+
+───────────────────────────────────────────────────────────────────
+Secrets (required)
+───────────────────────────────────────────────────────────────────
+
+Create a Secret with at least:
+
+  POSTGRES_DSN
+  FUSION_SEED_FOUNDER_EMAIL / FUSION_SEED_FOUNDER_PASSWORD
+  FUSION_SEED_SUPERADMIN_EMAIL / FUSION_SEED_SUPERADMIN_PASSWORD
+
+Then set:
+
+  global.secrets.existingSecret: <secret-name>
+
+Or for a one-shot create (dev only):
+
+  --set global.secrets.createSecret=true \
+  --set global.secrets.postgresDsn='postgres://...' \
+  --set global.secrets.seedFounderPassword='...' \
+  --set global.secrets.seedSuperadminPassword='...'
+
+Also set externalRedis.addr to your Redis host:port.
 
 {{- if .Values.controlPlaneKernel.enabled }}
 
-Control plane:
+───────────────────────────────────────────────────────────────────
+Control plane
+───────────────────────────────────────────────────────────────────
+
   kubectl port-forward -n {{ .Release.Namespace }} \
-    svc/{{ include "dcraft-fusion.fullname" . }}-control-plane-kernel 8080:{{ .Values.controlPlaneKernel.service.port }}
+    svc/{{ include "dcraft-fusion.fullname" . }}-control-plane-kernel \
+    8080:{{ .Values.controlPlaneKernel.service.port }}
+
   curl http://127.0.0.1:8080/healthz
 {{- end }}
 {{- if .Values.web.enabled }}
 
-Web UI:
+───────────────────────────────────────────────────────────────────
+Web UI
+───────────────────────────────────────────────────────────────────
+
   kubectl port-forward -n {{ .Release.Namespace }} \
-    svc/{{ include "dcraft-fusion.fullname" . }}-web 5174:{{ .Values.web.service.port }}
+    svc/{{ include "dcraft-fusion.fullname" . }}-web \
+    5174:{{ .Values.web.service.port }}
+
   open http://127.0.0.1:5174
 {{- end }}
 
-Auth:
+───────────────────────────────────────────────────────────────────
+Auth
+───────────────────────────────────────────────────────────────────
+
   FUSION_AUTH_MODE={{ .Values.controlPlaneKernel.config.authMode }}
-  Seed passwords come from the release Secret (not hardcoded PEMs).
-  Leave FUSION_OIDC_PRIVATE_KEY_PEM unset to auto-generate a key at runtime.
+  Leave FUSION_OIDC_PRIVATE_KEY_PEM unset to auto-generate at runtime.
 
-External database (skip bundled Postgres):
+───────────────────────────────────────────────────────────────────
+Security
+───────────────────────────────────────────────────────────────────
 
-  helm upgrade --install fusion infra/helm/dcraft-fusion \
-    --set postgresql.enabled=false \
-    --set secrets.postgresDsn='postgres://user:pass@host:5432/fusion?sslmode=require' \
-    --set secrets.seedFounderPassword='...' \
-    --set secrets.seedSuperadminPassword='...'
+  • Never commit passwords or PEMs to git.
+  • Prefer global.secrets.existingSecret or an external secret operator.
+  • Pin images with image.digest in production.
+{{- if not .Values.global.secrets.existingSecret }}
+{{- if not .Values.global.secrets.createSecret }}
 
-External Redis:
+⚠  No secret configured. Set global.secrets.existingSecret or
+   global.secrets.createSecret=true before pods will start cleanly.
+{{- end }}
+{{- end }}
+{{- if not .Values.externalRedis.addr }}
 
-  helm upgrade --install fusion infra/helm/dcraft-fusion \
-    --set redis.enabled=false \
-    --set redis.externalAddr='my-redis:6379'
-
-Security:
-  Rotate seed passwords and DB credentials before any shared/production cluster.
-  Prefer secrets.existingSecret or an external secret operator in production.
+⚠  externalRedis.addr is empty — set it to your Redis host:port.
+{{- end }}

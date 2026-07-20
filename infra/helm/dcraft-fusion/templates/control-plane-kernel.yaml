@@ -7,28 +7,44 @@ metadata:
     {{- include "dcraft-fusion.labels" . | nindent 4 }}
     app.kubernetes.io/component: control-plane-kernel
 spec:
+  {{- if not .Values.controlPlaneKernel.hpa.enabled }}
   replicas: {{ .Values.controlPlaneKernel.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "dcraft-fusion.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: control-plane-kernel
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "dcraft-fusion.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: control-plane-kernel
-        {{- include "dcraft-fusion.labels" . | nindent 8 }}
+        {{- with .Values.controlPlaneKernel.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.controlPlaneKernel.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dcraft-fusion.controlPlaneKernel.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.controlPlaneKernel.serviceAccount.automountServiceAccountToken }}
+      {{- with .Values.controlPlaneKernel.podSecurityContext }}
+      securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: control-plane-kernel
           image: {{ include "dcraft-fusion.image" (dict "global" .Values.global "image" .Values.controlPlaneKernel.image) }}
           imagePullPolicy: {{ .Values.controlPlaneKernel.image.pullPolicy }}
+          {{- with .Values.controlPlaneKernel.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.controlPlaneKernel.service.port }}
@@ -94,20 +110,47 @@ spec:
                   name: {{ include "dcraft-fusion.secretName" . }}
                   key: FUSION_OIDC_PRIVATE_KEY_PEM
                   optional: true
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: http
-            initialDelaySeconds: 3
-            periodSeconds: 5
+            {{- include "dcraft-fusion.renderEnv" (dict "env" .Values.controlPlaneKernel.env "extraEnv" .Values.controlPlaneKernel.extraEnv) | nindent 12 }}
+          {{- if .Values.controlPlaneKernel.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 10
+              path: {{ .Values.controlPlaneKernel.livenessProbe.httpGet.path }}
+              port: {{ .Values.controlPlaneKernel.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.controlPlaneKernel.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.controlPlaneKernel.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.controlPlaneKernel.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.controlPlaneKernel.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.controlPlaneKernel.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.controlPlaneKernel.readinessProbe.httpGet.path }}
+              port: {{ .Values.controlPlaneKernel.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.controlPlaneKernel.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.controlPlaneKernel.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.controlPlaneKernel.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.controlPlaneKernel.readinessProbe.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml .Values.controlPlaneKernel.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.controlPlaneKernel.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controlPlaneKernel.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controlPlaneKernel.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -116,14 +159,47 @@ metadata:
   labels:
     {{- include "dcraft-fusion.labels" . | nindent 4 }}
     app.kubernetes.io/component: control-plane-kernel
+  {{- with .Values.controlPlaneKernel.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.controlPlaneKernel.service.type }}
   selector:
-    app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "dcraft-fusion.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: control-plane-kernel
   ports:
     - name: http
       port: {{ .Values.controlPlaneKernel.service.port }}
       targetPort: http
+---
+{{- if .Values.controlPlaneKernel.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "dcraft-fusion.fullname" . }}-control-plane-kernel
+  labels:
+    {{- include "dcraft-fusion.labels" . | nindent 4 }}
+    app.kubernetes.io/component: control-plane-kernel
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "dcraft-fusion.fullname" . }}-control-plane-kernel
+  minReplicas: {{ .Values.controlPlaneKernel.hpa.minReplicas }}
+  maxReplicas: {{ .Values.controlPlaneKernel.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.controlPlaneKernel.hpa.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.controlPlaneKernel.hpa.targetMemoryUtilizationPercentage }}
+{{- end }}
 {{- end }}

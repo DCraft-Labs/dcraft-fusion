@@ -116,7 +116,8 @@ Before this can become a Fusion module, normalize:
 
 ### Now
 
-Keep the implementation in `engines/fusion-cdc-engine/` as an engine module reference and source base.
+Keep CDC as an optional data-plane module. Source lives in the private
+`DCraft-Labs/fusion-cdc-engine` repository; the public monorepo ships images + Helm only.
 
 Use it to inform:
 

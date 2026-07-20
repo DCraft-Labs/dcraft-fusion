@@ -2,17 +2,21 @@ apiVersion: v2
 name: dcraft-fusion
 description: >
   DCraft Fusion control plane — kernel API and web UI.
-  Bring your own Postgres/Redis via values (recommended for production).
+  Bring your own Postgres and Redis (no bundled databases).
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 1.0.1
+appVersion: "1.0.1"
 keywords:
   - dcraft
   - fusion
   - control-plane
 home: https://github.com/DCraft-Labs/dcraft-fusion
+icon: https://raw.githubusercontent.com/DCraft-Labs/dcraft-fusion/main/docs/assets/dcraft-fusion-icon.png
 sources:
   - https://github.com/DCraft-Labs/dcraft-fusion
 maintainers:
   - name: DCraft Labs
     email: platform@dcraftlabs.com
+annotations:
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/prerelease: "false"

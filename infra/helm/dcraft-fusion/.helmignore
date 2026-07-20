@@ -1,4 +1,17 @@
 .DS_Store
+.git/
+.gitignore
 *.tgz
+*.md
+!README.md
 charts/
 tmpcharts/
+examples/
+.vscode/
+.idea/
+*.swp
+*~
+.project
+.classpath
+.settings/
+Thumbs.db

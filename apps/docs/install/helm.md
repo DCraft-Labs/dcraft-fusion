@@ -50,4 +50,5 @@ Set Community password auth or Enterprise OIDC via chart values / secrets. See [
 ## Related paths in-repo
 
 - Raw Kubernetes manifests: `infra/kubernetes`
-- CDC Helm chart source: `engines/fusion-cdc-engine/helm/fusion-cdc`
+- Control plane chart: `infra/helm/dcraft-fusion`
+- CDC chart (image-only): `infra/helm/fusion-cdc`

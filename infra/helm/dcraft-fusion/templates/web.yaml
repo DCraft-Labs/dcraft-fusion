@@ -7,39 +7,91 @@ metadata:
     {{- include "dcraft-fusion.labels" . | nindent 4 }}
     app.kubernetes.io/component: web
 spec:
+  {{- if not .Values.web.hpa.enabled }}
   replicas: {{ .Values.web.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "dcraft-fusion.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: web
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "dcraft-fusion.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: web
-        {{- include "dcraft-fusion.labels" . | nindent 8 }}
+        {{- with .Values.web.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.web.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "dcraft-fusion.web.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.web.serviceAccount.automountServiceAccountToken }}
+      {{- with .Values.web.podSecurityContext }}
+      securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: web
           image: {{ include "dcraft-fusion.image" (dict "global" .Values.global "image" .Values.web.image) }}
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          {{- with .Values.web.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.web.service.port }}
+          {{- if or .Values.web.env .Values.web.extraEnv }}
+          env:
+            {{- include "dcraft-fusion.renderEnv" (dict "env" .Values.web.env "extraEnv" .Values.web.extraEnv) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.web.livenessProbe.httpGet.path }}
+              port: {{ .Values.web.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.web.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.web.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.web.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.web.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.web.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: http
-            initialDelaySeconds: 3
-            periodSeconds: 5
+              path: {{ .Values.web.readinessProbe.httpGet.path }}
+              port: {{ .Values.web.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.web.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.web.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.web.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.web.readinessProbe.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml .Values.web.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -48,14 +100,47 @@ metadata:
   labels:
     {{- include "dcraft-fusion.labels" . | nindent 4 }}
     app.kubernetes.io/component: web
+  {{- with .Values.web.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.web.service.type }}
   selector:
-    app.kubernetes.io/name: {{ include "dcraft-fusion.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "dcraft-fusion.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: web
   ports:
     - name: http
       port: {{ .Values.web.service.port }}
       targetPort: http
+---
+{{- if .Values.web.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "dcraft-fusion.fullname" . }}-web
+  labels:
+    {{- include "dcraft-fusion.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "dcraft-fusion.fullname" . }}-web
+  minReplicas: {{ .Values.web.hpa.minReplicas }}
+  maxReplicas: {{ .Values.web.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.hpa.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.hpa.targetMemoryUtilizationPercentage }}
+{{- end }}
 {{- end }}

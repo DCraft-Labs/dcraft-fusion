@@ -2,16 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-frontend
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-frontend
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
 spec:
+  {{- if not .Values.frontend.hpa.enabled }}
   replicas: {{ .Values.frontend.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Release.Name }}-frontend
+      {{- include "fusion-cdc.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: frontend
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,61 +22,133 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ .Release.Name }}-frontend
+        {{- include "fusion-cdc.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: frontend
-        {{- include "fusion-cdc.labels" . | nindent 8 }}
+        {{- with .Values.frontend.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.frontend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      automountServiceAccountToken: false
+      serviceAccountName: {{ include "fusion-cdc.frontend.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.frontend.serviceAccount.automountServiceAccountToken }}
       terminationGracePeriodSeconds: 15
+      {{- with .Values.frontend.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: frontend
-          image: {{ include "fusion-cdc.frontendImage" . }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.frontend.image) }}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          {{- with .Values.frontend.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.frontend.service.port }}
+          {{- if or .Values.frontend.env .Values.frontend.extraEnv }}
+          env:
+            {{- include "fusion-cdc.renderEnv" (dict "env" .Values.frontend.env "extraEnv" .Values.frontend.extraEnv) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.frontend.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 15
+              path: {{ .Values.frontend.livenessProbe.httpGet.path }}
+              port: {{ .Values.frontend.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.frontend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.frontend.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.frontend.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.frontend.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.frontend.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 3
-            periodSeconds: 5
+              path: {{ .Values.frontend.readinessProbe.httpGet.path }}
+              port: {{ .Values.frontend.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.frontend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.frontend.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.frontend.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.frontend.readinessProbe.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.frontend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.frontend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-frontend-svc
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-frontend
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
+  {{- with .Values.frontend.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.frontend.service.type }}
   selector:
-    app.kubernetes.io/name: {{ .Release.Name }}-frontend
+    {{- include "fusion-cdc.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
   ports:
     - name: http
       port: {{ .Values.frontend.service.port }}
       targetPort: http
+---
+{{- if .Values.frontend.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-frontend
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "fusion-cdc.fullname" . }}-frontend
+  minReplicas: {{ .Values.frontend.hpa.minReplicas }}
+  maxReplicas: {{ .Values.frontend.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.frontend.hpa.targetCPUUtilizationPercentage }}
+{{- end }}
 {{- if .Values.frontend.ingress.enabled }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-frontend-ingress
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-frontend
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
   {{- with .Values.frontend.ingress.annotations }}
@@ -82,7 +156,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.frontend.ingress.className }}
+  {{- with .Values.frontend.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
   {{- with .Values.frontend.ingress.tls }}
   tls:
     {{- toYaml . | nindent 4 }}
@@ -97,7 +173,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-frontend-svc
+                name: {{ include "fusion-cdc.fullname" $ }}-frontend
                 port:
                   number: {{ $.Values.frontend.service.port }}
           {{- end }}

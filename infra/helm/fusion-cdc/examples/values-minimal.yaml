@@ -1,0 +1,36 @@
+# Minimal values — CDC image-only smoke test
+# Requires Secret fusion-cdc-secrets (see chart README).
+
+global:
+  edition: community
+  secrets:
+    existingSecret: fusion-cdc-secrets
+
+controlPlane:
+  replicaCount: 1
+  image:
+    tag: "1.0.1"
+  hpa:
+    enabled: false
+  podDisruptionBudget:
+    enabled: false
+
+cdcWorkers:
+  postgres:
+    enabled: true
+    replicas: 1
+  mysql:
+    enabled: false
+  mongodb:
+    enabled: false
+
+sparkConsumer:
+  enabled: false
+
+frontend:
+  replicaCount: 1
+  image:
+    tag: "1.0.1"
+
+transformWorker:
+  enabled: false

@@ -31,32 +31,6 @@ jobs:
             context: .
             file: apps/web/Dockerfile
             platforms: linux/amd64,linux/arm64
-          - name: cdc-control-plane
-            image: fusion-cdc-control-plane
-            context: engines/fusion-cdc-engine
-            file: engines/fusion-cdc-engine/docker/Dockerfile.control-plane
-            platforms: linux/amd64,linux/arm64
-          - name: cdc-worker
-            image: fusion-cdc-worker
-            context: engines/fusion-cdc-engine
-            file: engines/fusion-cdc-engine/docker/Dockerfile.cdc-worker
-            platforms: linux/amd64,linux/arm64
-          - name: cdc-frontend
-            image: fusion-cdc-frontend
-            context: engines/fusion-cdc-engine
-            file: engines/fusion-cdc-engine/docker/Dockerfile.frontend
-            platforms: linux/amd64,linux/arm64
-          - name: cdc-spark-consumer
-            image: fusion-cdc-spark-consumer
-            context: engines/fusion-cdc-engine
-            file: engines/fusion-cdc-engine/docker/Dockerfile.spark-consumer
-            # bitnami/spark base is reliably amd64; avoid multi-arch publish failures
-            platforms: linux/amd64
-          - name: cdc-transform-worker
-            image: fusion-cdc-transform-worker
-            context: engines/fusion-cdc-engine
-            file: engines/fusion-cdc-engine/docker/Dockerfile.transform-worker
-            platforms: linux/amd64,linux/arm64
     steps:
       - uses: actions/checkout@v5
 

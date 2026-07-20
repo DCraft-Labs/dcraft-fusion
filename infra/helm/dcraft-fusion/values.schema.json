@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "DCraft Fusion Helm values",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["global"],
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": { "type": "string" },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            },
+            "required": ["name"]
+          }
+        },
+        "labels": { "type": "object" },
+        "edition": {
+          "type": "string",
+          "enum": ["community", "enterprise"]
+        },
+        "secrets": {
+          "type": "object",
+          "properties": {
+            "existingSecret": { "type": "string" },
+            "createSecret": { "type": "boolean" },
+            "postgresDsn": { "type": "string" },
+            "seedFounderEmail": { "type": "string" },
+            "seedFounderPassword": { "type": "string" },
+            "seedSuperadminEmail": { "type": "string" },
+            "seedSuperadminPassword": { "type": "string" },
+            "oidcPrivateKeyPem": { "type": "string" }
+          }
+        }
+      }
+    },
+    "nameOverride": { "type": "string" },
+    "fullnameOverride": { "type": "string" },
+    "externalRedis": {
+      "type": "object",
+      "properties": {
+        "addr": { "type": "string" }
+      }
+    },
+    "controlPlaneKernel": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicaCount": { "type": "integer", "minimum": 0 },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string" },
+            "digest": { "type": "string" },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          },
+          "required": ["repository"]
+        },
+        "resources": { "type": "object" },
+        "hpa": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "minReplicas": { "type": "integer", "minimum": 1 },
+            "maxReplicas": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "web": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicaCount": { "type": "integer", "minimum": 0 },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string" },
+            "digest": { "type": "string" },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          },
+          "required": ["repository"]
+        },
+        "resources": { "type": "object" },
+        "hpa": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "minReplicas": { "type": "integer", "minimum": 1 },
+            "maxReplicas": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "className": { "type": "string" },
+        "hosts": { "type": "array" },
+        "tls": { "type": "array" }
+      }
+    }
+  }
+}

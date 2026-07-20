@@ -1,0 +1,107 @@
+# Production values — pin digests, HPA, ingress, existingSecret.
+# Replace digests and hostnames before applying.
+
+global:
+  edition: community
+  imagePullSecrets:
+    - name: ghcr-pull
+  labels:
+    env: production
+  secrets:
+    existingSecret: fusion-secrets
+    createSecret: false
+
+externalRedis:
+  addr: redis.platform.svc.cluster.local:6379
+
+controlPlaneKernel:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: ghcr.io/dcraft-labs/dcraft-fusion-control-plane-kernel
+    tag: "1.0.1"
+    # digest: sha256:REPLACE_ME
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  hpa:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 12
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+  config:
+    fusionEnv: production
+    authMode: password
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: control-plane-kernel
+            topologyKey: kubernetes.io/hostname
+
+web:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: ghcr.io/dcraft-labs/dcraft-fusion-web
+    tag: "1.0.1"
+    # digest: sha256:REPLACE_ME
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  hpa:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 15
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: fusion.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web
+        - path: /api
+          pathType: Prefix
+          service: controlPlaneKernel
+        - path: /healthz
+          pathType: Prefix
+          service: controlPlaneKernel
+        - path: /oidc
+          pathType: Prefix
+          service: controlPlaneKernel
+  tls:
+    - secretName: fusion-tls
+      hosts:
+        - fusion.example.com

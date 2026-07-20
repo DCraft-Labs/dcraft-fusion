@@ -1,0 +1,23 @@
+apiVersion: v2
+name: dcraft-fusion-stack
+description: >
+  Optional stack guide for DCraft Fusion + Fusion CDC.
+  Prefer installing the published OCI charts separately (see README).
+  This thin umbrella documents dependency aliases for local file:// installs only.
+type: application
+version: 1.0.1
+appVersion: "1.0.1"
+# File dependencies work for local helm dependency update / helm install from this repo.
+# For OCI registries, install dcraft-fusion and fusion-cdc charts independently
+# as documented in ../README.md.
+dependencies:
+  - name: dcraft-fusion
+    version: "1.0.1"
+    repository: "file://../dcraft-fusion"
+    alias: fusion
+    condition: fusion.enabled
+  - name: fusion-cdc
+    version: "1.0.1"
+    repository: "file://../fusion-cdc"
+    alias: cdc
+    condition: cdc.enabled

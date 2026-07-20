@@ -2,14 +2,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-control-plane
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
+  {{- with .Values.controlPlane.ingress.annotations }}
   annotations:
-    {{- toYaml .Values.controlPlane.ingress.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  ingressClassName: {{ .Values.controlPlane.ingress.className }}
+  {{- with .Values.controlPlane.ingress.className }}
+  ingressClassName: {{ . }}
+  {{- end }}
   {{- with .Values.controlPlane.ingress.tls }}
   tls:
     {{- toYaml . | nindent 4 }}
@@ -24,7 +27,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-control-plane-svc
+                name: {{ include "fusion-cdc.fullname" $ }}-control-plane
                 port:
                   number: {{ $.Values.controlPlane.service.port }}
           {{- end }}

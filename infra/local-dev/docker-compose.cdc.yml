@@ -1,16 +1,17 @@
-# Fusion CDC local profile — use alongside the Fusion control-plane compose.
+# Fusion CDC local profile — official GHCR images only.
 #
-# Brings up CDC metadata DB, Redis (shared name optional), CDC worker, spark
-# consumer, and transform worker for all-in-one local development.
+# CDC engine source is proprietary. This compose file pulls pre-built images
+# from ghcr.io/dcraft-labs/fusion-cdc-* (no build: contexts).
 #
 # Usage (from repo root):
-#   docker compose -f infra/local-dev/docker-compose.yml -f infra/local-dev/docker-compose.cdc.yml --profile cdc up -d
-#
-# Or CDC stack alone:
 #   docker compose -f infra/local-dev/docker-compose.cdc.yml --profile cdc up -d
 #
-# Full engine-local stack (sources + airflow) remains at:
-#   engines/fusion-cdc-engine/docker/docker-compose.dev.yml
+# Alongside Fusion control-plane compose:
+#   docker compose -f infra/local-dev/docker-compose.yml \
+#     -f infra/local-dev/docker-compose.cdc.yml --profile cdc up -d
+#
+# Set GHCR_TOKEN / docker login if images are private:
+#   echo $GHCR_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 
 name: dcraft-local
 
@@ -20,7 +21,7 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: fusion_user
-      POSTGRES_PASSWORD: ${CDC_POSTGRES_PASSWORD:-fusion_password}
+      POSTGRES_PASSWORD: ${CDC_POSTGRES_PASSWORD:-CHANGE_ME}
       POSTGRES_DB: fusion_cdc_metadata
     ports:
       - "5433:5432"
@@ -46,17 +47,15 @@ services:
 
   cdc-control-plane:
     profiles: [cdc]
-    build:
-      context: ../../engines/fusion-cdc-engine
-      dockerfile: docker/Dockerfile.control-plane
+    image: ghcr.io/dcraft-labs/fusion-cdc-control-plane:latest
     environment:
       LOG_LEVEL: INFO
       ENVIRONMENT: local
-      DATABASE_URL: postgresql://fusion_user:${CDC_POSTGRES_PASSWORD:-fusion_password}@cdc-postgres-meta:5432/fusion_cdc_metadata
+      DATABASE_URL: postgresql://fusion_user:${CDC_POSTGRES_PASSWORD:-CHANGE_ME}@cdc-postgres-meta:5432/fusion_cdc_metadata
       REDIS_URL: redis://cdc-redis:6379/0
-      SECRET_KEY: ${CDC_SECRET_KEY:-local-dev-secret-key-change-me}
-      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-local-dev-encryption-key-32c}
-      WORKER_TOKEN_SECRET: ${CDC_WORKER_TOKEN_SECRET:-local-dev-worker-secret}
+      SECRET_KEY: ${CDC_SECRET_KEY:-CHANGE_ME_SECRET_KEY}
+      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-CHANGE_ME_ENCRYPTION_KEY_32C}
+      WORKER_TOKEN_SECRET: ${CDC_WORKER_TOKEN_SECRET:-CHANGE_ME_WORKER_SECRET}
       CORS_ORIGINS: "*"
     ports:
       - "8000:8000"
@@ -68,18 +67,16 @@ services:
 
   cdc-worker:
     profiles: [cdc]
-    build:
-      context: ../../engines/fusion-cdc-engine
-      dockerfile: docker/Dockerfile.cdc-worker
+    image: ghcr.io/dcraft-labs/fusion-cdc-worker:latest
     environment:
       CONTROL_PLANE_URL: http://cdc-control-plane:8000
-      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-dev-worker-token}
+      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-CHANGE_ME_WORKER_TOKEN}
       WORKER_ID: worker-local-1
       REDIS_URL: redis://cdc-redis:6379/0
       CHECKPOINT_DB_PATH: /var/lib/cdc/checkpoints.db
       FALLBACK_DB_PATH: /var/lib/cdc/fallback.db
       HTTP_PORT: "8081"
-      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-local-dev-encryption-key-32c}
+      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-CHANGE_ME_ENCRYPTION_KEY_32C}
     ports:
       - "8081:8081"
     depends_on:
@@ -92,13 +89,11 @@ services:
 
   cdc-spark-consumer:
     profiles: [cdc]
-    build:
-      context: ../../engines/fusion-cdc-engine
-      dockerfile: docker/Dockerfile.spark-consumer
+    image: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer:latest
     environment:
       REDIS_URL: redis://cdc-redis:6379/0
       CONTROL_PLANE_URL: http://cdc-control-plane:8000
-      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-dev-worker-token}
+      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-CHANGE_ME_WORKER_TOKEN}
       SPARK_CHECKPOINT_DIR: /tmp/spark-checkpoints
       CONSUMER_GROUP: fusion-spark
       CONSUMER_NAME: spark-consumer-local-1
@@ -112,15 +107,13 @@ services:
 
   cdc-transform-worker:
     profiles: [cdc]
-    build:
-      context: ../../engines/fusion-cdc-engine
-      dockerfile: docker/Dockerfile.transform-worker
+    image: ghcr.io/dcraft-labs/fusion-cdc-transform-worker:latest
     environment:
-      METADATA_DB_DSN: host=cdc-postgres-meta port=5432 dbname=fusion_cdc_metadata user=fusion_user password=${CDC_POSTGRES_PASSWORD:-fusion_password}
+      METADATA_DB_DSN: host=cdc-postgres-meta port=5432 dbname=fusion_cdc_metadata user=fusion_user password=${CDC_POSTGRES_PASSWORD:-CHANGE_ME}
       REDIS_URL: redis://cdc-redis:6379/0
-      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-local-dev-encryption-key-32c}
+      ENCRYPTION_KEY: ${CDC_ENCRYPTION_KEY:-CHANGE_ME_ENCRYPTION_KEY_32C}
       CONTROL_PLANE_URL: http://cdc-control-plane:8000
-      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-dev-worker-token}
+      WORKER_TOKEN: ${CDC_WORKER_TOKEN:-CHANGE_ME_WORKER_TOKEN}
       WORKER_ID: transform-worker-local-1
     depends_on:
       cdc-postgres-meta:
@@ -132,11 +125,7 @@ services:
 
   cdc-frontend:
     profiles: [cdc]
-    build:
-      context: ../../engines/fusion-cdc-engine
-      dockerfile: docker/Dockerfile.frontend
-      args:
-        VITE_API_BASE_URL: http://127.0.0.1:8000
+    image: ghcr.io/dcraft-labs/fusion-cdc-frontend:latest
     ports:
       - "8088:8080"
     depends_on:

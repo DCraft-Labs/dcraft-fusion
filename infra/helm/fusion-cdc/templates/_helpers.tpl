@@ -1,5 +1,5 @@
 {{/*
-Fusion CDC Engine — Helm Helper Templates
+Fusion CDC — Helm helpers (image-only chart)
 */}}
 
 {{- define "fusion-cdc.name" -}}
@@ -31,6 +31,10 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/part-of: fusion-cdc
+dcraft.edition: {{ .Values.global.edition | default "community" | quote }}
+{{- with .Values.global.labels }}
+{{- toYaml . }}
+{{- end }}
 {{- end }}
 
 {{- define "fusion-cdc.selectorLabels" -}}
@@ -38,45 +42,84 @@ app.kubernetes.io/name: {{ include "fusion-cdc.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/*
+Image helper: registry + repository + tag or digest.
+*/}}
 {{- define "fusion-cdc.image" -}}
 {{- $registry := .global.imageRegistry | default "" -}}
 {{- $repo := .image.repository -}}
+{{- if and .image.digest (ne .image.digest "") -}}
+{{- if $registry -}}
+{{- printf "%s/%s@%s" (trimSuffix "/" $registry) $repo .image.digest -}}
+{{- else -}}
+{{- printf "%s@%s" $repo .image.digest -}}
+{{- end -}}
+{{- else -}}
 {{- $tag := .image.tag | default "latest" -}}
 {{- if $registry -}}
-{{- printf "%s/%s:%s" $registry $repo $tag -}}
+{{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repo $tag -}}
 {{- else -}}
 {{- printf "%s:%s" $repo $tag -}}
 {{- end -}}
+{{- end -}}
 {{- end }}
 
-{{- define "fusion-cdc.controlPlaneImage" -}}
-{{- include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.controlPlane.image) -}}
-{{- end }}
-
-{{- define "fusion-cdc.workerImage" -}}
-{{- include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.cdcWorkers.image) -}}
-{{- end }}
-
-{{- define "fusion-cdc.sparkConsumerImage" -}}
-{{- include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.sparkConsumer.image) -}}
-{{- end }}
-
-{{- define "fusion-cdc.frontendImage" -}}
-{{- include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.frontend.image) -}}
-{{- end }}
-
-{{- define "fusion-cdc.transformWorkerImage" -}}
-{{- include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.transformWorker.image) -}}
-{{- end }}
-
-{{- define "fusion-cdc.redisHost" -}}
-{{- if .Values.redis.enabled -}}
-{{- printf "%s-redis-master.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+{{- define "fusion-cdc.secretName" -}}
+{{- if .Values.global.secrets.existingSecret -}}
+{{- .Values.global.secrets.existingSecret -}}
 {{- else -}}
-{{- .Values.redis.externalHost | default "redis" -}}
+{{- printf "%s-secrets" (include "fusion-cdc.fullname" .) -}}
+{{- end -}}
+{{- end }}
+
+{{- define "fusion-cdc.redisUrl" -}}
+{{- if .Values.global.secrets.redisUrl -}}
+{{- .Values.global.secrets.redisUrl -}}
+{{- else if .Values.externalRedis.url -}}
+{{- .Values.externalRedis.url -}}
+{{- else -}}
+{{- "" -}}
 {{- end -}}
 {{- end }}
 
 {{- define "fusion-cdc.controlPlaneURL" -}}
-{{- printf "http://%s-control-plane-svc.%s.svc.cluster.local:%v" .Release.Name .Release.Namespace .Values.controlPlane.service.port -}}
+{{- printf "http://%s-control-plane:%v" (include "fusion-cdc.fullname" .) .Values.controlPlane.service.port -}}
+{{- end }}
+
+{{- define "fusion-cdc.controlPlane.serviceAccountName" -}}
+{{- if .Values.controlPlane.serviceAccount.create -}}
+{{- default (printf "%s-control-plane" (include "fusion-cdc.fullname" .)) .Values.controlPlane.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.controlPlane.serviceAccount.name -}}
+{{- end -}}
+{{- end }}
+
+{{- define "fusion-cdc.cdcWorkers.serviceAccountName" -}}
+{{- if .Values.cdcWorkers.serviceAccount.create -}}
+{{- default (printf "%s-cdc-worker" (include "fusion-cdc.fullname" .)) .Values.cdcWorkers.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.cdcWorkers.serviceAccount.name -}}
+{{- end -}}
+{{- end }}
+
+{{- define "fusion-cdc.frontend.serviceAccountName" -}}
+{{- if .Values.frontend.serviceAccount.create -}}
+{{- default (printf "%s-frontend" (include "fusion-cdc.fullname" .)) .Values.frontend.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.frontend.serviceAccount.name -}}
+{{- end -}}
+{{- end }}
+
+{{- define "fusion-cdc.workerServiceAccountName" -}}
+{{- include "fusion-cdc.cdcWorkers.serviceAccountName" . -}}
+{{- end }}
+
+{{- define "fusion-cdc.renderEnv" -}}
+{{- range $key, $value := .env }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- with .extraEnv }}
+{{- toYaml . }}
+{{- end }}
 {{- end }}

@@ -1,12 +1,35 @@
-# Fusion CDC Engine — Helm chart default values (canonical public chart)
-# Source of truth: infra/helm/fusion-cdc (engines/.../helm is a legacy mirror)
+# Fusion CDC — image-only chart (public)
+# CDC engine source is proprietary. This chart deploys official DCraft Labs images from GHCR.
+# Never commit real passwords. Prefer global.secrets.existingSecret.
 
 global:
   imageRegistry: ""
   imagePullSecrets: []
-  namespace: ""
-  # External metadata DB when not injecting via controlPlane.secrets
-  databaseUrl: ""
+  labels: {}
+  edition: community
+
+  secrets:
+    # Pre-created Secret name (recommended). When set, the chart does not create secrets.
+    existingSecret: ""
+    # When true and existingSecret is empty, create a Secret from placeholders below.
+    createSecret: false
+    # Keys expected:
+    #   DATABASE_URL, SECRET_KEY, ENCRYPTION_KEY, WORKER_TOKEN_SECRET, WORKER_TOKEN
+    #   REDIS_URL (optional if externalRedis.url is set in ConfigMap path)
+    databaseUrl: ""
+    secretKey: ""
+    encryptionKey: ""
+    workerTokenSecret: ""
+    workerToken: ""
+    redisUrl: ""
+
+nameOverride: ""
+fullnameOverride: ""
+
+# External Redis URL used when not injected via secret key REDIS_URL.
+# Example: redis://redis.example:6379/0
+externalRedis:
+  url: ""
 
 # ── Control Plane ─────────────────────────────────────────────────────────────
 controlPlane:
@@ -15,12 +38,95 @@ controlPlane:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
     port: 8000
+    annotations: {}
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /api/v1/monitoring/health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /api/v1/monitoring/health
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  startupProbe:
+    enabled: true
+    httpGet:
+      path: /api/v1/monitoring/health
+      port: http
+    failureThreshold: 12
+    periodSeconds: 10
+
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+  config:
+    logLevel: INFO
+    environment: production
+    algorithm: HS256
+    accessTokenExpireMinutes: 60
+    corsOrigins: "https://app.dcraftfusion.io"
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
 
   ingress:
     enabled: false
@@ -35,50 +141,23 @@ controlPlane:
             pathType: Prefix
     tls: []
 
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 512Mi
-
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 80
-
-  podDisruptionBudget:
-    enabled: true
-    minAvailable: 1
-
-  config:
-    logLevel: INFO
-    environment: production
-    algorithm: HS256
-    accessTokenExpireMinutes: 60
-    corsOrigins: "https://app.dcraftfusion.io"
-
-  secrets:
-    create: true
-    secretKey: "change-me-in-production"
-    encryptionKey: "change-me-encryption-key-32chars"
-    workerTokenSecret: "change-me-worker-secret"
-
 # ── CDC Workers ───────────────────────────────────────────────────────────────
 cdcWorkers:
+  enabled: true
+
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
+
+  metricsPort: 8080
 
   postgres:
     enabled: true
     replicas: 1
     storage: 5Gi
-    storageClass: standard
+    storageClass: ""
     resources:
       requests:
         cpu: 200m
@@ -91,7 +170,7 @@ cdcWorkers:
     enabled: true
     replicas: 1
     storage: 5Gi
-    storageClass: standard
+    storageClass: ""
     resources:
       requests:
         cpu: 200m
@@ -104,7 +183,7 @@ cdcWorkers:
     enabled: true
     replicas: 1
     storage: 5Gi
-    storageClass: standard
+    storageClass: ""
     resources:
       requests:
         cpu: 200m
@@ -113,28 +192,53 @@ cdcWorkers:
         cpu: 1000m
         memory: 1Gi
 
-  autoscaling:
+  hpa:
     enabled: false
     minReplicas: 1
     maxReplicas: 5
     targetCPUUtilizationPercentage: 70
 
-  workerToken: "change-me-worker-token"
-  metricsPort: 8080
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
-# ── Spark Consumer ────────────────────────────────────────────────────────────
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
+
+# ── Spark Consumer (optional) ─────────────────────────────────────────────────
 sparkConsumer:
-  enabled: true
+  enabled: false
   replicaCount: 1
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   storage:
     size: 20Gi
-    storageClass: standard
+    storageClass: ""
 
   resources:
     requests:
@@ -144,12 +248,51 @@ sparkConsumer:
       cpu: 4000m
       memory: 8Gi
 
+  livenessProbe:
+    enabled: false
+
+  readinessProbe:
+    enabled: false
+
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: ["ALL"]
+
   config:
     sparkMaster: "local[*]"
     sparkCheckpointDir: /var/lib/spark/checkpoints
     consumerGroup: fusion-spark
     metricsPort: 8080
     sparkUiPort: 4040
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: false
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
 
 # ── Frontend ──────────────────────────────────────────────────────────────────
 frontend:
@@ -158,12 +301,14 @@ frontend:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
     port: 8080
+    annotations: {}
 
   resources:
     requests:
@@ -172,6 +317,59 @@ frontend:
     limits:
       cpu: 200m
       memory: 256Mi
+
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 15
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: http
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
 
   ingress:
     enabled: false
@@ -184,14 +382,15 @@ frontend:
             pathType: Prefix
     tls: []
 
-# ── Transform Worker (optional, scale-to-zero friendly) ───────────────────────
+# ── Transform Worker (optional) ───────────────────────────────────────────────
 transformWorker:
   enabled: false
   replicaCount: 0
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   resources:
@@ -202,11 +401,44 @@ transformWorker:
       cpu: 4000m
       memory: 4Gi
 
+  hpa:
+    enabled: false
+    minReplicas: 0
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: ["ALL"]
+
   config:
     highPriorityQueue: fusion:transforms:high
     normalPriorityQueue: fusion:transforms:normal
     duckdbThreads: "2"
     duckdbMemoryLimit: 3GB
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: false
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
 
   keda:
     enabled: false
@@ -215,46 +447,9 @@ transformWorker:
     cooldownPeriod: 120
     pollingInterval: 5
 
-# ── Redis (Bitnami subchart) ──────────────────────────────────────────────────
-redis:
-  enabled: true
-  architecture: standalone
-  auth:
-    enabled: false
-  master:
-    persistence:
-      enabled: true
-      size: 10Gi
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 1Gi
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: false
-
-# ── Monitoring ────────────────────────────────────────────────────────────────
+# ── Monitoring (optional Prometheus Operator) ─────────────────────────────────
 monitoring:
   serviceMonitor:
     enabled: false
     interval: 15s
     scrapeTimeout: 10s
-  grafanaDashboards:
-    enabled: false
-
-podSecurityContext:
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
-
-containerSecurityContext:
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop: ["ALL"]
-
-topologySpreadConstraints: []

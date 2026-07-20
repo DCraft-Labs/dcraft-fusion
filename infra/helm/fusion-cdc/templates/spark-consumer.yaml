@@ -2,14 +2,15 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-spark-checkpoints
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-spark-checkpoints
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
     app.kubernetes.io/component: spark-consumer
 spec:
   accessModes: ["ReadWriteOnce"]
-  storageClassName: {{ .Values.sparkConsumer.storage.storageClass }}
+  {{- with .Values.sparkConsumer.storage.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.sparkConsumer.storage.size }}
@@ -17,50 +18,61 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-spark-consumer
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-spark-consumer
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
     app.kubernetes.io/component: spark-consumer
 spec:
+  {{- if not .Values.sparkConsumer.hpa.enabled }}
   replicas: {{ .Values.sparkConsumer.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+      {{- include "fusion-cdc.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: spark-consumer
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+        {{- include "fusion-cdc.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: spark-consumer
-        {{- include "fusion-cdc.labels" . | nindent 8 }}
+        {{- with .Values.sparkConsumer.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.sparkConsumer.config.metricsPort }}"
         prometheus.io/path: "/metrics"
+        {{- with .Values.sparkConsumer.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ .Release.Name }}-cdc-worker-sa
+      serviceAccountName: {{ include "fusion-cdc.workerServiceAccountName" . }}
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 90
+      {{- with .Values.sparkConsumer.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: spark-consumer
-          image: {{ include "fusion-cdc.sparkConsumerImage" . }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.sparkConsumer.image) }}
           imagePullPolicy: {{ .Values.sparkConsumer.image.pullPolicy }}
+          {{- with .Values.sparkConsumer.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: spark-ui
               containerPort: {{ .Values.sparkConsumer.config.sparkUiPort }}
             - name: metrics
               containerPort: {{ .Values.sparkConsumer.config.metricsPort }}
           env:
-            - name: REDIS_URL
-              value: "redis://{{ include "fusion-cdc.redisHost" . }}:6379/0"
             - name: CONTROL_PLANE_URL
               value: {{ include "fusion-cdc.controlPlaneURL" . | quote }}
             - name: SPARK_MASTER
@@ -72,12 +84,21 @@ spec:
             - name: WORKER_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
+                  name: {{ include "fusion-cdc.secretName" . }}
                   key: WORKER_TOKEN
+            {{- if or .Values.global.secrets.existingSecret .Values.global.secrets.redisUrl }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusion-cdc.secretName" . }}
+                  key: REDIS_URL
+            {{- else if .Values.externalRedis.url }}
+            - name: REDIS_URL
+              value: {{ .Values.externalRedis.url | quote }}
+            {{- end }}
+            {{- include "fusion-cdc.renderEnv" (dict "env" .Values.sparkConsumer.env "extraEnv" .Values.sparkConsumer.extraEnv) | nindent 12 }}
           resources:
             {{- toYaml .Values.sparkConsumer.resources | nindent 12 }}
-          securityContext:
-            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
           volumeMounts:
             - name: spark-checkpoints
               mountPath: {{ .Values.sparkConsumer.config.sparkCheckpointDir }}
@@ -86,22 +107,34 @@ spec:
       volumes:
         - name: spark-checkpoints
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-spark-checkpoints
+            claimName: {{ include "fusion-cdc.fullname" . }}-spark-checkpoints
         - name: tmp
           emptyDir: {}
+      {{- with .Values.sparkConsumer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sparkConsumer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.sparkConsumer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-spark-consumer-svc
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" . }}-spark-consumer
   labels:
     {{- include "fusion-cdc.labels" . | nindent 4 }}
     app.kubernetes.io/component: spark-consumer
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+    {{- include "fusion-cdc.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: spark-consumer
   ports:
     - name: spark-ui
       port: {{ .Values.sparkConsumer.config.sparkUiPort }}

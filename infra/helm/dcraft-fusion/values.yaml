@@ -1,12 +1,40 @@
-# DCraft Fusion — default values
-# Override secrets via --set, -f secrets.yaml, or an existing Secret (secrets.existingSecret).
+# DCraft Fusion control plane — default values
+# Never commit real passwords. Prefer global.secrets.existingSecret in production.
 
 global:
   imageRegistry: ""
   imagePullSecrets: []
+  labels: {}
+  edition: community
+
+  # Secrets pattern: use an existing Secret, or optionally create one from placeholders.
+  secrets:
+    # Name of a pre-created Secret (recommended). When set, the chart does not create secrets.
+    existingSecret: ""
+    # When true and existingSecret is empty, create a Secret from the keys below.
+    # Leave password fields empty and inject via --set / -f / External Secrets.
+    createSecret: false
+    # Keys expected in the Secret (existing or created):
+    #   POSTGRES_DSN
+    #   FUSION_SEED_FOUNDER_EMAIL / FUSION_SEED_FOUNDER_PASSWORD
+    #   FUSION_SEED_SUPERADMIN_EMAIL / FUSION_SEED_SUPERADMIN_PASSWORD
+    #   FUSION_OIDC_PRIVATE_KEY_PEM (optional)
+    postgresDsn: ""
+    seedFounderEmail: founder@dcraftlabs.com
+    seedFounderPassword: ""
+    seedSuperadminEmail: superadmin@dcraftlabs.com
+    seedSuperadminPassword: ""
+    oidcPrivateKeyPem: ""
 
 nameOverride: ""
 fullnameOverride: ""
+
+# External Postgres (required). Provide DSN via global.secrets.
+# Example: postgres://fusion:CHANGE_ME@postgres.example:5432/fusion?sslmode=require
+
+# External Redis address host:port (required for kernel).
+externalRedis:
+  addr: ""
 
 # ── Control plane kernel ──────────────────────────────────────────────────────
 controlPlaneKernel:
@@ -15,12 +43,14 @@ controlPlaneKernel:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-control-plane-kernel
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
     port: 8080
+    annotations: {}
 
   resources:
     requests:
@@ -30,14 +60,68 @@ controlPlaneKernel:
       cpu: 500m
       memory: 512Mi
 
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /healthz
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /healthz
+      port: http
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+  # Non-secret config (also rendered into ConfigMap)
   config:
     fusionEnv: production
-    # Community default: password login returning a JWT.
-    # Set to oidc for Enterprise-style OIDC.
+    # Community default: password login returning a JWT. Set to oidc for OIDC.
     authMode: password
     oidcIssuer: ""
     oidcAudience: dcraft-fusion
     oidcJwksUrl: ""
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
 
 # ── Web UI ────────────────────────────────────────────────────────────────────
 web:
@@ -46,12 +130,14 @@ web:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-web
-    tag: latest
+    tag: "1.0.1"
+    digest: ""
     pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
     port: 80
+    annotations: {}
 
   resources:
     requests:
@@ -61,62 +147,61 @@ web:
       cpu: 250m
       memory: 256Mi
 
-# ── Secrets ───────────────────────────────────────────────────────────────────
-# Prefer existingSecret in production. Do not commit real PEMs or passwords.
-secrets:
-  create: true
-  # existingSecret: fusion-secrets
-  # Seed passwords for FUSION_AUTH_MODE=password (change in production).
-  seedFounderEmail: founder@dcraftlabs.com
-  seedFounderPassword: ""
-  seedSuperadminEmail: superadmin@dcraftlabs.com
-  seedSuperadminPassword: ""
-  # Optional OIDC private key PEM. Leave empty to auto-generate at runtime.
-  oidcPrivateKeyPem: ""
-  # Used when postgresql.enabled=false — full DSN for an external database.
-  postgresDsn: ""
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /healthz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
 
-# ── External / bundled Postgres ───────────────────────────────────────────────
-# When postgresql.enabled=false, set secrets.postgresDsn (or existingSecret POSTGRES_DSN).
-# Example external DSN:
-#   postgres://fusion:CHANGE_ME@my-postgres:5432/fusion?sslmode=require
-postgresql:
-  enabled: true
-  auth:
-    username: fusion
-    password: ""   # set via --set or secrets file; required when enabled
-    database: fusion
-  primary:
-    persistence:
-      enabled: true
-      size: 8Gi
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /healthz
+      port: http
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
 
-# ── External / bundled Redis ──────────────────────────────────────────────────
-# When redis.enabled=false, set redis.externalAddr (host:port).
-redis:
-  enabled: true
-  externalAddr: ""
-  architecture: standalone
-  auth:
+  hpa:
     enabled: false
-  master:
-    persistence:
-      enabled: false
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 250m
-        memory: 256Mi
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
 
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+  env: {}
+  extraEnv: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    automountServiceAccountToken: false
+
+  podAnnotations: {}
+  podLabels: {}
+
+# ── Ingress ───────────────────────────────────────────────────────────────────
 ingress:
   enabled: false
   className: nginx

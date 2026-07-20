@@ -123,12 +123,12 @@ jobs:
         run: |
           set -euo pipefail
           helm lint infra/helm/dcraft-fusion \
-            --set secrets.seedFounderPassword=ci \
-            --set secrets.seedSuperadminPassword=ci \
-            --set secrets.postgresDsn='postgres://fusion:ci@postgres:5432/fusion?sslmode=disable'
+            --set global.secrets.existingSecret=fusion-secrets \
+            --set externalRedis.addr=redis:6379
           helm lint infra/helm/fusion-cdc \
-            --set controlPlane.secrets.secretKey=ci \
-            --set controlPlane.secrets.encryptionKey=ci-encryption-key-32chars!! \
-            --set controlPlane.secrets.workerTokenSecret=ci \
-            --set cdcWorkers.workerToken=ci \
-            --set global.databaseUrl='postgresql://fusion:ci@postgres:5432/fusion_cdc'
+            --set global.secrets.existingSecret=fusion-cdc-secrets
+          helm template fusion infra/helm/dcraft-fusion \
+            --set global.secrets.existingSecret=fusion-secrets \
+            --set externalRedis.addr=redis:6379 >/dev/null
+          helm template fusion-cdc infra/helm/fusion-cdc \
+            --set global.secrets.existingSecret=fusion-cdc-secrets >/dev/null

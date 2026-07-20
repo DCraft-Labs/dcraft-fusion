@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "title": "Fusion CDC Helm values",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["global"],
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "imageRegistry": { "type": "string" },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            },
+            "required": ["name"]
+          }
+        },
+        "labels": { "type": "object" },
+        "edition": {
+          "type": "string",
+          "enum": ["community", "enterprise"]
+        },
+        "secrets": {
+          "type": "object",
+          "properties": {
+            "existingSecret": { "type": "string" },
+            "createSecret": { "type": "boolean" },
+            "databaseUrl": { "type": "string" },
+            "secretKey": { "type": "string" },
+            "encryptionKey": { "type": "string" },
+            "workerTokenSecret": { "type": "string" },
+            "workerToken": { "type": "string" },
+            "redisUrl": { "type": "string" }
+          }
+        }
+      }
+    },
+    "externalRedis": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" }
+      }
+    },
+    "controlPlane": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicaCount": { "type": "integer", "minimum": 0 },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string" },
+            "digest": { "type": "string" },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          },
+          "required": ["repository"]
+        },
+        "hpa": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "minReplicas": { "type": "integer", "minimum": 1 },
+            "maxReplicas": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "cdcWorkers": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string" },
+            "digest": { "type": "string" }
+          },
+          "required": ["repository"]
+        }
+      }
+    },
+    "sparkConsumer": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "frontend": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "transformWorker": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicaCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

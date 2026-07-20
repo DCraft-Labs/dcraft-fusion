@@ -1,55 +1,106 @@
-Fusion CDC Engine has been deployed.
+═══════════════════════════════════════════════════════════════════
+  Fusion CDC {{ .Chart.AppVersion }} (image-only)
+═══════════════════════════════════════════════════════════════════
 
   Release:   {{ .Release.Name }}
   Namespace: {{ .Release.Namespace }}
-  Version:   {{ .Chart.AppVersion }}
+  Chart:     {{ .Chart.Name }}-{{ .Chart.Version }}
 
-Install (from repo root):
+  CDC engine source is proprietary.
+  This chart deploys official DCraft Labs images from GHCR.
 
-  helm dependency update infra/helm/fusion-cdc
-  helm upgrade --install fusion-cdc infra/helm/fusion-cdc \
-    --namespace fusion --create-namespace \
-    --set controlPlane.secrets.secretKey="$(openssl rand -hex 32)" \
-    --set controlPlane.secrets.encryptionKey="$(openssl rand -hex 16)" \
-    --set controlPlane.secrets.workerTokenSecret="$(openssl rand -hex 32)" \
-    --set cdcWorkers.workerToken="$(openssl rand -hex 32)" \
-    --set global.databaseUrl='postgresql://user:pass@host:5432/fusion_cdc_metadata'
+───────────────────────────────────────────────────────────────────
+OCI install
+───────────────────────────────────────────────────────────────────
 
-OCI:
+  helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
+    --version {{ .Chart.Version }} \
+    --namespace fusion-cdc --create-namespace \
+    -f my-values.yaml
 
-  helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc --version {{ .Chart.Version }}
+───────────────────────────────────────────────────────────────────
+Secrets (required)
+───────────────────────────────────────────────────────────────────
 
-Services:
-{{- if .Values.controlPlane.enabled }}
-  - Control Plane API  → {{ .Release.Name }}-control-plane-svc:{{ .Values.controlPlane.service.port }}
-{{- end }}
-{{- if .Values.frontend.enabled }}
-  - Frontend           → {{ .Release.Name }}-frontend-svc:{{ .Values.frontend.service.port }}
-{{- end }}
-{{- if .Values.cdcWorkers.postgres.enabled }}
-  - CDC Worker (Postgres)
-{{- end }}
-{{- if .Values.cdcWorkers.mysql.enabled }}
-  - CDC Worker (MySQL)
-{{- end }}
-{{- if .Values.cdcWorkers.mongodb.enabled }}
-  - CDC Worker (MongoDB)
-{{- end }}
+Create a Secret with:
+
+  DATABASE_URL
+  SECRET_KEY
+  ENCRYPTION_KEY
+  WORKER_TOKEN_SECRET
+  WORKER_TOKEN
+  REDIS_URL
+
+Then set:
+
+  global.secrets.existingSecret: <secret-name>
+
+Or for local/dev only:
+
+  --set global.secrets.createSecret=true \
+  --set global.secrets.databaseUrl='postgresql://...' \
+  --set global.secrets.redisUrl='redis://redis:6379/0' \
+  --set global.secrets.secretKey="$(openssl rand -hex 32)" \
+  --set global.secrets.encryptionKey="$(openssl rand -hex 16)" \
+  --set global.secrets.workerTokenSecret="$(openssl rand -hex 32)" \
+  --set global.secrets.workerToken="$(openssl rand -hex 32)"
+
+Images pulled (pre-built only):
+
+  • ghcr.io/dcraft-labs/fusion-cdc-control-plane
+  • ghcr.io/dcraft-labs/fusion-cdc-worker
+  • ghcr.io/dcraft-labs/fusion-cdc-frontend
 {{- if .Values.sparkConsumer.enabled }}
-  - Spark Consumer     → {{ .Release.Name }}-spark-consumer
+  • ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
 {{- end }}
 {{- if .Values.transformWorker.enabled }}
-  - Transform Worker   → {{ .Release.Name }}-transform-worker
+  • ghcr.io/dcraft-labs/fusion-cdc-transform-worker
 {{- end }}
-{{- if .Values.redis.enabled }}
-  - Redis              → {{ .Release.Name }}-redis-master:6379
+
+───────────────────────────────────────────────────────────────────
+Services
+───────────────────────────────────────────────────────────────────
+{{- if .Values.controlPlane.enabled }}
+  Control Plane API → {{ include "fusion-cdc.fullname" . }}-control-plane:{{ .Values.controlPlane.service.port }}
+{{- end }}
+{{- if .Values.frontend.enabled }}
+  Frontend          → {{ include "fusion-cdc.fullname" . }}-frontend:{{ .Values.frontend.service.port }}
+{{- end }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.postgres.enabled }}
+  CDC Worker (Postgres)
+{{- end }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.mysql.enabled }}
+  CDC Worker (MySQL)
+{{- end }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.mongodb.enabled }}
+  CDC Worker (MongoDB)
+{{- end }}
+{{- if .Values.sparkConsumer.enabled }}
+  Spark Consumer    → {{ include "fusion-cdc.fullname" . }}-spark-consumer
+{{- end }}
+{{- if .Values.transformWorker.enabled }}
+  Transform Worker  → {{ include "fusion-cdc.fullname" . }}-transform-worker
 {{- end }}
 
 Health check:
 
-  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ .Release.Name }}-control-plane-svc 8000:{{ .Values.controlPlane.service.port }}
+  kubectl port-forward -n {{ .Release.Namespace }} \
+    svc/{{ include "fusion-cdc.fullname" . }}-control-plane \
+    8000:{{ .Values.controlPlane.service.port }}
+
   curl http://127.0.0.1:8000/api/v1/monitoring/health
 
-Security:
-  Default secrets are placeholders — rotate them before production use.
-  Provide DATABASE_URL via global.databaseUrl or an external Secret.
+───────────────────────────────────────────────────────────────────
+Security
+───────────────────────────────────────────────────────────────────
+
+  • Prefer global.secrets.existingSecret — never commit passwords.
+  • Pin images with image.digest in production.
+  • Private GHCR pulls need global.imagePullSecrets.
+{{- if not .Values.global.secrets.existingSecret }}
+{{- if not .Values.global.secrets.createSecret }}
+
+⚠  No secret configured. Set global.secrets.existingSecret or
+   global.secrets.createSecret=true before pods will start cleanly.
+{{- end }}
+{{- end }}

@@ -1,5 +1,5 @@
 {{/*
-CDC Worker StatefulSet template — instantiated once per enabled source type
+CDC Worker StatefulSet — one per enabled source type (image-only).
 */}}
 {{- define "fusion-cdc.workerStatefulSet" -}}
 {{- $root := index . 0 -}}
@@ -8,40 +8,58 @@ CDC Worker StatefulSet template — instantiated once per enabled source type
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}
-  namespace: {{ $root.Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" $root }}-cdc-worker-{{ $sourceType }}
   labels:
-    app.kubernetes.io/name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}
+    {{- include "fusion-cdc.labels" $root | nindent 4 }}
     app.kubernetes.io/component: cdc-worker
-    app.kubernetes.io/part-of: fusion-cdc
     cdc.dcraftfusion.io/source-type: {{ $sourceType }}
 spec:
-  serviceName: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}-headless
+  serviceName: {{ include "fusion-cdc.fullname" $root }}-cdc-worker-{{ $sourceType }}-headless
   replicas: {{ $cfg.replicas }}
   podManagementPolicy: OrderedReady
   updateStrategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}
+      {{- include "fusion-cdc.selectorLabels" $root | nindent 6 }}
+      app.kubernetes.io/component: cdc-worker
+      cdc.dcraftfusion.io/source-type: {{ $sourceType }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}
+        {{- include "fusion-cdc.selectorLabels" $root | nindent 8 }}
         app.kubernetes.io/component: cdc-worker
         cdc.dcraftfusion.io/source-type: {{ $sourceType }}
+        {{- with $root.Values.cdcWorkers.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ $root.Values.cdcWorkers.metricsPort }}"
         prometheus.io/path: "/metrics"
+        {{- with $root.Values.cdcWorkers.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-      serviceAccountName: {{ $root.Release.Name }}-cdc-worker-sa
-      automountServiceAccountToken: false
+      {{- with $root.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fusion-cdc.cdcWorkers.serviceAccountName" $root }}
+      automountServiceAccountToken: {{ $root.Values.cdcWorkers.serviceAccount.automountServiceAccountToken }}
       terminationGracePeriodSeconds: 60
+      {{- with $root.Values.cdcWorkers.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: cdc-worker
-          image: {{ include "fusion-cdc.workerImage" $root }}
+          image: {{ include "fusion-cdc.image" (dict "global" $root.Values.global "image" $root.Values.cdcWorkers.image) }}
           imagePullPolicy: {{ $root.Values.cdcWorkers.image.pullPolicy }}
+          {{- with $root.Values.cdcWorkers.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: metrics
               containerPort: {{ $root.Values.cdcWorkers.metricsPort }}
@@ -54,32 +72,39 @@ spec:
                   fieldPath: metadata.name
             - name: CONTROL_PLANE_URL
               value: {{ include "fusion-cdc.controlPlaneURL" $root | quote }}
-            - name: REDIS_URL
-              value: "redis://{{ include "fusion-cdc.redisHost" $root }}:6379/0"
             - name: METRICS_PORT
               value: {{ $root.Values.cdcWorkers.metricsPort | quote }}
             - name: WORKER_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ $root.Release.Name }}-secrets
+                  name: {{ include "fusion-cdc.secretName" $root }}
                   key: WORKER_TOKEN
+            {{- if or $root.Values.global.secrets.existingSecret $root.Values.global.secrets.redisUrl }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusion-cdc.secretName" $root }}
+                  key: REDIS_URL
+            {{- else if $root.Values.externalRedis.url }}
+            - name: REDIS_URL
+              value: {{ $root.Values.externalRedis.url | quote }}
+            {{- end }}
+            {{- include "fusion-cdc.renderEnv" (dict "env" $root.Values.cdcWorkers.env "extraEnv" $root.Values.cdcWorkers.extraEnv) | nindent 12 }}
           livenessProbe:
             httpGet:
               path: /metrics
-              port: {{ $root.Values.cdcWorkers.metricsPort }}
+              port: metrics
             initialDelaySeconds: 30
             periodSeconds: 20
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /metrics
-              port: {{ $root.Values.cdcWorkers.metricsPort }}
+              port: metrics
             initialDelaySeconds: 15
             periodSeconds: 10
           resources:
             {{- toYaml $cfg.resources | nindent 12 }}
-          securityContext:
-            {{- toYaml $root.Values.containerSecurityContext | nindent 12 }}
           volumeMounts:
             - name: cdc-data
               mountPath: /var/lib/cdc
@@ -88,12 +113,26 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+      {{- with $root.Values.cdcWorkers.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $root.Values.cdcWorkers.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $root.Values.cdcWorkers.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: cdc-data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: {{ $cfg.storageClass }}
+        {{- with $cfg.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
         resources:
           requests:
             storage: {{ $cfg.storage }}
@@ -101,25 +140,31 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}-headless
-  namespace: {{ $root.Release.Namespace }}
+  name: {{ include "fusion-cdc.fullname" $root }}-cdc-worker-{{ $sourceType }}-headless
+  labels:
+    {{- include "fusion-cdc.labels" $root | nindent 4 }}
+    app.kubernetes.io/component: cdc-worker
+    cdc.dcraftfusion.io/source-type: {{ $sourceType }}
 spec:
   clusterIP: None
   selector:
-    app.kubernetes.io/name: {{ $root.Release.Name }}-cdc-worker-{{ $sourceType }}
+    {{- include "fusion-cdc.selectorLabels" $root | nindent 4 }}
+    app.kubernetes.io/component: cdc-worker
+    cdc.dcraftfusion.io/source-type: {{ $sourceType }}
   ports:
     - name: metrics
       port: {{ $root.Values.cdcWorkers.metricsPort }}
+      targetPort: metrics
 {{- end }}
 
-{{- if .Values.cdcWorkers.postgres.enabled }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.postgres.enabled }}
 {{ include "fusion-cdc.workerStatefulSet" (list . "postgres" .Values.cdcWorkers.postgres) }}
 {{- end }}
 
-{{- if .Values.cdcWorkers.mysql.enabled }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.mysql.enabled }}
 {{ include "fusion-cdc.workerStatefulSet" (list . "mysql" .Values.cdcWorkers.mysql) }}
 {{- end }}
 
-{{- if .Values.cdcWorkers.mongodb.enabled }}
+{{- if and .Values.cdcWorkers.enabled .Values.cdcWorkers.mongodb.enabled }}
 {{ include "fusion-cdc.workerStatefulSet" (list . "mongodb" .Values.cdcWorkers.mongodb) }}
 {{- end }}

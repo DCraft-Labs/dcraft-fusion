@@ -1,0 +1,22 @@
+# Thin umbrella for local file:// installs only.
+# Prefer OCI ordered install documented in ../README.md.
+
+fusion:
+  enabled: true
+  # Nested values for dcraft-fusion (alias: fusion)
+  global:
+    secrets:
+      existingSecret: fusion-secrets
+  externalRedis:
+    addr: redis:6379
+
+cdc:
+  enabled: true
+  # Nested values for fusion-cdc (alias: cdc)
+  global:
+    secrets:
+      existingSecret: fusion-cdc-secrets
+  sparkConsumer:
+    enabled: false
+  transformWorker:
+    enabled: false

@@ -1,0 +1,30 @@
+# Minimal values — local / smoke test
+# Requires a pre-created Secret named fusion-secrets (or set createSecret).
+
+global:
+  edition: community
+  secrets:
+    existingSecret: fusion-secrets
+
+externalRedis:
+  addr: redis:6379
+
+controlPlaneKernel:
+  replicaCount: 1
+  image:
+    tag: "1.0.1"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+web:
+  replicaCount: 1
+  image:
+    tag: "1.0.1"
+
+ingress:
+  enabled: false

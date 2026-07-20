@@ -1,34 +1,39 @@
 # Open Core
 
-DCraft Fusion is developed by DCraft Labs under an open-core model. The Community
-edition is Apache-2.0 licensed. Enterprise capabilities are offered separately
-for organizations that need stronger identity, isolation, and commercial support.
+DCraft Fusion uses an open-core model:
 
-## Community (open source)
+| Layer | License / access | What you get |
+| --- | --- | --- |
+| **Control plane** (kernel, web, contracts, public adapters) | Apache 2.0 in `dcraft-fusion` | Full source, fork, contribute |
+| **Fusion CDC Engine** (connectors, workers, CDC UI source) | **Private source** | Official **public GHCR images** + public Helm chart |
+| **Enterprise** | Commercial | SSO/SAML/SCIM, BYOC, SLA, managed cloud |
 
-Included in the open-source distribution:
+## Why CDC source is private
 
-- Control plane kernel and operator UX
-- Fusion CDC engine integration
-- Simple login / local authentication suitable for labs and early deployments
-- Helm charts and container images published via GHCR
-- Engine-agnostic coordination, metadata, policy, run state, and audit foundations
+CDC connector/worker IP is the proprietary “muscle.” Shipping **images + Helm** lets the community run production CDC without forking engine internals — similar to commercial engines that publish installable artifacts while keeping core source closed.
+
+You can still:
+
+- Install CDC with `helm install … oci://ghcr.io/dcraft-labs/charts/fusion-cdc`
+- Pin image digests for supply-chain control
+- File bugs against the public control-plane repo (runtime / chart / integration)
+
+## Community (Apache 2.0)
+
+- Control plane kernel and operator UX (source)
+- Simple password / JWT auth
+- Public Helm charts for control plane **and** CDC (image-only)
+- Public GHCR images for control plane **and** CDC
+- Engine-agnostic coordination, metadata, policy, run state, audit
 - Community support via GitHub Issues and Discussions
 
 ## Enterprise
 
-Enterprise offerings build on the Community edition and may include:
-
-- SSO / SAML and SCIM provisioning
-- Bring Your Own Cloud (BYOC) deployment patterns
-- Service-level agreements (SLA)
-- Managed cloud / hosted control plane options
-- Priority support and commercial licensing terms
-
-Enterprise features are not required to run the Community edition. Contact
-DCraft Labs for commercial options.
+- SSO / SAML / SCIM
+- BYOC / air-gapped commercial support
+- SLA and managed offerings
+- Priority support
 
 ## Trademark
 
 "DCraft", "DCraft Labs", and "DCraft Fusion" are trademarks of DCraft Labs.
-Use of the marks must not imply endorsement without permission.

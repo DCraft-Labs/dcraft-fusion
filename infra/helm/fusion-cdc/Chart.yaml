@@ -1,12 +1,12 @@
 apiVersion: v2
 name: fusion-cdc
 description: >
-  Fusion CDC Engine — multi-tenant Change Data Capture platform.
-  Deploys control-plane, cdc-workers, spark-consumer, frontend, optional transform-worker.
-  Bring your own Redis/Postgres via values.
+  Fusion CDC — image-only Helm chart for official DCraft Labs CDC images.
+  CDC engine source is proprietary; this chart deploys pre-built GHCR images only.
+  Bring your own Postgres and Redis (no bundled databases).
 type: application
-version: 2.0.0
-appVersion: "2.0.0"
+version: 1.0.1
+appVersion: "1.0.1"
 keywords:
   - cdc
   - change-data-capture
@@ -17,5 +17,9 @@ home: https://github.com/DCraft-Labs/dcraft-fusion
 sources:
   - https://github.com/DCraft-Labs/dcraft-fusion
 maintainers:
-  - name: DCraft Fusion Platform Team
+  - name: DCraft Labs
     email: platform@dcraftlabs.com
+annotations:
+  artifacthub.io/license: Proprietary
+  artifacthub.io/prerelease: "false"
+  dcraft.io/distribution: image-only

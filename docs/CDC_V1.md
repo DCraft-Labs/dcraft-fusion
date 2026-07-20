@@ -1,22 +1,33 @@
-# CDC in DCraft Fusion v1
+# CDC
 
-Fusion CDC Engine ships **in-tree** under `engines/fusion-cdc-engine/` as the first included execution engine.
+Fusion CDC Engine is the first official **execution muscle** for DCraft Fusion.
 
-## Local all-in-one
+## What is public vs private
 
-```powershell
-# Control plane + web
-docker compose -f infra/local-dev/docker-compose.yml up -d --build
+| Artifact | Access |
+| --- | --- |
+| Control plane (this monorepo) | Apache 2.0 source |
+| CDC Helm chart (`infra/helm/fusion-cdc`) | Public (deploys images only) |
+| CDC container images | Public on `ghcr.io/dcraft-labs/fusion-cdc-*` |
+| CDC connector / worker / CDC UI **source** | **Private** (`DCraft-Labs/fusion-cdc-engine`) |
 
-# CDC stack (control plane, workers, frontend)
-docker compose -f infra/local-dev/docker-compose.cdc.yml up -d --build
+## Install
+
+```bash
+helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
+  --version 1.0.1 \
+  --namespace fusion-cdc \
+  --create-namespace \
+  -f examples/values-minimal.yaml
 ```
 
-See Docs Guide: CDC chapter and Install → Docker / Helm.
+Or Compose (images only):
+
+```bash
+docker compose -f infra/local-dev/docker-compose.cdc.yml up -d
+```
 
 ## Product boundary
 
-- **DCraft Fusion** = control plane (kernel + web)
-- **Fusion CDC Engine** = data-plane muscle under the same brand (not a second product name)
-
-Community feedback welcome via GitHub Issues and Discussions on `DCraft-Labs/dcraft-fusion`.
+Fusion governs connections, runs, audit, and policy. CDC moves data under that governance.
+The engine is not a second brand — it is a muscle of DCraft Fusion.
