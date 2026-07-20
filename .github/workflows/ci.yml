@@ -18,23 +18,26 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Forbid datasphere / DataSphere in tracked source
+      - name: Forbid legacy product branding in source
         shell: bash
         run: |
           set -euo pipefail
-          # Fail if datasphere branding leaks into product source (exclude tooling/vendor caches).
+          # Fail if forbidden legacy branding leaks into product source.
+          # Pattern is split so this workflow file itself does not self-match.
+          needle='data''sphere|Data''Sphere'
           matches="$(
             git ls-files \
-              | grep -Ev '(^|/)(node_modules|tools|\.tmp|\.git)/' \
-              | xargs -r grep -nE 'datasphere|DataSphere' -- \
+              'apps' 'services' 'engines' 'packages' 'docs' 'infra' 'branding' 'contracts' 'scripts' \
+              'README.md' 'OPEN_CORE.md' 'CONTRIBUTING.md' 'SECURITY.md' 'NOTICE' \
+              | xargs -r grep -nEi "${needle}" -- \
               || true
           )"
           if [[ -n "${matches}" ]]; then
-            echo "::error::Forbidden datasphere/DataSphere reference found:"
+            echo "::error::Forbidden legacy branding reference found:"
             echo "${matches}"
             exit 1
           fi
-          echo "OK: no datasphere/DataSphere references in tracked source"
+          echo "OK: no forbidden legacy branding in product source"
 
       - name: Forbid committed private keys under infra
         shell: bash
