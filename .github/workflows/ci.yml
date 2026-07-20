@@ -22,14 +22,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Fail if forbidden legacy branding leaks into product source.
-          # Pattern is split so this workflow file itself does not self-match.
-          needle='data''sphere|Data''Sphere'
+          # Character-class form matches "datasphere" in product files without
+          # putting that contiguous word in this workflow (avoids self-fail).
           matches="$(
             git ls-files \
               'apps' 'services' 'engines' 'packages' 'docs' 'infra' 'branding' 'contracts' 'scripts' \
               'README.md' 'OPEN_CORE.md' 'CONTRIBUTING.md' 'SECURITY.md' 'NOTICE' \
-              | xargs -r grep -nEi "${needle}" -- \
+              | xargs -r grep -nEi 'data[s]phere|Data[S]phere' -- \
               || true
           )"
           if [[ -n "${matches}" ]]; then
