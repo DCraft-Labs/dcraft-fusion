@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DCraft Labs">
+  <title>DCraft Labs</title>
+  <!-- Abstract fused nodes: control-plane brain linked to muscle nodes -->
+  <g fill="none" stroke="#0D7377" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Core hexagonal nucleus -->
+    <path stroke-width="18" d="M256 148 L318 184 L318 256 L256 292 L194 256 L194 184 Z"/>
+    <!-- Outer fused ring segments -->
+    <path stroke-width="14" d="M256 88 L370 154 L370 286 L256 352 L142 286 L142 154 Z"/>
+    <!-- Radial connectors (brain ” muscle) -->
+    <path stroke-width="12" d="M256 148 V88"/>
+    <path stroke-width="12" d="M318 184 L370 154"/>
+    <path stroke-width="12" d="M318 256 L370 286"/>
+    <path stroke-width="12" d="M256 292 V352"/>
+    <path stroke-width="12" d="M194 256 L142 286"/>
+    <path stroke-width="12" d="M194 184 L142 154"/>
+  </g>
+  <!-- Node terminals -->
+  <g fill="#0D7377">
+    <circle cx="256" cy="88" r="22"/>
+    <circle cx="370" cy="154" r="18"/>
+    <circle cx="370" cy="286" r="18"/>
+    <circle cx="256" cy="352" r="22"/>
+    <circle cx="142" cy="286" r="18"/>
+    <circle cx="142" cy="154" r="18"/>
+    <circle cx="256" cy="220" r="28"/>
+  </g>
+  <!-- Ink accent on nucleus -->
+  <circle cx="256" cy="220" r="12" fill="#0B1220"/>
+</svg>

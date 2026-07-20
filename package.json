@@ -1,0 +1,32 @@
+{
+  "name": "dcraft-fusion",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "DCraft Fusion control plane monorepo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DCraft-Labs/dcraft-fusion.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "dev:web": "npm run dev -w @dcraft-fusion/web",
+    "dev:docs": "npm run dev -w @dcraft-fusion/docs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.6"
+  }
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DCraft Fusion">
+  <title>DCraft Fusion</title>
+  <g fill="none" stroke="#0D7377" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="20" d="M256 160 L336 240 L256 320 L176 240 Z"/>
+    <path stroke-width="16" d="M176 140 C120 190 120 290 176 340"/>
+    <path stroke-width="16" d="M336 140 C392 190 392 290 336 340"/>
+    <path stroke-width="12" d="M200 200 L160 160"/>
+    <path stroke-width="12" d="M312 200 L352 160"/>
+    <path stroke-width="12" d="M200 280 L160 320"/>
+    <path stroke-width="12" d="M312 280 L352 320"/>
+  </g>
+  <g fill="#0D7377">
+    <circle cx="256" cy="240" r="36"/>
+    <circle cx="160" cy="160" r="20"/>
+    <circle cx="352" cy="160" r="20"/>
+    <circle cx="160" cy="320" r="20"/>
+    <circle cx="352" cy="320" r="20"/>
+    <circle cx="176" cy="140" r="14"/>
+    <circle cx="336" cy="140" r="14"/>
+    <circle cx="176" cy="340" r="14"/>
+    <circle cx="336" cy="340" r="14"/>
+  </g>
+  <circle cx="256" cy="240" r="14" fill="#0B1220"/>
+</svg>

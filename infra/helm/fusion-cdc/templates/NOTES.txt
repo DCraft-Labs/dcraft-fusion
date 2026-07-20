@@ -1,0 +1,55 @@
+Fusion CDC Engine has been deployed.
+
+  Release:   {{ .Release.Name }}
+  Namespace: {{ .Release.Namespace }}
+  Version:   {{ .Chart.AppVersion }}
+
+Install (from repo root):
+
+  helm dependency update infra/helm/fusion-cdc
+  helm upgrade --install fusion-cdc infra/helm/fusion-cdc \
+    --namespace fusion --create-namespace \
+    --set controlPlane.secrets.secretKey="$(openssl rand -hex 32)" \
+    --set controlPlane.secrets.encryptionKey="$(openssl rand -hex 16)" \
+    --set controlPlane.secrets.workerTokenSecret="$(openssl rand -hex 32)" \
+    --set cdcWorkers.workerToken="$(openssl rand -hex 32)" \
+    --set global.databaseUrl='postgresql://user:pass@host:5432/fusion_cdc_metadata'
+
+OCI:
+
+  helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc --version {{ .Chart.Version }}
+
+Services:
+{{- if .Values.controlPlane.enabled }}
+  - Control Plane API  → {{ .Release.Name }}-control-plane-svc:{{ .Values.controlPlane.service.port }}
+{{- end }}
+{{- if .Values.frontend.enabled }}
+  - Frontend           → {{ .Release.Name }}-frontend-svc:{{ .Values.frontend.service.port }}
+{{- end }}
+{{- if .Values.cdcWorkers.postgres.enabled }}
+  - CDC Worker (Postgres)
+{{- end }}
+{{- if .Values.cdcWorkers.mysql.enabled }}
+  - CDC Worker (MySQL)
+{{- end }}
+{{- if .Values.cdcWorkers.mongodb.enabled }}
+  - CDC Worker (MongoDB)
+{{- end }}
+{{- if .Values.sparkConsumer.enabled }}
+  - Spark Consumer     → {{ .Release.Name }}-spark-consumer
+{{- end }}
+{{- if .Values.transformWorker.enabled }}
+  - Transform Worker   → {{ .Release.Name }}-transform-worker
+{{- end }}
+{{- if .Values.redis.enabled }}
+  - Redis              → {{ .Release.Name }}-redis-master:6379
+{{- end }}
+
+Health check:
+
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ .Release.Name }}-control-plane-svc 8000:{{ .Values.controlPlane.service.port }}
+  curl http://127.0.0.1:8000/api/v1/monitoring/health
+
+Security:
+  Default secrets are placeholders — rotate them before production use.
+  Provide DATABASE_URL via global.databaseUrl or an external Secret.

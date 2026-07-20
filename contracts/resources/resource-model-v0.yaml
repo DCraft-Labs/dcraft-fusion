@@ -1,0 +1,1848 @@
+# DCraft Fusion - Core Resource Model V0
+# Complete specification of all core resources
+# Version: 0.1.0
+# Status: FROZEN
+
+# ============================================================================
+# Resource 1: Pipeline
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: pipeline
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Pipeline
+    plural: pipelines
+    singular: pipeline
+    shortNames: [pipe, pl]
+  
+  # Spec fields
+  specSchema:
+    type: object
+    required: [description, provider]
+    properties:
+      description:
+        type: string
+        description: "Human-readable description of the pipeline"
+      
+      schedule:
+        type: object
+        description: "Scheduling configuration"
+        properties:
+          cron:
+            type: string
+            description: "Cron expression (e.g., '0 2 * * *')"
+          timezone:
+            type: string
+            description: "Timezone (e.g., 'America/Los_Angeles')"
+            default: "UTC"
+          enabled:
+            type: boolean
+            default: true
+      
+      provider:
+        type: object
+        required: [type]
+        description: "Provider configuration"
+        properties:
+          type:
+            type: string
+            description: "Provider type (dbt, airflow, dagster, etc.)"
+          version:
+            type: string
+            description: "Provider version"
+          config:
+            type: object
+            description: "Provider-specific configuration"
+      
+      tasks:
+        type: array
+        description: "Pipeline tasks"
+        items:
+          type: object
+          required: [name, type]
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+              description: "Task type (sql, dbt-model, python, etc.)"
+            dependsOn:
+              type: array
+              items:
+                type: string
+            config:
+              type: object
+            timeout:
+              type: string
+              description: "Task timeout (e.g., '3600s')"
+      
+      inputs:
+        type: array
+        description: "Input datasets"
+        items:
+          type: object
+          required: [datasetRef, mode]
+          properties:
+            datasetRef:
+              type: string
+              description: "Reference to Dataset resource"
+            mode:
+              type: string
+              enum: [read, readwrite]
+      
+      outputs:
+        type: array
+        description: "Output datasets"
+        items:
+          type: object
+          required: [datasetRef, mode]
+          properties:
+            datasetRef:
+              type: string
+            mode:
+              type: string
+              enum: [write, readwrite]
+      
+      retryPolicy:
+        type: object
+        properties:
+          maxRetries:
+            type: integer
+            default: 3
+          backoff:
+            type: string
+            enum: [linear, exponential]
+            default: exponential
+          initialDelay:
+            type: string
+            default: "30s"
+      
+      timeout:
+        type: string
+        description: "Pipeline timeout (e.g., '3600s')"
+        default: "3600s"
+      
+      notifications:
+        type: object
+        properties:
+          onSuccess:
+            type: array
+            items:
+              type: object
+          onFailure:
+            type: array
+            items:
+              type: object
+      
+      driftDetection:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          reconcileInterval:
+            type: string
+            default: "300s"
+  
+  # Status fields
+  statusSchema:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: [Pending, Running, Succeeded, Failed, Paused]
+      
+      observedGeneration:
+        type: integer
+        description: "Last spec generation reconciled"
+      
+      conditions:
+        type: array
+        items:
+          type: object
+          required: [type, status]
+          properties:
+            type:
+              type: string
+            status:
+              type: string
+              enum: ["True", "False", "Unknown"]
+            reason:
+              type: string
+            message:
+              type: string
+            lastTransitionTime:
+              type: string
+              format: date-time
+      
+      lastExecution:
+        type: object
+        properties:
+          runId:
+            type: string
+          startTime:
+            type: string
+            format: date-time
+          endTime:
+            type: string
+            format: date-time
+          status:
+            type: string
+          duration:
+            type: string
+      
+      nextScheduledRun:
+        type: string
+        format: date-time
+      
+      providerStatus:
+        type: object
+        properties:
+          syncedAt:
+            type: string
+            format: date-time
+          externalId:
+            type: string
+          externalUrl:
+            type: string
+          driftDetected:
+            type: boolean
+  
+  # Relationships
+  relationships:
+    - type: inputs
+      target: Dataset
+      cardinality: many-to-many
+    - type: outputs
+      target: Dataset
+      cardinality: many-to-many
+    - type: owner
+      target: Owner
+      cardinality: many-to-one
+    - type: executions
+      target: PipelineExecution
+      cardinality: one-to-many
+  
+  # Versioning strategy
+  versioning:
+    strategy: immutable-revisions
+    retentionPolicy:
+      maxRevisions: 10
+      compressAfterDays: 30
+  
+  # Audit
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resource 2: Dataset
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: dataset
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Dataset
+    plural: datasets
+    singular: dataset
+    shortNames: [ds]
+  
+  specSchema:
+    type: object
+    required: [type, provider]
+    properties:
+      description:
+        type: string
+      
+      type:
+        type: string
+        enum: [table, file, stream, model, view]
+      
+      provider:
+        type: object
+        required: [type]
+        properties:
+          type:
+            type: string
+          config:
+            type: object
+      
+      schema:
+        type: object
+        properties:
+          schemaVersionRef:
+            type: string
+            description: "Reference to SchemaVersion resource"
+          inferSchema:
+            type: boolean
+            default: false
+      
+      quality:
+        type: object
+        properties:
+          rules:
+            type: array
+            items:
+              type: object
+              properties:
+                ruleRef:
+                  type: string
+      
+      owner:
+        type: object
+        properties:
+          ownerRef:
+            type: string
+      
+      tags:
+        type: array
+        items:
+          type: string
+      
+      retentionPolicy:
+        type: object
+        properties:
+          days:
+            type: integer
+          action:
+            type: string
+            enum: [delete, archive]
+            default: delete
+      
+      partitioning:
+        type: object
+        properties:
+          type:
+            type: string
+            enum: [time, hash, range]
+          column:
+            type: string
+          granularity:
+            type: string
+            enum: [hour, day, month, year]
+  
+  statusSchema:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: [Active, Deprecated, Archived]
+      
+      observedGeneration:
+        type: integer
+      
+      lastUpdated:
+        type: string
+        format: date-time
+      
+      rowCount:
+        type: integer
+      
+      sizeBytes:
+        type: integer
+      
+      schemaVersion:
+        type: string
+      
+      qualityScore:
+        type: number
+        minimum: 0
+        maximum: 1
+      
+      lineage:
+        type: object
+        properties:
+          upstreamCount:
+            type: integer
+          downstreamCount:
+            type: integer
+      
+      providerStatus:
+        type: object
+        properties:
+          syncedAt:
+            type: string
+            format: date-time
+          externalId:
+            type: string
+  
+  relationships:
+    - type: schemaVersion
+      target: SchemaVersion
+      cardinality: many-to-one
+    - type: owner
+      target: Owner
+      cardinality: many-to-one
+    - type: qualityRules
+      target: DataQualityRule
+      cardinality: many-to-many
+    - type: producedBy
+      target: Pipeline
+      cardinality: many-to-many
+      viaLineage: true
+    - type: consumedBy
+      target: Pipeline
+      cardinality: many-to-many
+      viaLineage: true
+  
+  versioning:
+    strategy: immutable-revisions
+    retentionPolicy:
+      maxRevisions: 10
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resource 3: DataQualityRule
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: dataqualityrule
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: DataQualityRule
+    plural: dataqualityrules
+    singular: dataqualityrule
+    shortNames: [dqr, quality]
+  
+  specSchema:
+    type: object
+    required: [type, target]
+    properties:
+      description:
+        type: string
+      
+      type:
+        type: string
+        enum: [freshness, null-check, uniqueness, range, custom-sql, schema-validation]
+      
+      severity:
+        type: string
+        enum: [critical, high, medium, low]
+        default: medium
+      
+      schedule:
+        type: object
+        properties:
+          cron:
+            type: string
+          timezone:
+            type: string
+            default: "UTC"
+      
+      target:
+        type: object
+        required: [datasetRef]
+        properties:
+          datasetRef:
+            type: string
+      
+      config:
+        type: object
+        description: "Type-specific configuration"
+      
+      notifications:
+        type: object
+        properties:
+          onFailure:
+            type: array
+            items:
+              type: object
+  
+  statusSchema:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: [Active, Paused, Disabled]
+      
+      observedGeneration:
+        type: integer
+      
+      lastCheck:
+        type: object
+        properties:
+          timestamp:
+            type: string
+            format: date-time
+          result:
+            type: string
+            enum: [passed, failed, error]
+          value:
+            type: number
+          threshold:
+            type: number
+          message:
+            type: string
+      
+      passRate:
+        type: number
+        description: "Pass rate over last 30 days"
+      
+      consecutiveFailures:
+        type: integer
+  
+  relationships:
+    - type: target
+      target: Dataset
+      cardinality: many-to-one
+  
+  versioning:
+    strategy: immutable-revisions
+    retentionPolicy:
+      maxRevisions: 5
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resource 4: Owner
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: owner
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Owner
+    plural: owners
+    singular: owner
+  
+  specSchema:
+    type: object
+    required: [displayName, type]
+    properties:
+      displayName:
+        type: string
+      
+      type:
+        type: string
+        enum: [team, individual]
+      
+      contacts:
+        type: array
+        items:
+          type: object
+          required: [type, value]
+          properties:
+            type:
+              type: string
+              enum: [email, slack, pagerduty, phone]
+            value:
+              type: string
+      
+      members:
+        type: array
+        items:
+          type: object
+          required: [userId]
+          properties:
+            userId:
+              type: string
+            role:
+              type: string
+              enum: [lead, member]
+  
+  statusSchema:
+    type: object
+    properties:
+      ownedDatasets:
+        type: integer
+      
+      ownedPipelines:
+        type: integer
+      
+      qualityScore:
+        type: number
+        description: "Average quality score of owned assets"
+  
+  relationships:
+    - type: members
+      target: User
+      cardinality: many-to-many
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resource 5: Policy
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: policy
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Policy
+    plural: policies
+    singular: policy
+  
+  specSchema:
+    type: object
+    required: [subjects, resources, actions]
+    properties:
+      description:
+        type: string
+      
+      subjects:
+        type: array
+        description: "Who this policy applies to"
+        items:
+          type: object
+          required: [type, ref]
+          properties:
+            type:
+              type: string
+              enum: [user, team, serviceAccount]
+            ref:
+              type: string
+      
+      resources:
+        type: array
+        description: "What resources this policy covers"
+        items:
+          type: object
+          required: [type]
+          properties:
+            type:
+              type: string
+            namespaces:
+              type: array
+              items:
+                type: string
+            names:
+              type: array
+              items:
+                type: string
+      
+      actions:
+        type: array
+        description: "What actions are allowed"
+        items:
+          type: string
+          enum: [create, read, update, delete, list, execute, approve]
+      
+      effect:
+        type: string
+        enum: [allow, deny]
+        default: allow
+      
+      conditions:
+        type: array
+        description: "ABAC conditions"
+        items:
+          type: object
+          properties:
+            attribute:
+              type: string
+            operator:
+              type: string
+              enum: [equals, notEquals, contains, notContains, in, notIn]
+            value:
+              type: string
+  
+  statusSchema:
+    type: object
+    properties:
+      active:
+        type: boolean
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable-revisions
+    retentionPolicy:
+      maxRevisions: 10
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 2555  # 7 years for compliance
+
+# ============================================================================
+# Resource 6: Environment
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: environment
+spec:
+  scope: Cluster
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Environment
+    plural: environments
+    singular: environment
+    shortNames: [env]
+  
+  specSchema:
+    type: object
+    required: [displayName, type]
+    properties:
+      displayName:
+        type: string
+      
+      type:
+        type: string
+        enum: [development, staging, production, sandbox]
+      
+      provider:
+        type: object
+        properties:
+          type:
+            type: string
+          config:
+            type: object
+      
+      secrets:
+        type: array
+        items:
+          type: object
+          required: [name, secretRef]
+          properties:
+            name:
+              type: string
+            secretRef:
+              type: string
+      
+      quotas:
+        type: object
+        properties:
+          maxPipelines:
+            type: integer
+          maxDatasets:
+            type: integer
+          maxExecutionsPerDay:
+            type: integer
+  
+  statusSchema:
+    type: object
+    properties:
+      healthy:
+        type: boolean
+      
+      resourceUsage:
+        type: object
+        properties:
+          pipelines:
+            type: integer
+          datasets:
+            type: integer
+          executionsToday:
+            type: integer
+  
+  relationships: []
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resource 7: PipelineExecution
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: pipelineexecution
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: PipelineExecution
+    plural: pipelineexecutions
+    singular: pipelineexecution
+    shortNames: [exec, run]
+  
+  specSchema:
+    type: object
+    required: [pipelineRef]
+    properties:
+      pipelineRef:
+        type: string
+      
+      triggeredBy:
+        type: object
+        required: [type]
+        properties:
+          type:
+            type: string
+            enum: [schedule, manual, api, event]
+          userId:
+            type: string
+      
+      parameters:
+        type: object
+        description: "Runtime parameters"
+  
+  statusSchema:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: [Pending, Running, Succeeded, Failed, Cancelled]
+      
+      startTime:
+        type: string
+        format: date-time
+      
+      endTime:
+        type: string
+        format: date-time
+      
+      duration:
+        type: string
+      
+      tasks:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            status:
+              type: string
+            startTime:
+              type: string
+              format: date-time
+            endTime:
+              type: string
+              format: date-time
+            error:
+              type: string
+      
+      logs:
+        type: object
+        properties:
+          url:
+            type: string
+      
+      metrics:
+        type: object
+        properties:
+          rowsProcessed:
+            type: integer
+          bytesProcessed:
+            type: integer
+  
+  relationships:
+    - type: pipeline
+      target: Pipeline
+      cardinality: many-to-one
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: false
+    retentionDays: 90
+
+# ============================================================================
+# Resource 8: EdgeAgent
+# ============================================================================
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: edgeagent
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: EdgeAgent
+    plural: edgeagents
+    singular: edgeagent
+    shortNames: [agent]
+  
+  specSchema:
+    type: object
+    required: [version, environment]
+    properties:
+      version:
+        type: string
+        description: "Agent version"
+      
+      environment:
+        type: string
+        description: "Environment name"
+      
+      location:
+        type: string
+        description: "Geographic location or cloud region"
+      
+      capabilities:
+        type: array
+        items:
+          type: string
+          enum: [exec, observe]
+      
+      certificate:
+        type: object
+        properties:
+          expiresAt:
+            type: string
+            format: date-time
+          autoRotate:
+            type: boolean
+            default: true
+  
+  statusSchema:
+    type: object
+    properties:
+      phase:
+        type: string
+        enum: [Healthy, Degraded, Offline]
+      
+      lastHeartbeat:
+        type: string
+        format: date-time
+      
+      connectedSince:
+        type: string
+        format: date-time
+      
+      providers:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            version:
+              type: string
+            status:
+              type: string
+              enum: [Running, Stopped, Failed]
+      
+      resourceUsage:
+        type: object
+        properties:
+          cpuPercent:
+            type: number
+          memoryBytes:
+            type: integer
+          diskBytes:
+            type: integer
+  
+  relationships: []
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# ============================================================================
+# Resources 9-20: Complete Definitions
+# ============================================================================
+
+# Resource 9: LineageEdge
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: lineageedge
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: LineageEdge
+    plural: lineageedges
+    singular: lineageedge
+  
+  specSchema:
+    type: object
+    required: [source, target, relationship]
+    properties:
+      source:
+        type: object
+        required: [type, ref]
+        properties:
+          type:
+            type: string
+            enum: [Dataset, Pipeline, Column, Model]
+          ref:
+            type: string
+      
+      target:
+        type: object
+        required: [type, ref]
+        properties:
+          type:
+            type: string
+            enum: [Dataset, Pipeline, Column, Model]
+          ref:
+            type: string
+      
+      relationship:
+        type: string
+        enum: [produces, consumes, transforms, derives_from]
+      
+      via:
+        type: object
+        properties:
+          type:
+            type: string
+          ref:
+            type: string
+      
+      confidence:
+        type: number
+        minimum: 0
+        maximum: 1
+        default: 1.0
+      
+      metadata:
+        type: object
+        properties:
+          columns:
+            type: array
+            items:
+              type: object
+  
+  statusSchema:
+    type: object
+    properties:
+      verified:
+        type: boolean
+      
+      lastVerified:
+        type: string
+        format: date-time
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: false
+    retentionDays: 730
+
+# Resource 10: SchemaVersion
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: schemaversion
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: SchemaVersion
+    plural: schemaversions
+    singular: schemaversion
+  
+  specSchema:
+    type: object
+    required: [datasetRef, version, schema]
+    properties:
+      datasetRef:
+        type: string
+      
+      version:
+        type: integer
+      
+      schema:
+        type: object
+        required: [format, definition]
+        properties:
+          format:
+            type: string
+            enum: [avro, json-schema, protobuf, sql-ddl]
+          definition:
+            type: string
+      
+      changeType:
+        type: string
+        enum: [breaking, compatible, patch]
+      
+      migratedFrom:
+        type: string
+        description: "Reference to previous SchemaVersion"
+  
+  statusSchema:
+    type: object
+    properties:
+      active:
+        type: boolean
+      
+      adoptionRate:
+        type: number
+        description: "Percentage of consumers using this version"
+  
+  relationships:
+    - type: dataset
+      target: Dataset
+      cardinality: many-to-one
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: false
+    retentionDays: 2555
+
+# Resource 11: Alert
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: alert
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Alert
+    plural: alerts
+    singular: alert
+  
+  specSchema:
+    type: object
+    required: [triggeredBy, severity, message]
+    properties:
+      triggeredBy:
+        type: object
+        required: [type, ref]
+        properties:
+          type:
+            type: string
+          ref:
+            type: string
+      
+      severity:
+        type: string
+        enum: [critical, high, medium, low]
+      
+      message:
+        type: string
+      
+      affectedResources:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+            ref:
+              type: string
+      
+      createdAt:
+        type: string
+        format: date-time
+  
+  statusSchema:
+    type: object
+    properties:
+      state:
+        type: string
+        enum: [open, acknowledged, resolved]
+      
+      acknowledgedBy:
+        type: string
+      
+      acknowledgedAt:
+        type: string
+        format: date-time
+      
+      resolvedAt:
+        type: string
+        format: date-time
+      
+      incidentRef:
+        type: string
+  
+  relationships:
+    - type: incident
+      target: Incident
+      cardinality: many-to-one
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: false
+    retentionDays: 365
+
+# Resource 12: Incident
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: incident
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Incident
+    plural: incidents
+    singular: incident
+  
+  specSchema:
+    type: object
+    required: [title, severity]
+    properties:
+      title:
+        type: string
+      
+      severity:
+        type: string
+        enum: [critical, high, medium, low]
+      
+      alerts:
+        type: array
+        items:
+          type: string
+      
+      assignedTo:
+        type: string
+      
+      createdAt:
+        type: string
+        format: date-time
+  
+  statusSchema:
+    type: object
+    properties:
+      state:
+        type: string
+        enum: [open, investigating, resolved]
+      
+      updates:
+        type: array
+        items:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            author:
+              type: string
+            message:
+              type: string
+      
+      resolvedAt:
+        type: string
+        format: date-time
+      
+      rootCause:
+        type: string
+  
+  relationships:
+    - type: alerts
+      target: Alert
+      cardinality: one-to-many
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 2555
+
+# Resource 13: Secret
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: secret
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Secret
+    plural: secrets
+    singular: secret
+  
+  specSchema:
+    type: object
+    required: [type, encryptedData]
+    properties:
+      type:
+        type: string
+        description: "Secret type (e.g., snowflake-credentials, api-key)"
+      
+      encryptedData:
+        type: object
+        description: "Encrypted key-value pairs"
+      
+      rotationPolicy:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+          intervalDays:
+            type: integer
+      
+      lastRotated:
+        type: string
+        format: date-time
+  
+  statusSchema:
+    type: object
+    properties:
+      expiresAt:
+        type: string
+        format: date-time
+      
+      rotationDue:
+        type: boolean
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable-revisions
+    retentionPolicy:
+      maxRevisions: 3
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 2555
+
+# Resource 14: Provider
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: provider
+spec:
+  scope: Cluster
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Provider
+    plural: providers
+    singular: provider
+  
+  specSchema:
+    type: object
+    required: [displayName, version, type, capabilities, runtime]
+    properties:
+      displayName:
+        type: string
+      
+      version:
+        type: string
+      
+      type:
+        type: string
+        enum: [orchestration, storage, compute, quality, governance, observability]
+      
+      capabilities:
+        type: array
+        items:
+          type: string
+      
+      runtime:
+        type: string
+        enum: [edge, control-plane]
+      
+      certificationTier:
+        type: string
+        enum: [tier1, tier2, tier3, tier4]
+      
+      manifest:
+        type: object
+        properties:
+          image:
+            type: string
+          entrypoint:
+            type: string
+      
+      healthCheck:
+        type: object
+        properties:
+          endpoint:
+            type: string
+          intervalSeconds:
+            type: integer
+  
+  statusSchema:
+    type: object
+    properties:
+      registered:
+        type: boolean
+      
+      activeInstances:
+        type: integer
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: false
+    retentionDays: 730
+
+# Resource 15: AIRequest
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: airequest
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: AIRequest
+    plural: airequests
+    singular: airequest
+  
+  specSchema:
+    type: object
+    required: [prompt, requestedBy]
+    properties:
+      prompt:
+        type: string
+      
+      targetResource:
+        type: object
+        properties:
+          type:
+            type: string
+          ref:
+            type: string
+      
+      proposedChanges:
+        type: array
+        items:
+          type: object
+          properties:
+            action:
+              type: string
+              enum: [create, update, delete]
+            resource:
+              type: object
+      
+      requestedBy:
+        type: string
+      
+      createdAt:
+        type: string
+        format: date-time
+  
+  statusSchema:
+    type: object
+    properties:
+      state:
+        type: string
+        enum: [draft, pending-review, approved, rejected, applied]
+      
+      reviewedBy:
+        type: string
+      
+      reviewedAt:
+        type: string
+        format: date-time
+      
+      appliedAt:
+        type: string
+        format: date-time
+      
+      rejectionReason:
+        type: string
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# Resource 16: Tenant
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: tenant
+spec:
+  scope: Cluster
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Tenant
+    plural: tenants
+    singular: tenant
+  
+  specSchema:
+    type: object
+    required: [displayName, plan]
+    properties:
+      displayName:
+        type: string
+      
+      plan:
+        type: string
+        enum: [free, starter, professional, enterprise]
+      
+      quotas:
+        type: object
+        properties:
+          maxUsers:
+            type: integer
+          maxPipelines:
+            type: integer
+          maxDatasets:
+            type: integer
+          aiRequestsPerMonth:
+            type: integer
+      
+      features:
+        type: object
+        properties:
+          aiOperator:
+            type: boolean
+          advancedLineage:
+            type: boolean
+      
+      billingContact:
+        type: string
+  
+  statusSchema:
+    type: object
+    properties:
+      active:
+        type: boolean
+      
+      usage:
+        type: object
+        properties:
+          users:
+            type: integer
+          pipelines:
+            type: integer
+          datasets:
+            type: integer
+  
+  relationships: []
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 2555
+
+# Resource 17: User
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: user
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: User
+    plural: users
+    singular: user
+  
+  specSchema:
+    type: object
+    required: [email, displayName]
+    properties:
+      email:
+        type: string
+      
+      displayName:
+        type: string
+      
+      roles:
+        type: array
+        items:
+          type: string
+      
+      teams:
+        type: array
+        items:
+          type: string
+      
+      ssoProvider:
+        type: string
+      
+      externalId:
+        type: string
+  
+  statusSchema:
+    type: object
+    properties:
+      active:
+        type: boolean
+      
+      lastLogin:
+        type: string
+        format: date-time
+  
+  relationships:
+    - type: teams
+      target: Owner
+      cardinality: many-to-many
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 2555
+
+# Resource 18: Notification
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: notification
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Notification
+    plural: notifications
+    singular: notification
+  
+  specSchema:
+    type: object
+    required: [type, config]
+    properties:
+      type:
+        type: string
+        enum: [slack, email, pagerduty, webhook]
+      
+      config:
+        type: object
+      
+      filters:
+        type: object
+        properties:
+          severity:
+            type: array
+            items:
+              type: string
+          resourceTypes:
+            type: array
+            items:
+              type: string
+  
+  statusSchema:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+      
+      lastSent:
+        type: string
+        format: date-time
+  
+  relationships: []
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# Resource 19: Quota
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: quota
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: Quota
+    plural: quotas
+    singular: quota
+  
+  specSchema:
+    type: object
+    required: [limits]
+    properties:
+      limits:
+        type: object
+        properties:
+          pipelines:
+            type: integer
+          datasets:
+            type: integer
+          executions-per-day:
+            type: integer
+          ai-requests-per-month:
+            type: integer
+  
+  statusSchema:
+    type: object
+    properties:
+      used:
+        type: object
+        properties:
+          pipelines:
+            type: integer
+          datasets:
+            type: integer
+          executions-per-day:
+            type: integer
+          ai-requests-per-month:
+            type: integer
+  
+  relationships: []
+  
+  versioning:
+    strategy: mutable
+  
+  audit:
+    enabled: true
+    logChanges: true
+    retentionDays: 730
+
+# Resource 20: AuditLog
+---
+apiVersion: fusion.dcraft.io/v1
+kind: ResourceDefinition
+metadata:
+  name: auditlog
+spec:
+  scope: Namespaced
+  group: fusion.dcraft.io
+  version: v1
+  names:
+    kind: AuditLog
+    plural: auditlogs
+    singular: auditlog
+  
+  specSchema:
+    type: object
+    required: [timestamp, actor, action, resource]
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+      
+      actor:
+        type: object
+        required: [type, ref]
+        properties:
+          type:
+            type: string
+            enum: [user, serviceAccount, system]
+          ref:
+            type: string
+      
+      action:
+        type: string
+        enum: [CREATE, UPDATE, DELETE, APPROVE, EXECUTE]
+      
+      resource:
+        type: object
+        required: [type, ref]
+        properties:
+          type:
+            type: string
+          ref:
+            type: string
+          version:
+            type: string
+      
+      changes:
+        type: array
+        items:
+          type: object
+          properties:
+            field:
+              type: string
+            oldValue:
+              type: string
+            newValue:
+              type: string
+      
+      ipAddress:
+        type: string
+      
+      userAgent:
+        type: string
+  
+  statusSchema:
+    type: object
+    properties:
+      archived:
+        type: boolean
+  
+  relationships: []
+  
+  versioning:
+    strategy: immutable
+  
+  audit:
+    enabled: false  # AuditLog itself is not audited
+    logChanges: false
+    retentionDays: 2555

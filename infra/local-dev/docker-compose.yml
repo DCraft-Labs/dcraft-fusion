@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: fusion
+      POSTGRES_USER: fusion
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fusion_local}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fusion -d fusion"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - fusion-postgres:/var/lib/postgresql
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  control-plane-kernel:
+    build:
+      context: ../..
+      dockerfile: services/control-plane-kernel/Dockerfile
+    environment:
+      FUSION_ENV: local
+      # Community default: simple password login that returns a JWT.
+      # Set FUSION_AUTH_MODE=oidc for Enterprise-style OIDC code flow.
+      FUSION_AUTH_MODE: ${FUSION_AUTH_MODE:-password}
+      FUSION_OIDC_ISSUER: http://127.0.0.1:8080
+      FUSION_OIDC_AUDIENCE: dcraft-fusion
+      FUSION_OIDC_JWKS_URL: http://127.0.0.1:8080/oidc/jwks
+      # Private key is generated at process start when unset (do not commit PEMs).
+      FUSION_SEED_FOUNDER_EMAIL: ${FUSION_SEED_FOUNDER_EMAIL:-founder@dcraftlabs.com}
+      FUSION_SEED_FOUNDER_PASSWORD: ${FUSION_SEED_FOUNDER_PASSWORD:-changeme-founder}
+      FUSION_SEED_SUPERADMIN_EMAIL: ${FUSION_SEED_SUPERADMIN_EMAIL:-superadmin@dcraftlabs.com}
+      FUSION_SEED_SUPERADMIN_PASSWORD: ${FUSION_SEED_SUPERADMIN_PASSWORD:-changeme-superadmin}
+      POSTGRES_DSN: postgres://fusion:${POSTGRES_PASSWORD:-fusion_local}@postgres:5432/fusion?sslmode=disable
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "5174:80"
+    depends_on:
+      - control-plane-kernel
+
+volumes:
+  fusion-postgres:

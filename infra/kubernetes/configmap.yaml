@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fusion-config
+  namespace: dcraft-fusion
+data:
+  FUSION_ENV: local-kubernetes
+  FUSION_AUTH_MODE: oidc
+  FUSION_OIDC_ISSUER: http://127.0.0.1:30173
+  FUSION_OIDC_AUDIENCE: dcraft-fusion
+  FUSION_OIDC_JWKS_URL: http://127.0.0.1:8080/oidc/jwks
+  REDIS_ADDR: redis:6379

@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup-verify
+  namespace: dcraft-fusion
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup-verify
+              image: postgres:18-alpine
+              env:
+                - name: POSTGRES_DSN
+                  valueFrom:
+                    secretKeyRef:
+                      name: fusion-secrets
+                      key: POSTGRES_DSN
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  pg_dump "$POSTGRES_DSN" --schema-only >/tmp/fusion-schema.sql
+                  test -s /tmp/fusion-schema.sql
+                  psql "$POSTGRES_DSN" -c "select count(*) from organizations;" >/tmp/fusion-restore-check.txt
+                  test -s /tmp/fusion-restore-check.txt

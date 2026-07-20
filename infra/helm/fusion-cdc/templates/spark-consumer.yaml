@@ -1,0 +1,112 @@
+{{- if .Values.sparkConsumer.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-spark-checkpoints
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: spark-consumer
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: {{ .Values.sparkConsumer.storage.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.sparkConsumer.storage.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-spark-consumer
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: spark-consumer
+spec:
+  replicas: {{ .Values.sparkConsumer.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+        app.kubernetes.io/component: spark-consumer
+        {{- include "fusion-cdc.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.sparkConsumer.config.metricsPort }}"
+        prometheus.io/path: "/metrics"
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-cdc-worker-sa
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 90
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: spark-consumer
+          image: {{ include "fusion-cdc.sparkConsumerImage" . }}
+          imagePullPolicy: {{ .Values.sparkConsumer.image.pullPolicy }}
+          ports:
+            - name: spark-ui
+              containerPort: {{ .Values.sparkConsumer.config.sparkUiPort }}
+            - name: metrics
+              containerPort: {{ .Values.sparkConsumer.config.metricsPort }}
+          env:
+            - name: REDIS_URL
+              value: "redis://{{ include "fusion-cdc.redisHost" . }}:6379/0"
+            - name: CONTROL_PLANE_URL
+              value: {{ include "fusion-cdc.controlPlaneURL" . | quote }}
+            - name: SPARK_MASTER
+              value: {{ .Values.sparkConsumer.config.sparkMaster | quote }}
+            - name: SPARK_CHECKPOINT_DIR
+              value: {{ .Values.sparkConsumer.config.sparkCheckpointDir | quote }}
+            - name: CONSUMER_GROUP
+              value: {{ .Values.sparkConsumer.config.consumerGroup | quote }}
+            - name: WORKER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: WORKER_TOKEN
+          resources:
+            {{- toYaml .Values.sparkConsumer.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            - name: spark-checkpoints
+              mountPath: {{ .Values.sparkConsumer.config.sparkCheckpointDir }}
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: spark-checkpoints
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-spark-checkpoints
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-spark-consumer-svc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: spark-consumer
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name }}-spark-consumer
+  ports:
+    - name: spark-ui
+      port: {{ .Values.sparkConsumer.config.sparkUiPort }}
+      targetPort: spark-ui
+    - name: metrics
+      port: {{ .Values.sparkConsumer.config.metricsPort }}
+      targetPort: metrics
+{{- end }}

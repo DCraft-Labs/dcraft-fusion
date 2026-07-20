@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an enhancement for DCraft Fusion
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share the problem you are trying to solve. Product questions also belong in [Discussions](https://github.com/DCraft-Labs/dcraft-fusion/discussions).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should Fusion behave?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you evaluated
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Target edition
+      options:
+        - Community (open source)
+        - Enterprise
+        - Unsure
+    validations:
+      required: true
+  - type: checkboxes
+    id: willingness
+    attributes:
+      label: Contribution interest
+      options:
+        - label: I am willing to help implement this

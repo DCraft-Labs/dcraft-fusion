@@ -1,0 +1,188 @@
+openapi: 3.1.0
+info:
+  title: DCraft Fusion Phase 1 Control Plane API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+security:
+  - fusionContext: []
+components:
+  securitySchemes:
+    fusionContext:
+      type: apiKey
+      in: header
+      name: X-Fusion-Actor-Id
+  parameters:
+    ActorId:
+      in: header
+      name: X-Fusion-Actor-Id
+      required: true
+      schema:
+        type: string
+    CorrelationId:
+      in: header
+      name: X-Fusion-Correlation-Id
+      required: true
+      schema:
+        type: string
+    OrganizationId:
+      in: header
+      name: X-Fusion-Organization-Id
+      required: true
+      schema:
+        type: string
+    TenantId:
+      in: header
+      name: X-Fusion-Tenant-Id
+      required: true
+      schema:
+        type: string
+    ProjectId:
+      in: header
+      name: X-Fusion-Project-Id
+      required: true
+      schema:
+        type: string
+paths:
+  /healthz:
+    get:
+      responses:
+        "200":
+          description: Service health.
+  /api/v1/organizations:
+    post:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "201":
+          description: Organization created.
+    get:
+      responses:
+        "200":
+          description: Organizations listed.
+  /api/v1/tenants:
+    post:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+      responses:
+        "201":
+          description: Tenant created.
+    get:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+      responses:
+        "200":
+          description: Tenants listed.
+  /api/v1/projects:
+    post:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+      responses:
+        "201":
+          description: Project created.
+    get:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+      responses:
+        "200":
+          description: Projects listed.
+  /api/v1/bootstrap:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Tenant-scoped private-alpha bootstrap data.
+  /api/v1/connections:
+    post:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "201":
+          description: Secret-reference-only connection created.
+    get:
+      parameters:
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Tenant-scoped connections listed.
+  /api/v1/connections/{connectionId}/test:
+    post:
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          description: Connection test result.
+  /api/v1/connections/{connectionId}/discover:
+    post:
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/ActorId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/TenantId"
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "201":
+          description: Discovered datasets.
+  /api/v1/datasets:
+    get:
+      responses:
+        "200":
+          description: Tenant-scoped metadata resources.
+  /api/v1/runs:
+    get:
+      responses:
+        "200":
+          description: Tenant-scoped workflow runs.
+  /api/v1/audit-events:
+    get:
+      responses:
+        "200":
+          description: Audit events.
+  /api/v1/policies:
+    get:
+      responses:
+        "200":
+          description: Tenant-scoped policies.
+  /api/v1/ai/recommendations:
+    get:
+      responses:
+        "200":
+          description: Draft-only AI recommendations.

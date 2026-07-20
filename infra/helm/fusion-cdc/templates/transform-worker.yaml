@@ -1,0 +1,117 @@
+{{- if .Values.transformWorker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-transform-worker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: transform-worker
+spec:
+  replicas: {{ .Values.transformWorker.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}-transform-worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Release.Name }}-transform-worker
+        app.kubernetes.io/component: transform-worker
+        {{- include "fusion-cdc.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+        prometheus.io/path: "/metrics"
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Release.Name }}-cdc-worker-sa
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: transform-worker
+          image: {{ include "fusion-cdc.transformWorkerImage" . }}
+          imagePullPolicy: {{ .Values.transformWorker.image.pullPolicy }}
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: DATABASE_URL
+            - name: REDIS_URL
+              value: "redis://{{ include "fusion-cdc.redisHost" . }}:6379/0"
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: ENCRYPTION_KEY
+            - name: CONTROL_PLANE_URL
+              value: {{ include "fusion-cdc.controlPlaneURL" . | quote }}
+            - name: WORKER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: WORKER_TOKEN
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: HIGH_PRIORITY_QUEUE
+              value: {{ .Values.transformWorker.config.highPriorityQueue | quote }}
+            - name: NORMAL_PRIORITY_QUEUE
+              value: {{ .Values.transformWorker.config.normalPriorityQueue | quote }}
+            - name: DUCKDB_THREADS
+              value: {{ .Values.transformWorker.config.duckdbThreads | quote }}
+            - name: DUCKDB_MEMORY_LIMIT
+              value: {{ .Values.transformWorker.config.duckdbMemoryLimit | quote }}
+          volumeMounts:
+            - name: duckdb-scratch
+              mountPath: /tmp/duckdb
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            {{- toYaml .Values.transformWorker.resources | nindent 12 }}
+      volumes:
+        - name: duckdb-scratch
+          emptyDir:
+            sizeLimit: 10Gi
+        - name: tmp
+          emptyDir: {}
+{{- if .Values.transformWorker.keda.enabled }}
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .Release.Name }}-transform-worker-scaler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-transform-worker
+  minReplicaCount: {{ .Values.transformWorker.keda.minReplicaCount }}
+  maxReplicaCount: {{ .Values.transformWorker.keda.maxReplicaCount }}
+  cooldownPeriod: {{ .Values.transformWorker.keda.cooldownPeriod }}
+  pollingInterval: {{ .Values.transformWorker.keda.pollingInterval }}
+  triggers:
+    - type: redis
+      metadata:
+        address: {{ include "fusion-cdc.redisHost" . }}:6379
+        listName: {{ .Values.transformWorker.config.highPriorityQueue }}
+        listLength: "1"
+    - type: redis
+      metadata:
+        address: {{ include "fusion-cdc.redisHost" . }}:6379
+        listName: {{ .Values.transformWorker.config.normalPriorityQueue }}
+        listLength: "5"
+{{- end }}
+{{- end }}

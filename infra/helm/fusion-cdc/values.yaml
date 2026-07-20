@@ -1,0 +1,260 @@
+# Fusion CDC Engine — Helm chart default values (canonical public chart)
+# Source of truth: infra/helm/fusion-cdc (engines/.../helm is a legacy mirror)
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  namespace: ""
+  # External metadata DB when not injecting via controlPlane.secrets
+  databaseUrl: ""
+
+# ── Control Plane ─────────────────────────────────────────────────────────────
+controlPlane:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  ingress:
+    enabled: false
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "100"
+    hosts:
+      - host: api.dcraftfusion.io
+        paths:
+          - path: /api
+            pathType: Prefix
+    tls: []
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  config:
+    logLevel: INFO
+    environment: production
+    algorithm: HS256
+    accessTokenExpireMinutes: 60
+    corsOrigins: "https://app.dcraftfusion.io"
+
+  secrets:
+    create: true
+    secretKey: "change-me-in-production"
+    encryptionKey: "change-me-encryption-key-32chars"
+    workerTokenSecret: "change-me-worker-secret"
+
+# ── CDC Workers ───────────────────────────────────────────────────────────────
+cdcWorkers:
+  image:
+    repository: ghcr.io/dcraft-labs/fusion-cdc-worker
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  postgres:
+    enabled: true
+    replicas: 1
+    storage: 5Gi
+    storageClass: standard
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+  mysql:
+    enabled: true
+    replicas: 1
+    storage: 5Gi
+    storageClass: standard
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+  mongodb:
+    enabled: true
+    replicas: 1
+    storage: 5Gi
+    storageClass: standard
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+  workerToken: "change-me-worker-token"
+  metricsPort: 8080
+
+# ── Spark Consumer ────────────────────────────────────────────────────────────
+sparkConsumer:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  storage:
+    size: 20Gi
+    storageClass: standard
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+
+  config:
+    sparkMaster: "local[*]"
+    sparkCheckpointDir: /var/lib/spark/checkpoints
+    consumerGroup: fusion-spark
+    metricsPort: 8080
+    sparkUiPort: 4040
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  ingress:
+    enabled: false
+    className: nginx
+    annotations: {}
+    hosts:
+      - host: app.dcraftfusion.io
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+
+# ── Transform Worker (optional, scale-to-zero friendly) ───────────────────────
+transformWorker:
+  enabled: false
+  replicaCount: 0
+
+  image:
+    repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 4000m
+      memory: 4Gi
+
+  config:
+    highPriorityQueue: fusion:transforms:high
+    normalPriorityQueue: fusion:transforms:normal
+    duckdbThreads: "2"
+    duckdbMemoryLimit: 3GB
+
+  keda:
+    enabled: false
+    minReplicaCount: 0
+    maxReplicaCount: 50
+    cooldownPeriod: 120
+    pollingInterval: 5
+
+# ── Redis (Bitnami subchart) ──────────────────────────────────────────────────
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+# ── Monitoring ────────────────────────────────────────────────────────────────
+monitoring:
+  serviceMonitor:
+    enabled: false
+    interval: 15s
+    scrapeTimeout: 10s
+  grafanaDashboards:
+    enabled: false
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+topologySpreadConstraints: []

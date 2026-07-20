@@ -1,0 +1,67 @@
+name: Build & Push Multi-Arch Images to Docker Hub
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag"
+        required: false
+        default: "master-latest"
+  push:
+    branches: [master, main]
+    paths:
+      - "control-plane/**"
+      - "cdc-workers/**"
+      - "frontend/**"
+      - "docker/**"
+      - "requirements*.txt"
+
+env:
+  DOCKERHUB_USERNAME: rishikesh03
+
+jobs:
+  build-push:
+    name: Build & Push ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: fusion-control-plane
+            dockerfile: docker/Dockerfile.control-plane
+          - service: fusion-cdc-worker
+            dockerfile: docker/Dockerfile.cdc-worker
+          - service: fusion-frontend
+            dockerfile: docker/Dockerfile.frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Set tag
+        id: tag
+        run: echo "tag=${{ github.event.inputs.tag || 'master-latest' }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.tag.outputs.tag }}
+            ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+          build-args: |
+            VITE_API_BASE_URL=https://uat-dcraftlabs-ds-cdc-api.dcraftlabsfintech.dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

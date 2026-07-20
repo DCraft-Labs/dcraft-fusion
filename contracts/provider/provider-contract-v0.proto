@@ -1,0 +1,632 @@
+// DCraft Fusion Provider Contract V0
+// Protocol Buffers definition for provider interface
+// Version: 0.1.0
+// Status: FROZEN
+
+syntax = "proto3";
+
+package fusion.provider.v1;
+
+option go_package = "github.com/dcraft-fusion/provider-sdk/v1";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// Provider Service
+// ============================================================================
+
+// Provider service interface that all providers must implement
+service Provider {
+  // GetCapabilities returns the provider's capabilities manifest
+  rpc GetCapabilities(GetCapabilitiesRequest) returns (GetCapabilitiesResponse);
+  
+  // ValidateConfig validates provider-specific configuration
+  rpc ValidateConfig(ValidateConfigRequest) returns (ValidateConfigResponse);
+  
+  // TranslateResource translates a Fusion resource to tool-native config
+  rpc TranslateResource(TranslateResourceRequest) returns (TranslateResourceResponse);
+  
+  // ExecuteCommand executes a command (create/update/delete resource)
+  rpc ExecuteCommand(ExecuteCommandRequest) returns (stream ExecuteCommandResponse);
+  
+  // GetStatus retrieves current status of a managed resource
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  
+  // ExtractLineage extracts lineage metadata from the tool
+  rpc ExtractLineage(ExtractLineageRequest) returns (ExtractLineageResponse);
+  
+  // HealthCheck returns provider health status
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // WatchEvents streams events from the tool (optional)
+  rpc WatchEvents(WatchEventsRequest) returns (stream WatchEventsResponse);
+}
+
+// ============================================================================
+// GetCapabilities
+// ============================================================================
+
+message GetCapabilitiesRequest {
+  // Empty - no parameters needed
+}
+
+message GetCapabilitiesResponse {
+  // Provider metadata
+  ProviderMetadata metadata = 1;
+  
+  // List of capabilities this provider supports
+  repeated Capability capabilities = 2;
+  
+  // Resource types this provider can manage
+  repeated ResourceTypeSupport resource_types = 3;
+  
+  // Runtime requirements
+  RuntimeRequirements runtime = 4;
+  
+  // Required secrets
+  repeated SecretRequirement secrets = 5;
+}
+
+message ProviderMetadata {
+  // Provider name (e.g., "dbt-provider")
+  string name = 1;
+  
+  // Display name (e.g., "dbt Core Provider")
+  string display_name = 2;
+  
+  // Provider version (SemVer)
+  string version = 3;
+  
+  // Provider type (orchestration, storage, compute, etc.)
+  string type = 4;
+  
+  // Vendor name
+  string vendor = 5;
+  
+  // Description
+  string description = 6;
+  
+  // Certification tier (tier1, tier2, tier3, tier4)
+  string certification_tier = 7;
+  
+  // Homepage URL
+  string homepage = 8;
+  
+  // Documentation URL
+  string documentation = 9;
+}
+
+message Capability {
+  // Capability name (e.g., "pipeline-execution")
+  string name = 1;
+  
+  // Capability version
+  string version = 2;
+  
+  // Configuration schema (JSON Schema)
+  string config_schema = 3;
+  
+  // Required fields
+  repeated string required_fields = 4;
+  
+  // Optional fields
+  repeated string optional_fields = 5;
+}
+
+message ResourceTypeSupport {
+  // Fusion API version (e.g., "fusion.dcraft.io/v1")
+  string api_version = 1;
+  
+  // Resource kind (e.g., "Pipeline")
+  string kind = 2;
+  
+  // Supported actions
+  repeated string actions = 3; // create, update, delete, get, list
+  
+  // Custom fields this provider adds to the resource
+  google.protobuf.Struct custom_fields = 4;
+}
+
+message RuntimeRequirements {
+  // Runtime type (edge, control-plane)
+  string type = 1;
+  
+  // Isolation level (container, process, none)
+  string isolation = 2;
+  
+  // Resource limits
+  ResourceLimits resources = 3;
+  
+  // Dependencies (e.g., "dbt-core>=1.7.0")
+  repeated Dependency dependencies = 4;
+}
+
+message ResourceLimits {
+  // CPU limit (millicores)
+  int32 cpu_millicores = 1;
+  
+  // Memory limit (bytes)
+  int64 memory_bytes = 2;
+  
+  // Disk limit (bytes)
+  int64 disk_bytes = 3;
+  
+  // Network bandwidth limit (bytes/sec)
+  int64 network_bps = 4;
+}
+
+message Dependency {
+  // Dependency name
+  string name = 1;
+  
+  // Version constraint (e.g., ">=1.7.0")
+  string version = 2;
+  
+  // Optional dependency
+  bool optional = 3;
+}
+
+message SecretRequirement {
+  // Secret name
+  string name = 1;
+  
+  // Secret type (e.g., "snowflake-credentials")
+  string type = 2;
+  
+  // Required or optional
+  bool required = 3;
+  
+  // Description
+  string description = 4;
+}
+
+// ============================================================================
+// ValidateConfig
+// ============================================================================
+
+message ValidateConfigRequest {
+  // Provider-specific configuration
+  google.protobuf.Struct config = 1;
+  
+  // Secrets (for validation, e.g., test connection)
+  map<string, string> secrets = 2;
+}
+
+message ValidateConfigResponse {
+  // Validation result
+  bool valid = 1;
+  
+  // Error messages (if invalid)
+  repeated string errors = 2;
+  
+  // Warnings (non-blocking)
+  repeated string warnings = 3;
+}
+
+// ============================================================================
+// TranslateResource
+// ============================================================================
+
+message TranslateResourceRequest {
+  // Fusion resource (YAML or JSON)
+  string resource = 1;
+  
+  // Resource API version
+  string api_version = 2;
+  
+  // Resource kind
+  string kind = 3;
+  
+  // Provider-specific config
+  google.protobuf.Struct provider_config = 4;
+}
+
+message TranslateResourceResponse {
+  // Tool-native configuration (e.g., dbt project YAML, Airflow DAG Python)
+  repeated TranslatedFile files = 1;
+  
+  // Metadata about translation
+  TranslationMetadata metadata = 2;
+}
+
+message TranslatedFile {
+  // File path (relative to project root)
+  string path = 1;
+  
+  // File content
+  bytes content = 2;
+  
+  // File mode (Unix permissions)
+  uint32 mode = 3;
+}
+
+message TranslationMetadata {
+  // Translation timestamp
+  google.protobuf.Timestamp timestamp = 1;
+  
+  // Provider version used
+  string provider_version = 2;
+  
+  // Warnings or notes
+  repeated string notes = 3;
+}
+
+// ============================================================================
+// ExecuteCommand
+// ============================================================================
+
+message ExecuteCommandRequest {
+  // Unique request ID (for idempotency)
+  string request_id = 1;
+  
+  // Command type (create, update, delete)
+  string command = 2;
+  
+  // Fusion resource (YAML or JSON)
+  string resource = 3;
+  
+  // Resource API version
+  string api_version = 4;
+  
+  // Resource kind
+  string kind = 5;
+  
+  // Provider-specific config
+  google.protobuf.Struct provider_config = 6;
+  
+  // Secrets
+  map<string, string> secrets = 7;
+  
+  // Dry-run mode (simulate, don't execute)
+  bool dry_run = 8;
+}
+
+message ExecuteCommandResponse {
+  // Request ID (echo from request)
+  string request_id = 1;
+  
+  // Execution phase (translating, executing, completed, failed)
+  string phase = 2;
+  
+  // Progress percentage (0-100)
+  int32 progress = 3;
+  
+  // Status message
+  string message = 4;
+  
+  // Logs (streamed incrementally)
+  repeated LogEntry logs = 5;
+  
+  // Result (only in final response)
+  ExecutionResult result = 6;
+  
+  // Error (if failed)
+  Error error = 7;
+}
+
+message LogEntry {
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 1;
+  
+  // Log level (DEBUG, INFO, WARN, ERROR)
+  string level = 2;
+  
+  // Log message
+  string message = 3;
+  
+  // Additional context
+  map<string, string> context = 4;
+}
+
+message ExecutionResult {
+  // Success or failure
+  bool success = 1;
+  
+  // External resource ID (e.g., dbt project ID, Airflow DAG ID)
+  string external_id = 2;
+  
+  // External resource URL (e.g., link to Airflow UI)
+  string external_url = 3;
+  
+  // Metrics
+  map<string, double> metrics = 4;
+  
+  // Output artifacts (e.g., generated files)
+  repeated Artifact artifacts = 5;
+}
+
+message Artifact {
+  // Artifact name
+  string name = 1;
+  
+  // Artifact type (file, url, data)
+  string type = 2;
+  
+  // Artifact content or URL
+  string content = 3;
+  
+  // Artifact size (bytes)
+  int64 size = 4;
+}
+
+message Error {
+  // Error code (provider-specific)
+  string code = 1;
+  
+  // Error message
+  string message = 2;
+  
+  // Detailed error (stack trace, etc.)
+  string details = 3;
+  
+  // Retryable or not
+  bool retryable = 4;
+}
+
+// ============================================================================
+// GetStatus
+// ============================================================================
+
+message GetStatusRequest {
+  // Resource ID (Fusion resource ID)
+  string resource_id = 1;
+  
+  // External resource ID (tool-native ID)
+  string external_id = 2;
+  
+  // Provider-specific config
+  google.protobuf.Struct provider_config = 3;
+  
+  // Secrets
+  map<string, string> secrets = 4;
+}
+
+message GetStatusResponse {
+  // Resource status
+  ResourceStatus status = 1;
+  
+  // Observed state (tool-native state)
+  google.protobuf.Struct observed_state = 2;
+  
+  // Drift detected
+  bool drift_detected = 3;
+  
+  // Drift details (if drift detected)
+  repeated DriftDetail drift_details = 4;
+  
+  // Last sync timestamp
+  google.protobuf.Timestamp last_sync = 5;
+}
+
+message ResourceStatus {
+  // Phase (Pending, Running, Succeeded, Failed, Unknown)
+  string phase = 1;
+  
+  // Conditions
+  repeated Condition conditions = 2;
+  
+  // Metrics
+  map<string, double> metrics = 3;
+  
+  // External ID
+  string external_id = 4;
+  
+  // External URL
+  string external_url = 5;
+}
+
+message Condition {
+  // Condition type (e.g., "Scheduled", "Healthy")
+  string type = 1;
+  
+  // Status (True, False, Unknown)
+  string status = 2;
+  
+  // Reason (short, machine-readable)
+  string reason = 3;
+  
+  // Message (human-readable)
+  string message = 4;
+  
+  // Last transition time
+  google.protobuf.Timestamp last_transition_time = 5;
+}
+
+message DriftDetail {
+  // Field path (e.g., "spec.schedule.cron")
+  string field = 1;
+  
+  // Expected value (from Fusion resource)
+  string expected = 2;
+  
+  // Actual value (from tool)
+  string actual = 3;
+}
+
+// ============================================================================
+// ExtractLineage
+// ============================================================================
+
+message ExtractLineageRequest {
+  // Resource ID (Fusion resource ID)
+  string resource_id = 1;
+  
+  // External resource ID (tool-native ID)
+  string external_id = 2;
+  
+  // Provider-specific config
+  google.protobuf.Struct provider_config = 3;
+  
+  // Secrets
+  map<string, string> secrets = 4;
+  
+  // Lineage sources to extract (e.g., "manifest", "runtime")
+  repeated string sources = 5;
+}
+
+message ExtractLineageResponse {
+  // Lineage nodes
+  repeated LineageNode nodes = 1;
+  
+  // Lineage edges
+  repeated LineageEdge edges = 2;
+  
+  // Extraction metadata
+  LineageMetadata metadata = 3;
+}
+
+message LineageNode {
+  // Node ID (unique within provider)
+  string id = 1;
+  
+  // Node type (Dataset, Pipeline, Column, Model)
+  string type = 2;
+  
+  // Node name
+  string name = 3;
+  
+  // Namespace (optional)
+  string namespace = 4;
+  
+  // Metadata
+  google.protobuf.Struct metadata = 5;
+}
+
+message LineageEdge {
+  // Source node ID
+  string source_id = 1;
+  
+  // Target node ID
+  string target_id = 2;
+  
+  // Relationship type (produces, consumes, transforms, derives_from)
+  string relationship = 3;
+  
+  // Confidence score (0.0-1.0)
+  double confidence = 4;
+  
+  // Metadata (e.g., column mappings)
+  google.protobuf.Struct metadata = 5;
+}
+
+message LineageMetadata {
+  // Extraction timestamp
+  google.protobuf.Timestamp timestamp = 1;
+  
+  // Sources used (e.g., "manifest.json")
+  repeated string sources = 2;
+  
+  // Provider version
+  string provider_version = 3;
+  
+  // Warnings
+  repeated string warnings = 4;
+}
+
+// ============================================================================
+// HealthCheck
+// ============================================================================
+
+message HealthCheckRequest {
+  // Empty - no parameters needed
+}
+
+message HealthCheckResponse {
+  // Health status (healthy, degraded, unhealthy)
+  string status = 1;
+  
+  // Status message
+  string message = 2;
+  
+  // Detailed checks
+  repeated HealthCheck checks = 3;
+  
+  // Provider version
+  string version = 4;
+  
+  // Uptime (seconds)
+  int64 uptime_seconds = 5;
+}
+
+message HealthCheck {
+  // Check name (e.g., "database-connection")
+  string name = 1;
+  
+  // Status (pass, fail)
+  string status = 2;
+  
+  // Message
+  string message = 3;
+  
+  // Duration (milliseconds)
+  int64 duration_ms = 4;
+}
+
+// ============================================================================
+// WatchEvents (Optional)
+// ============================================================================
+
+message WatchEventsRequest {
+  // Resource ID to watch (optional, watch all if empty)
+  string resource_id = 1;
+  
+  // Event types to watch (optional, watch all if empty)
+  repeated string event_types = 2;
+  
+  // Provider-specific config
+  google.protobuf.Struct provider_config = 3;
+  
+  // Secrets
+  map<string, string> secrets = 4;
+}
+
+message WatchEventsResponse {
+  // Event
+  Event event = 1;
+}
+
+message Event {
+  // Event ID
+  string id = 1;
+  
+  // Event type (e.g., "execution-started", "execution-completed")
+  string type = 2;
+  
+  // Resource ID
+  string resource_id = 3;
+  
+  // External resource ID
+  string external_id = 4;
+  
+  // Timestamp
+  google.protobuf.Timestamp timestamp = 5;
+  
+  // Event data
+  google.protobuf.Struct data = 6;
+}
+
+// ============================================================================
+// Common Types
+// ============================================================================
+
+// Empty message (for future use)
+message Empty {}
+
+// ============================================================================
+// Provider SDK Helpers (Not part of gRPC interface)
+// ============================================================================
+
+// These are helper types for provider SDK implementations, not part of the
+// gRPC contract. Providers can use these internally.
+
+// Example: Provider SDK in Go would provide:
+// - func NewProvider(config Config) (*Provider, error)
+// - func (p *Provider) Start() error
+// - func (p *Provider) Stop() error
+// - func (p *Provider) RegisterHandlers(handlers Handlers)
+
+// Example: Provider SDK in Python would provide:
+// - class Provider(ABC)
+// - @abstractmethod def get_capabilities() -> GetCapabilitiesResponse
+// - @abstractmethod def execute_command() -> Iterator[ExecuteCommandResponse]

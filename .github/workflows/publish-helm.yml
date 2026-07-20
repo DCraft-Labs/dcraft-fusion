@@ -1,0 +1,51 @@
+name: Publish Helm charts
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-helm-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: publish-helm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.4
+
+      - name: Login to GHCR (OCI)
+        shell: bash
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io \
+            -u "${{ github.actor }}" --password-stdin
+
+      - name: Package and push charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="${GITHUB_REF_NAME}"
+          SEMVER="${REF#v}"
+          OCI="oci://ghcr.io/dcraft-labs/charts"
+          mkdir -p .tmp/helm-dist
+
+          for chart in dcraft-fusion fusion-cdc; do
+            path="infra/helm/${chart}"
+            echo "==> packaging ${path} as ${SEMVER}"
+            # Align chart version with the git tag for OCI consumers.
+            helm dependency update "${path}" || true
+            helm package "${path}" --version "${SEMVER}" --app-version "${SEMVER}" -d .tmp/helm-dist
+            pkg="$(ls .tmp/helm-dist/${chart}-*.tgz | tail -n1)"
+            echo "==> pushing ${pkg} → ${OCI}"
+            helm push "${pkg}" "${OCI}"
+          done

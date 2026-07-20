@@ -1,0 +1,25 @@
+{
+  "title": "DCraft Fusion Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "HTTP Requests",
+      "targets": [
+        {
+          "expr": "fusion_http_requests_total"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "HTTP Errors",
+      "targets": [
+        {
+          "expr": "fusion_http_errors_total"
+        }
+      ]
+    }
+  ]
+}

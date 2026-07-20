@@ -1,0 +1,59 @@
+DCraft Fusion has been deployed.
+
+  Release:   {{ .Release.Name }}
+  Namespace: {{ .Release.Namespace }}
+  Chart:     {{ .Chart.Name }}-{{ .Chart.Version }}
+
+Quick install (from repo root):
+
+  helm dependency update infra/helm/dcraft-fusion
+  helm upgrade --install fusion infra/helm/dcraft-fusion \
+    --namespace dcraft-fusion --create-namespace \
+    --set secrets.seedFounderPassword="$(openssl rand -base64 24)" \
+    --set secrets.seedSuperadminPassword="$(openssl rand -base64 24)" \
+    --set postgresql.auth.password="$(openssl rand -base64 24)"
+
+OCI install (after publish):
+
+  helm install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion \
+    --version {{ .Chart.Version }} \
+    --namespace dcraft-fusion --create-namespace \
+    -f my-secrets.yaml
+
+{{- if .Values.controlPlaneKernel.enabled }}
+
+Control plane:
+  kubectl port-forward -n {{ .Release.Namespace }} \
+    svc/{{ include "dcraft-fusion.fullname" . }}-control-plane-kernel 8080:{{ .Values.controlPlaneKernel.service.port }}
+  curl http://127.0.0.1:8080/healthz
+{{- end }}
+{{- if .Values.web.enabled }}
+
+Web UI:
+  kubectl port-forward -n {{ .Release.Namespace }} \
+    svc/{{ include "dcraft-fusion.fullname" . }}-web 5174:{{ .Values.web.service.port }}
+  open http://127.0.0.1:5174
+{{- end }}
+
+Auth:
+  FUSION_AUTH_MODE={{ .Values.controlPlaneKernel.config.authMode }}
+  Seed passwords come from the release Secret (not hardcoded PEMs).
+  Leave FUSION_OIDC_PRIVATE_KEY_PEM unset to auto-generate a key at runtime.
+
+External database (skip bundled Postgres):
+
+  helm upgrade --install fusion infra/helm/dcraft-fusion \
+    --set postgresql.enabled=false \
+    --set secrets.postgresDsn='postgres://user:pass@host:5432/fusion?sslmode=require' \
+    --set secrets.seedFounderPassword='...' \
+    --set secrets.seedSuperadminPassword='...'
+
+External Redis:
+
+  helm upgrade --install fusion infra/helm/dcraft-fusion \
+    --set redis.enabled=false \
+    --set redis.externalAddr='my-redis:6379'
+
+Security:
+  Rotate seed passwords and DB credentials before any shared/production cluster.
+  Prefer secrets.existingSecret or an external secret operator in production.

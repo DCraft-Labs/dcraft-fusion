@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Required check name is stable: "gate"
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Forbid datasphere / DataSphere in tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail if datasphere branding leaks into product source (exclude tooling/vendor caches).
+          matches="$(
+            git ls-files \
+              | grep -Ev '(^|/)(node_modules|tools|\.tmp|\.git)/' \
+              | xargs -r grep -nE 'datasphere|DataSphere' -- \
+              || true
+          )"
+          if [[ -n "${matches}" ]]; then
+            echo "::error::Forbidden datasphere/DataSphere reference found:"
+            echo "${matches}"
+            exit 1
+          fi
+          echo "OK: no datasphere/DataSphere references in tracked source"
+
+      - name: Forbid committed private keys under infra
+        shell: bash
+        run: |
+          set -euo pipefail
+          matches="$(
+            git ls-files 'infra' \
+              | xargs -r grep -nE 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' -- \
+              || true
+          )"
+          if [[ -n "${matches}" ]]; then
+            echo "::error::Private key material found under infra/:"
+            echo "${matches}"
+            exit 1
+          fi
+          echo "OK: no private key PEM blocks under infra/"
+
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      kernel: ${{ steps.filter.outputs.kernel }}
+      helm: ${{ steps.filter.outputs.helm }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.base.json'
+            kernel:
+              - 'services/control-plane-kernel/**'
+            helm:
+              - 'infra/helm/**'
+
+  web:
+    name: web
+    needs: [gate, changes]
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  kernel:
+    name: kernel
+    needs: [gate, changes]
+    if: needs.changes.outputs.kernel == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.26.x"
+      - run: go test ./...
+        working-directory: services/control-plane-kernel
+
+  helm:
+    name: helm
+    needs: [gate, changes]
+    if: needs.changes.outputs.helm == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.16.4
+      - name: Helm lint charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Lint without requiring Bitnami deps to download (cost/network resilient).
+          helm lint infra/helm/dcraft-fusion \
+            --set postgresql.enabled=false \
+            --set redis.enabled=false \
+            --set secrets.seedFounderPassword=ci \
+            --set secrets.seedSuperadminPassword=ci \
+            --set secrets.postgresDsn='postgres://fusion:ci@postgres:5432/fusion?sslmode=disable'
+          helm lint infra/helm/fusion-cdc \
+            --set redis.enabled=false \
+            --set controlPlane.secrets.secretKey=ci \
+            --set controlPlane.secrets.encryptionKey=ci-encryption-key-32chars!! \
+            --set controlPlane.secrets.workerTokenSecret=ci \
+            --set cdcWorkers.workerToken=ci \
+            --set global.databaseUrl='postgresql://fusion:ci@postgres:5432/fusion_cdc'

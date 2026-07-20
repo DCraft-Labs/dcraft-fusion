@@ -1,0 +1,17 @@
+groups:
+  - name: dcraft-fusion
+    rules:
+      - alert: FusionAPIHighErrorRate
+        expr: increase(fusion_http_errors_total[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Fusion API is returning elevated 5xx responses.
+      - alert: FusionAPINoTraffic
+        expr: increase(fusion_http_requests_total[15m]) == 0
+        for: 15m
+        labels:
+          severity: info
+        annotations:
+          summary: Fusion API has received no traffic in the last 15 minutes.
