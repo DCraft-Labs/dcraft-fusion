@@ -4,6 +4,55 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.3] — 2026-07-21
+
+Follow-up to v1.2.2. The v1.2.2 remote retest (192.168.1.10) confirmed the
+self-healing seed worked (6 connectors, 1 source, 2 destinations, 1
+connection all present), but found 4 remaining issues. This release fixes
+the Fusion-kernel-side and chart-config issues; the CDC frontend / control-
+plane fixes live in the private `fusion-cdc-engine` repo.
+
+### Fixed
+- **Fusion kernel JWKS misconfig — every protected kernel API route 401s
+  with `Get "": unsupported protocol scheme ""` (HIGH).** The kernel runs in
+  non-dev auth mode (`FUSION_AUTH_MODE=password`) but
+  `FUSION_OIDC_JWKS_URL` was empty in the chart values, so the RS256 JWKS
+  fetch failed for every bearer-token request. The Fusion SPA masked this
+  by falling back to bundled seed data, so the UI looked alive while the
+  kernel API was unusable by any real bearer client.
+  - `infra/helm/dcraft-fusion/templates/configmap.yaml`: `FUSION_OIDC_JWKS_URL`
+    now auto-defaults to the in-cluster kernel service URL
+    (`http://<release>-control-plane-kernel:<port>/oidc/jwks`) when the
+    value is empty, so RS256 verification works for any release name without
+    operator intervention.
+  - `infra/helm/dcraft-fusion/values.yaml`: documented the JWKS URL default
+    and the `authMode` switch in `controlPlaneKernel.config`.
+  - `infra/local-dev/k8s/values-fusion-local.yaml`: set
+    `controlPlaneKernel.config.authMode: dev` for local-dev / community
+    deployments, which bypasses the JWKS fetch entirely (per the kernel's
+    auth middleware in
+    `services/control-plane-kernel/internal/auth/middleware.go`). Prod
+    values keep `authMode: password` and rely on the JWKS URL default.
+
+### Changed
+- **Helm chart + image tags bumped `1.2.2` → `1.2.3`** so `deploy.ps1`
+  pulls the fixed images:
+  `infra/helm/dcraft-fusion/Chart.yaml`,
+  `infra/helm/fusion-cdc/Chart.yaml`,
+  `infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`,
+  `infra/helm/dcraft-fusion/examples/values-minimal.yaml`,
+  `infra/helm/fusion-cdc/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-fusion-local.yaml`,
+  `infra/local-dev/k8s/values-cdc-local.yaml`,
+  `infra/helm/README.md`, and the two `--version` flags in
+  `infra/local-dev/k8s/deploy.ps1`.
+- **`infra/helm/fusion-cdc/templates/control-plane.yaml`:** wire
+  `KAFKA_BOOTSTRAP_SERVERS` into the control-plane deployment env (sourced
+  from the same `fusion-cdc.kafkaBootstrapServers` helper used by the
+  cdc-workers and spark-consumer) so the control-plane's
+  `/api/v1/monitoring/health` endpoint can probe Kafka.
+
 ## [1.2.2] — 2026-07-21
 
 Hotfix for the v1.2.1 regression: the CDC metadata DB stayed empty

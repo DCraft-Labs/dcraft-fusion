@@ -9,5 +9,5 @@ data:
   FUSION_AUTH_MODE: {{ .Values.controlPlaneKernel.config.authMode | quote }}
   FUSION_OIDC_ISSUER: {{ .Values.controlPlaneKernel.config.oidcIssuer | quote }}
   FUSION_OIDC_AUDIENCE: {{ .Values.controlPlaneKernel.config.oidcAudience | quote }}
-  FUSION_OIDC_JWKS_URL: {{ .Values.controlPlaneKernel.config.oidcJwksUrl | quote }}
+  FUSION_OIDC_JWKS_URL: {{ .Values.controlPlaneKernel.config.oidcJwksUrl | default (printf "http://%s-control-plane-kernel:%d/oidc/jwks" (include "dcraft-fusion.fullname" .) (int .Values.controlPlaneKernel.service.port)) | quote }}
   REDIS_ADDR: {{ include "dcraft-fusion.redisAddr" . | quote }}

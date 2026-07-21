@@ -43,7 +43,7 @@ controlPlaneKernel:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-control-plane-kernel
-    tag: "1.2.2"
+    tag: "1.2.3"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -106,9 +106,17 @@ controlPlaneKernel:
   config:
     fusionEnv: production
     # Community default: password login returning a JWT. Set to oidc for OIDC.
+    # Set authMode: dev for local-dev / community deployments to bypass the
+    # RS256 JWKS fetch on protected routes (see middleware.go). Production
+    # deployments should keep authMode: password (or oidc) and rely on the
+    # JWKS URL default below.
     authMode: password
     oidcIssuer: ""
     oidcAudience: dcraft-fusion
+    # JWKS endpoint used to verify RS256 bearer tokens. Empty string is OK —
+    # the configmap template auto-defaults to the in-cluster kernel service
+    # URL (http://<release>-control-plane-kernel:8080/oidc/jwks). Override
+    # only when pointing at an external IdP.
     oidcJwksUrl: ""
 
   env: {}
@@ -130,7 +138,7 @@ web:
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-web
-    tag: "1.2.2"
+    tag: "1.2.3"
     digest: ""
     pullPolicy: IfNotPresent
 
