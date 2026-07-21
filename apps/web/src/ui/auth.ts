@@ -3,12 +3,14 @@ import type { AuthUser, OpenIDConfiguration, UserSession } from "./workspace.js"
 // crypto.randomUUID() is undefined in non-secure HTTP contexts (e.g. http://192.168.1.10:8088).
 // Polyfill so OIDC state generation works regardless of page origin.
 if (!crypto.randomUUID) {
-  crypto.randomUUID = () =>
-    "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  crypto.randomUUID = function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
+    const s = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
+    return s as `${string}-${string}-${string}-${string}-${string}`;
+  };
 }
 
 const tokenKey = "fusion.auth.token";

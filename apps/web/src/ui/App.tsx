@@ -992,59 +992,64 @@ function SuperadminOverviewScreen({
   readonly authConfig: OpenIDConfiguration | undefined;
   readonly error: string | undefined;
 }) {
-  if (overview === undefined) {
-    return <AccessPanel error={error} title="Superadmin Overview" />;
-  }
   return (
     <>
       <PageHeader title="Superadmin Overview" description="Platform-wide status across identity, org topology, HA, backup, and adapters." />
-      <div className="metric-grid">
-        <MetricCard label="Organizations" value={overview.organizations.length.toString()} />
-        <MetricCard label="Superadmins" value={overview.superAdmins.length.toString()} />
-        <MetricCard label="API Replicas" value={overview.ha.apiMinReplicas.toString()} />
-        <MetricCard label="Backup Status" value={overview.backup.status} />
-      </div>
-      <div className="two-column">
+      {overview === undefined ? (
         <section className="panel">
-          <div className="panel-heading">
-            <h3>Runtime Identity</h3>
-            <p>Live OIDC configuration shared by the browser shell and the control plane.</p>
-          </div>
-          <div className="detail-list">
-            <p>
-              <strong>Issuer</strong>
-              <span>{authConfig?.issuer ?? "Loading"}</span>
-            </p>
-            <p>
-              <strong>Authorize</strong>
-              <span>/oidc/authorize</span>
-            </p>
-            <p>
-              <strong>Token</strong>
-              <span>/oidc/token</span>
-            </p>
-            <p>
-              <strong>JWKS</strong>
-              <span>{authConfig?.jwks_uri ?? "Loading"}</span>
-            </p>
-          </div>
+          <p>{error ?? "Loading platform overview\u2026"}</p>
         </section>
-        <section className="panel">
-          <div className="panel-heading">
-            <h3>Organization Coverage</h3>
-            <p>Rollout spans B2B, B2C, B2B2C, shared infra, dedicated infra, and customer-managed profiles.</p>
+      ) : (
+        <>
+          <div className="metric-grid">
+            <MetricCard label="Organizations" value={overview.organizations.length.toString()} />
+            <MetricCard label="Superadmins" value={overview.superAdmins.length.toString()} />
+            <MetricCard label="API Replicas" value={overview.ha.apiMinReplicas.toString()} />
+            <MetricCard label="Backup Status" value={overview.backup.status} />
           </div>
-          <DataTable
-            headers={["Organization", "Type", "Deployment", "Tenants"]}
-            rows={overview.organizations.map((organization) => [
-              organization.name,
-              organization.type,
-              organization.deploymentProfile.replaceAll("_", " "),
-              organization.tenants.length.toString()
-            ])}
-          />
-        </section>
-      </div>
+          <div className="two-column">
+            <section className="panel">
+              <div className="panel-heading">
+                <h3>Runtime Identity</h3>
+                <p>Live OIDC configuration shared by the browser shell and the control plane.</p>
+              </div>
+              <div className="detail-list">
+                <p>
+                  <strong>Issuer</strong>
+                  <span>{authConfig?.issuer ?? "Loading"}</span>
+                </p>
+                <p>
+                  <strong>Authorize</strong>
+                  <span>/oidc/authorize</span>
+                </p>
+                <p>
+                  <strong>Token</strong>
+                  <span>/oidc/token</span>
+                </p>
+                <p>
+                  <strong>JWKS</strong>
+                  <span>{authConfig?.jwks_uri ?? "Loading"}</span>
+                </p>
+              </div>
+            </section>
+            <section className="panel">
+              <div className="panel-heading">
+                <h3>Organization Coverage</h3>
+                <p>Rollout spans B2B, B2C, B2B2C, shared infra, dedicated infra, and customer-managed profiles.</p>
+              </div>
+              <DataTable
+                headers={["Organization", "Type", "Deployment", "Tenants"]}
+                rows={overview.organizations.map((organization) => [
+                  organization.name,
+                  organization.type,
+                  organization.deploymentProfile.replaceAll("_", " "),
+                  organization.tenants.length.toString()
+                ])}
+              />
+            </section>
+          </div>
+        </>
+      )}
     </>
   );
 }

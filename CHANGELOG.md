@@ -4,6 +4,48 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.6] — 2026-07-22
+
+Follow-up to v1.2.5. The v1.2.4 and v1.2.5 `Publish images` and `CI`
+workflows failed, so the `dcraft-fusion-web` image was never rebuilt and
+the deployed frontend stayed on the v1.2.3 bundle. This release fixes the
+two CI failures and re-publishes the images.
+
+### Fixed (Fusion SPA — CI failures)
+- **`auth.ts` UUID polyfill type** (`apps/web/src/ui/auth.ts:5-14`): the
+  `crypto.randomUUID` polyfill returned `string` but `Crypto.randomUUID`
+  is typed as the template-literal UUID type, so `tsc` failed with
+  `TS2322` and the `Publish images` workflow could not build the web
+  image. The polyfill now declares the return type as
+  `` `${string}-${string}-${string}-${string}-${string}` `` and casts the
+  generated string, satisfying the DOM lib type.
+- **`SuperadminOverviewScreen` heading race** (`apps/web/src/ui/App.tsx:986-1050`):
+  the screen rendered `<AccessPanel title="Superadmin Overview">` (an
+  `<h3>`) while the platform overview was loading, then swapped to
+  `<PageHeader>` (an `<h2>`) once `/api/v1/platform/overview` resolved.
+  Under Node 24 / jsdom 25 the `App.test.tsx` superadmin test's
+  `findByRole("heading", { name: "Superadmin Overview" })` resolved
+  against the transient `<h3>`, which was then removed by the re-render,
+  so `toBeInTheDocument()` failed. The screen now always renders the
+  `<PageHeader>` heading and only swaps the body (loading message vs.
+  metric grid / panels), so the heading element is stable across the
+  loading → loaded transition. The v1.2.5 DEMO-banner and Test-Connection
+  chip-flip fixes are unchanged.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.6`
+  / `appVersion: "1.2.6"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.5` → `1.2.6` in
+  `infra/helm/*/values.yaml`, `infra/helm/*/examples/values-minimal.yaml`,
+  and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.6` in `infra/local-dev/k8s/deploy.ps1` and the
+  helm install examples in `infra/helm/README.md`.
+
+### Notes
+- The CDC-side version bump (`control-plane/app/main.py` and
+  `helm/fusion-cdc/Chart.yaml`) ships in the private `fusion-cdc-engine`
+  repo's v1.2.6 release.
+
 ## [1.2.5] — 2026-07-22
 
 Follow-up to v1.2.4. The v1.2.4 live verification + codebase map audit
