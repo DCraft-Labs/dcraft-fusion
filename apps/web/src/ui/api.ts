@@ -1,4 +1,4 @@
-import { getAccessToken } from "./auth.js";
+import { getAccessToken, getTokenClaims } from "./auth.js";
 import type { Connection, FusionWorkspace, PlatformOverview } from "./workspace.js";
 
 function headers(): HeadersInit {
@@ -6,11 +6,29 @@ function headers(): HeadersInit {
   if (token === undefined) {
     throw new Error("Authentication is required");
   }
-  return {
+  const claims = getTokenClaims();
+  const h: Record<string, string> = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
     "X-Fusion-Correlation-Id": `ui-${Date.now().toString()}`
   };
+  // Defense-in-depth: inject tenant context headers from JWT claims so the API
+  // works regardless of whether the gateway middleware is in `dev` or
+  // `password` auth mode. The gateway in `dev` mode is a pass-through and
+  // does not populate these from the JWT, so the SPA must send them itself.
+  if (claims?.actor_id !== undefined) {
+    h["X-Fusion-Actor-Id"] = claims.actor_id;
+  }
+  if (claims?.organization_id !== undefined) {
+    h["X-Fusion-Organization-Id"] = claims.organization_id;
+  }
+  if (claims?.tenant_id !== undefined) {
+    h["X-Fusion-Tenant-Id"] = claims.tenant_id;
+  }
+  if (claims?.project_id !== undefined) {
+    h["X-Fusion-Project-Id"] = claims.project_id;
+  }
+  return h;
 }
 
 export async function createConnection(

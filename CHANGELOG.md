@@ -4,6 +4,63 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.4] — 2026-07-22
+
+Follow-up to v1.2.3. The v1.2.3 verification + Fusion UI audit (HTTP-only,
+192.168.1.10:8088) found 7 issues. This release fixes the 4 Fusion-SPA-side
+issues (1 HIGH, 1 HIGH, 2 LOW). The 3 CDC-side fixes live in the private
+`fusion-cdc-engine` repo (alert_rules migration, route ordering, Kafka
+widget).
+
+### Fixed
+- **Login crashed on HTTP with `crypto.randomUUID is not a function`
+  (HIGH).** `apps/web/src/ui/auth.ts:92` called `crypto.randomUUID()` for
+  the OIDC `state` nonce, which is `undefined` in non-secure HTTP contexts
+  (browsers gate `crypto.randomUUID` behind `window.isSecureContext`). Every
+  HTTP deployment — including `http://192.168.1.10:8088` — threw on the
+  login redirect. Added a 5-line polyfill at the top of `auth.ts` that
+  falls back to a `Math.random`-based RFC-4122 v4 generator when
+  `crypto.randomUUID` is missing.
+- **Bearer-token API calls returned 400 in `authMode: dev` (HIGH).** The
+  local-dev gateway (`infra/local-dev/k8s/values-fusion-local.yaml:12`) runs
+  in `authMode: dev`, which makes the middleware a pass-through that does
+  NOT inject `X-Fusion-Actor-Id` / `X-Fusion-Organization-Id` /
+  `X-Fusion-Tenant-Id` / `X-Fusion-Project-Id` from JWT claims. The SPA's
+  `api.ts` only sent `Authorization` + `X-Fusion-Correlation-Id`, so
+  tenant-scoped endpoints rejected requests. Added SPA-side defense-in-
+  depth: `api.ts` now decodes the JWT payload (base64) and sends the four
+  `X-Fusion-*` context headers from claims, so the SPA works regardless of
+  gateway auth mode. `values-fusion-local.yaml` is left in `dev` mode (the
+  JWKS URL config is fragile; SPA-side injection is the more robust fix).
+- **"Test Connection" optimistic UI masked failures (LOW).**
+  `apps/web/src/ui/App.tsx:760-767` flipped the connection status chip to
+  `healthy` BEFORE calling `/api/v1/connections/{id}/test`, so a failing
+  backend still showed a green chip with a small easy-to-miss banner. The
+  handler now marks the chip `untested` while the call is in flight, flips
+  to `healthy` only on HTTP 200, flips to `blocked` on error, and renders
+  the error in a `message-banner error` (red) tone with the failure reason
+  prefixed by `Connection test failed:`.
+- **Demo data presented as real (LOW).** When `/api/v1/bootstrap` failed,
+  `App.tsx` silently fell back to the bundled `createDemoWorkspace()` mock
+  (199 lines of hardcoded data in `apps/web/src/ui/demo-workspace.ts`),
+  making the UI look live when the backend was down. Added a
+  `bootstrapFailed` state that flips on bootstrap error and renders a red
+  `DEMO DATA — backend unreachable` banner at the top of the workspace
+  shell explaining the situation and that changes will not persist.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.4` /
+  `appVersion: "1.2.4"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.3` → `1.2.4` in
+  `infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`,
+  `infra/helm/dcraft-fusion/examples/values-minimal.yaml`,
+  `infra/helm/fusion-cdc/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-fusion-local.yaml`,
+  `infra/local-dev/k8s/values-cdc-local.yaml`.
+- Bumped `--version 1.2.4` in `infra/local-dev/k8s/deploy.ps1` and the
+  `infra/helm/README.md` install examples.
+
 ## [1.2.3] — 2026-07-21
 
 Follow-up to v1.2.2. The v1.2.2 remote retest (192.168.1.10) confirmed the

@@ -95,6 +95,7 @@ export function App({ workspace }: { readonly workspace: FusionWorkspace }) {
   const [platformOverview, setPlatformOverview] = useState<PlatformOverview | undefined>(undefined);
   const [platformError, setPlatformError] = useState<string | undefined>(undefined);
   const [platformLoading, setPlatformLoading] = useState(false);
+  const [bootstrapFailed, setBootstrapFailed] = useState(false);
 
   const workspaceContext = useMemo(() => liveWorkspace.context, [liveWorkspace.context]);
 
@@ -125,6 +126,7 @@ export function App({ workspace }: { readonly workspace: FusionWorkspace }) {
   useEffect(() => {
     if (session?.scope !== "tenant") return;
     let cancelled = false;
+    setBootstrapFailed(false);
     loadBootstrap()
       .then((bootstrap) => {
         if (cancelled) return;
@@ -134,8 +136,12 @@ export function App({ workspace }: { readonly workspace: FusionWorkspace }) {
         }
       })
       .catch(() => {
+        if (cancelled) return;
+        // Backend /api/v1/bootstrap is unreachable — fall back to the bundled
+        // demo workspace so the UI stays explorable, but flag it loudly.
         setLiveWorkspace(workspace);
         setConnections(workspace.connections);
+        setBootstrapFailed(true);
       });
     return () => {
       cancelled = true;
@@ -202,7 +208,7 @@ export function App({ workspace }: { readonly workspace: FusionWorkspace }) {
       <Route element={<RequireSession session={session} scope="tenant" />}>
         <Route
           path="/workspace"
-          element={<WorkspaceLayout context={workspaceContext} session={session} signOut={signOut} theme={theme} setTheme={setTheme} />}
+          element={<WorkspaceLayout context={workspaceContext} session={session} signOut={signOut} theme={theme} setTheme={setTheme} bootstrapFailed={bootstrapFailed} />}
         >
           <Route index element={<Navigate replace to="/workspace/command-center" />} />
           <Route path="command-center" element={<CommandCenter workspace={liveWorkspace} connections={connections} />} />
@@ -517,13 +523,15 @@ function WorkspaceLayout({
   session,
   signOut,
   theme,
-  setTheme
+  setTheme,
+  bootstrapFailed
 }: {
   readonly context: FusionWorkspace["context"];
   readonly session: UserSession | undefined;
   readonly signOut: () => Promise<void>;
   readonly theme: Theme;
   readonly setTheme: (theme: Theme) => void;
+  readonly bootstrapFailed: boolean;
 }) {
   return (
     <div className="app-shell">
@@ -555,6 +563,15 @@ function WorkspaceLayout({
             <ThemeToggle theme={theme} setTheme={setTheme} />
           </div>
         </header>
+        {bootstrapFailed ? (
+          <div className="message-banner error" role="status" aria-live="polite">
+            <strong>DEMO DATA — backend unreachable.</strong> The control plane
+            could not be reached at <code>/api/v1/bootstrap</code>, so this
+            workspace is showing bundled sample data. Changes here will not
+            persist. Check that the API gateway is running and that your
+            session token is valid.
+          </div>
+        ) : null}
         <section className="page">
           <Outlet />
         </section>
@@ -724,6 +741,7 @@ function IntegrationHub({
   const [kind, setKind] = useState<Connection["kind"]>("postgres");
   const [selectedConnectionId, setSelectedConnectionId] = useState(connections[0]?.id ?? "");
   const [message, setMessage] = useState<string | undefined>(undefined);
+  const [messageTone, setMessageTone] = useState<"info" | "error">("info");
   const selectedConnection = connections.find((connection) => connection.id === selectedConnectionId) ?? connections[0];
 
   useEffect(() => {
@@ -745,6 +763,7 @@ function IntegrationHub({
       status: "untested"
     };
     setMessage(undefined);
+    setMessageTone("info");
     setConnections([...connections, optimisticConnection]);
     setSelectedConnectionId(optimisticConnection.id);
     try {
@@ -752,24 +771,44 @@ function IntegrationHub({
       setConnections([...connections, created]);
       setSelectedConnectionId(created.id);
       setMessage("Read-only connection created through the API.");
+      setMessageTone("info");
     } catch (error: unknown) {
-      setMessage(error instanceof Error ? error.message : "Connection creation failed");
+      const reason = error instanceof Error ? error.message : "Connection creation failed";
+      setMessage(`Connection creation failed: ${reason}`);
+      setMessageTone("error");
     }
   }
 
   async function testConnection() {
     if (selectedConnection === undefined) return;
     setMessage(undefined);
+    setMessageTone("info");
+    // Mark as "untested" while the API call is in flight — never flip to
+    // "healthy" until the API actually returns 200. This avoids masking
+    // failures with a false "healthy" chip.
     setConnections(
       connections.map((connection) =>
-        connection.id === selectedConnection.id ? { ...connection, status: "healthy" as const } : connection
+        connection.id === selectedConnection.id ? { ...connection, status: "untested" as const } : connection
       )
     );
     try {
       await testConnectionAPI(selectedConnection.id);
+      setConnections(
+        connections.map((connection) =>
+          connection.id === selectedConnection.id ? { ...connection, status: "healthy" as const } : connection
+        )
+      );
       setMessage("Connection health validated through the API.");
+      setMessageTone("info");
     } catch (error: unknown) {
-      setMessage(error instanceof Error ? error.message : "Connection test failed");
+      setConnections(
+        connections.map((connection) =>
+          connection.id === selectedConnection.id ? { ...connection, status: "blocked" as const } : connection
+        )
+      );
+      const reason = error instanceof Error ? error.message : "Connection test failed";
+      setMessage(`Connection test failed: ${reason}`);
+      setMessageTone("error");
     }
   }
 
@@ -838,7 +877,9 @@ function IntegrationHub({
           <button className="primary-button" onClick={() => void testConnection()} type="button">
             Test Connection
           </button>
-          {message ? <div className="message-banner">{message}</div> : null}
+          {message ? (
+            <div className={messageTone === "error" ? "message-banner error" : "message-banner"}>{message}</div>
+          ) : null}
         </section>
       </div>
     </>
