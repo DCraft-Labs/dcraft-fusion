@@ -4,6 +4,49 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.7] — 2026-07-22
+
+Follow-up to v1.2.6. The v1.2.6 `Publish images` and `Publish Helm charts`
+workflows succeeded (the `dcraft-fusion-web` image was rebuilt for the
+first time since v1.2.3), but the `CI` workflow failed at
+`npm audit --audit-level=high` on newly-disclosed high-severity
+dev-server-only vulnerabilities in transitive dev dependencies. This
+release pins the patched versions so the CI gate is green.
+
+### Fixed (CI — npm audit)
+- **vite `server.fs.deny` bypass on Windows** (GHSA-fx2h-pf6j-xcff,
+  CVE-2026-53571, high): the VitePress docs workspace pulled a nested
+  `vite <=6.4.2` that had no auto-fix (VitePress 1.6.4 declares
+  `vite: ^5.4.14`, and the advisory is only patched in `vite 6.4.3` /
+  `7.3.5` / `8.0.16` — there is no 5.x fix). Added an npm `overrides`
+  block in the root `package.json` forcing `vite` to `6.4.3` for both
+  the web workspace and VitePress's nested dependency, and regenerated
+  `package-lock.json`. VitePress 1.6.4 is compatible with Vite 6.4.3
+  (docs build verified). This is a dev-server-only issue (Windows
+  `vite dev --host` with sensitive files in `server.fs.allow`); it does
+  not affect `vite build` or the shipped static bundle in the Docker
+  image.
+- `npm audit fix` also pulled in patched versions for the
+  `@babel/core` (GHSA-4x5r-pxfx-6jf8), `form-data`
+  (GHSA-hmw2-7cc7-3qxx), and `ws` (GHSA-96hv-2xvq-fx4p) advisories
+  that had fixes available.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.7`
+  / `appVersion: "1.2.7"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.6` → `1.2.7` in
+  `infra/helm/*/values.yaml`, `infra/helm/*/examples/values-minimal.yaml`,
+  and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.7` in `infra/local-dev/k8s/deploy.ps1` and the
+  helm install examples in `infra/helm/README.md`.
+
+### Notes
+- The v1.2.6 images remain valid in GHCR; v1.2.7 re-publishes identical
+  source under a new tag so the CI gate is green for the release.
+- The CDC-side version bump (`control-plane/app/main.py` and
+  `helm/fusion-cdc/Chart.yaml`) ships in the private `fusion-cdc-engine`
+  repo's v1.2.7 release.
+
 ## [1.2.6] — 2026-07-22
 
 Follow-up to v1.2.5. The v1.2.4 and v1.2.5 `Publish images` and `CI`
