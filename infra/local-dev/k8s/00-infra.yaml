@@ -76,17 +76,57 @@ data:
     \c fusion_dw
     GRANT ALL ON SCHEMA public TO dw_user;
 ---
-# NOTE: A PersistentVolumeClaim for postgres data was attempted here but the
-# cluster's built-in `storage-provisioner` (kube-system) is itself stuck in a
-# permanent CrashLoopBackOff — it repeatedly loses its leader-election lease
-# because API server round-trips exceed the 15s lease-renew deadline under
-# this Docker Desktop VM's CPU pressure (see docker stats: coredns/kube-proxy/
-# kube-controller-manager/storage-provisioner all >35% CPU sustained).
-# PVCs stay Pending forever as a result ("unbound immediate PersistentVolume
-# Claims. not found"). Until that's resolved (more CPU for the Docker Desktop
-# VM, or a different storage class), postgres data remains ephemeral — it
-# resets on every pod restart/recreate. Re-run scripts/seed-admin.sql and
-# `alembic upgrade head` after any postgres restart.
+# ─────────────────────────────────────────────────────────────────────────────
+# Postgres durability (local-dev)
+#
+# The Docker Desktop built-in `storage-provisioner` (kube-system) is unreliable
+# under CPU pressure (CrashLoopBackOff, lost leader-election lease) and PVCs
+# bound to a dynamic storage class stay Pending forever. To make postgres data
+# durable across pod restarts without depending on the dynamic provisioner, we
+# provision a hostPath PersistentVolume + a matching PersistentVolumeClaim.
+#
+# hostPath persists on the Docker Desktop VM's filesystem and survives pod
+# deletes/recreates (though NOT a full Docker Desktop reset). This is a
+# LOCAL-DEV-ONLY escape hatch. Production MUST use a real storage class or an
+# external managed Postgres (RDS, Cloud SQL, etc.) — hostPath is single-node
+# only and does not survive node replacement.
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-data-pv
+  namespace: dcraft-local
+  labels:
+    app: postgres
+    dcraft.io/role: local-dev-storage
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /var/dcraft-local/postgres-data
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: dcraft-local
+  labels:
+    app: postgres
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      app: postgres
+      dcraft.io/role: local-dev-storage
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -125,9 +165,16 @@ spec:
               value: fusion
             - name: POSTGRES_PASSWORD
               value: fusion_local
+            # PGDATA must be a subdirectory of the mounted volume, not the
+            # volume root, or postgres refuses to init when the dir has perms
+            # it doesn't expect.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           volumeMounts:
             - name: init
               mountPath: /docker-entrypoint-initdb.d
+            - name: data
+              mountPath: /var/lib/postgresql/data
           readinessProbe:
             exec:
               command: ["pg_isready", "-U", "fusion", "-d", "fusion"]
@@ -146,6 +193,9 @@ spec:
         - name: init
           configMap:
             name: postgres-init
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-data
 ---
 apiVersion: v1
 kind: Service

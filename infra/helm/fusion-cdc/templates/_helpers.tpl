@@ -86,6 +86,20 @@ Image helper: registry + repository + tag or digest.
 {{- printf "http://%s-control-plane:%v" (include "fusion-cdc.fullname" .) .Values.controlPlane.service.port -}}
 {{- end }}
 
+{{/*
+Kafka bootstrap servers: prefer explicit override, then in-cluster service
+when kafka.enabled=true, otherwise empty (operator must supply via env).
+*/}}
+{{- define "fusion-cdc.kafkaBootstrapServers" -}}
+{{- if .Values.kafka.bootstrapServers -}}
+{{- .Values.kafka.bootstrapServers -}}
+{{- else if .Values.kafka.enabled -}}
+{{- printf "%s-kafka:9092" (include "fusion-cdc.fullname" .) -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end }}
+
 {{- define "fusion-cdc.controlPlane.serviceAccountName" -}}
 {{- if .Values.controlPlane.serviceAccount.create -}}
 {{- default (printf "%s-control-plane" (include "fusion-cdc.fullname" .)) .Values.controlPlane.serviceAccount.name -}}

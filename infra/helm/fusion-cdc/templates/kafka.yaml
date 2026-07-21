@@ -1,0 +1,234 @@
+{{/*
+Fusion CDC — Kafka (Apache Kafka 3.7, KRaft mode, no ZooKeeper).
+
+Gated by .Values.kafka.enabled. Defaults to true so the local-dev deployment
+gets a working broker out-of-the-box; production should set kafka.enabled=false
+and provide KAFKA_BOOTSTRAP_SERVERS pointing at an external broker (MSK,
+Confluent Cloud, etc.) via the cdcWorkers.env / sparkConsumer.env overrides.
+
+The cdc-workers and spark-consumer templates read .Values.kafka.bootstrapServers
+into KAFKA_BOOTSTRAP_SERVERS so the in-cluster service name resolves by default.
+*/}}
+{{- if .Values.kafka.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-kafka-config
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+data:
+  server.properties: |
+    # KRaft mode — no ZooKeeper
+    process.roles=broker,controller
+    node.id=1
+    controller.quorum.voters=1@localhost:9093
+    listeners=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+    advertised.listeners=PLAINTEXT://{{ include "fusion-cdc.fullname" . }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092,EXTERNAL://localhost:{{ .Values.kafka.externalNodePort }}
+    listener.security.protocol.map=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+    controller.listener.names=CONTROLLER
+    inter.broker.listener.name=PLAINTEXT
+
+    # Storage
+    log.dirs=/var/lib/kafka/data
+
+    # Topic defaults
+    num.partitions={{ .Values.kafka.numPartitions }}
+    default.replication.factor={{ .Values.kafka.replicationFactor }}
+    offsets.topic.replication.factor={{ .Values.kafka.replicationFactor }}
+    transaction.state.log.replication.factor={{ .Values.kafka.replicationFactor }}
+    transaction.state.log.min.isr=1
+
+    # Retention
+    log.retention.hours={{ .Values.kafka.logRetentionHours }}
+    log.retention.bytes={{ .Values.kafka.logRetentionBytes }}
+    log.segment.bytes=536870912
+
+    # Performance
+    num.network.threads=3
+    num.io.threads=8
+    socket.send.buffer.bytes=102400
+    socket.receive.buffer.bytes=102400
+    socket.request.max.bytes=104857600
+
+    # Auto topic creation (CDC workers create topics on first event)
+    auto.create.topics.enable=true
+    delete.topic.enable=true
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-kafka
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+spec:
+  serviceName: {{ include "fusion-cdc.fullname" . }}-kafka-headless
+  replicas: {{ .Values.kafka.replicas }}
+  selector:
+    matchLabels:
+      {{- include "fusion-cdc.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: message-broker
+  template:
+    metadata:
+      labels:
+        {{- include "fusion-cdc.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: message-broker
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.kafka.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # KRaft requires a cluster ID to be formatted before first start.
+        - name: kafka-init
+          image: "{{ .Values.kafka.image.repository }}:{{ .Values.kafka.image.tag }}"
+          imagePullPolicy: {{ .Values.kafka.image.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              CLUSTER_ID_FILE=/var/lib/kafka/data/cluster_id
+              if [ ! -f "$CLUSTER_ID_FILE" ]; then
+                echo "Formatting KRaft storage..."
+                CLUSTER_ID=$(/opt/kafka/bin/kafka-storage.sh random-uuid)
+                /opt/kafka/bin/kafka-storage.sh format \
+                  --cluster-id "$CLUSTER_ID" \
+                  --config /opt/kafka/config/kraft/server.properties
+                echo "$CLUSTER_ID" > "$CLUSTER_ID_FILE"
+                echo "KRaft storage formatted with cluster ID: $CLUSTER_ID"
+              else
+                echo "KRaft storage already formatted (cluster ID: $(cat $CLUSTER_ID_FILE))"
+              fi
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value: {{ .Values.kafka.initHeapOpts | quote }}
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /var/lib/kafka/data
+            - name: kafka-config-vol
+              mountPath: /opt/kafka/config/kraft/server.properties
+              subPath: server.properties
+      containers:
+        - name: kafka
+          image: "{{ .Values.kafka.image.repository }}:{{ .Values.kafka.image.tag }}"
+          imagePullPolicy: {{ .Values.kafka.image.pullPolicy }}
+          {{- with .Values.kafka.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: plaintext
+              containerPort: 9092
+            - name: controller
+              containerPort: 9093
+            - name: external
+              containerPort: 9094
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value: {{ .Values.kafka.heapOpts | quote }}
+            - name: KAFKA_JVM_PERFORMANCE_OPTS
+              value: "-server -XX:+UseG1GC -XX:MaxGCPauseMillis=20"
+          command:
+            - /opt/kafka/bin/kafka-server-start.sh
+            - /opt/kafka/config/kraft/server.properties
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /var/lib/kafka/data
+            - name: kafka-config-vol
+              mountPath: /opt/kafka/config/kraft/server.properties
+              subPath: server.properties
+          livenessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - /opt/kafka/bin/kafka-broker-api-versions.sh
+                - --bootstrap-server
+                - localhost:9092
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.kafka.resources | nindent 12 }}
+      volumes:
+        - name: kafka-config-vol
+          configMap:
+            name: {{ include "fusion-cdc.fullname" . }}-kafka-config
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- with .Values.kafka.storage.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.kafka.storage.size }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-kafka-headless
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+spec:
+  clusterIP: None
+  selector:
+    {{- include "fusion-cdc.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+  ports:
+    - name: plaintext
+      port: 9092
+      targetPort: 9092
+    - name: controller
+      port: 9093
+      targetPort: 9093
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-kafka
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "fusion-cdc.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+  ports:
+    - name: plaintext
+      port: 9092
+      targetPort: 9092
+---
+{{- if .Values.kafka.externalNodePort }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fusion-cdc.fullname" . }}-kafka-external
+  labels:
+    {{- include "fusion-cdc.labels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+spec:
+  type: NodePort
+  selector:
+    {{- include "fusion-cdc.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: message-broker
+  ports:
+    - name: external
+      port: 9094
+      targetPort: 9094
+      nodePort: {{ .Values.kafka.externalNodePort }}
+{{- end }}
+{{- end }}

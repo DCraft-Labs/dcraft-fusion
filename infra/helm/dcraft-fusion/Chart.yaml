@@ -2,8 +2,8 @@ apiVersion: v2
 name: dcraft-fusion
 description: DCraft Fusion control plane (kernel API and web UI). Bring your own Postgres and Redis.
 type: application
-version: 1.1.2
-appVersion: "1.1.2"
+version: 1.2.1
+appVersion: "1.2.1"
 keywords:
   - dcraft
   - fusion

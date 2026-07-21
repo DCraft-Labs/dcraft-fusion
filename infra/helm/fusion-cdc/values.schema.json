@@ -45,6 +45,36 @@
         "url": { "type": "string" }
       }
     },
+    "kafka": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "replicas": { "type": "integer", "minimum": 1 },
+        "bootstrapServers": { "type": "string" },
+        "numPartitions": { "type": "integer", "minimum": 1 },
+        "replicationFactor": { "type": "integer", "minimum": 1 },
+        "externalNodePort": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": { "type": "string", "minLength": 1 },
+            "tag": { "type": "string" },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"]
+            }
+          },
+          "required": ["repository"]
+        },
+        "storage": {
+          "type": "object",
+          "properties": {
+            "size": { "type": "string" },
+            "storageClass": { "type": "string" }
+          }
+        }
+      }
+    },
     "controlPlane": {
       "type": "object",
       "properties": {

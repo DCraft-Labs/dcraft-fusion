@@ -31,6 +31,55 @@ fullnameOverride: ""
 externalRedis:
   url: ""
 
+# ── Kafka (in-cluster broker, KRaft mode) ─────────────────────────────────────
+# Enabled by default so local-dev gets a working CDC pipeline out of the box.
+# Production should set kafka.enabled=false and provide KAFKA_BOOTSTRAP_SERVERS
+# pointing at an external broker (MSK, Confluent Cloud, self-managed, etc.)
+# via cdcWorkers.env / sparkConsumer.env overrides.
+kafka:
+  enabled: true
+  # Number of broker replicas. 1 is fine for local-dev; use 3 for prod HA
+  # (when using the in-cluster broker). Ignored when kafka.enabled=false.
+  replicas: 1
+  # Default bootstrap servers used by cdc-workers and spark-consumer when
+  # kafka.enabled=true. Override per-workload via .Values.*.env.KAFKA_BOOTSTRAP_SERVERS.
+  bootstrapServers: ""
+  # Apache Kafka 3.7+ KRaft mode (no ZooKeeper).
+  image:
+    repository: apache/kafka
+    tag: "3.7.0"
+    pullPolicy: IfNotPresent
+  # Topic defaults
+  numPartitions: 3
+  replicationFactor: 1
+  # Retention
+  logRetentionHours: 24
+  logRetentionBytes: 10737418240
+  # JVM heap
+  initHeapOpts: "-Xmx256m -Xms128m"
+  heapOpts: "-Xmx512m -Xms256m"
+  # External NodePort for CLI/UI tools (kafka-ui, kcat, etc.). Set to 0 to disable.
+  externalNodePort: 30092
+  storage:
+    size: 20Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 500m
+      memory: 768Mi
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: ["ALL"]
+
 # ── Control Plane ─────────────────────────────────────────────────────────────
 controlPlane:
   enabled: true
@@ -38,7 +87,7 @@ controlPlane:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: "1.1.1"
+    tag: "1.2.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -147,7 +196,7 @@ cdcWorkers:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: "1.1.1"
+    tag: "1.2.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -232,7 +281,7 @@ sparkConsumer:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: "1.1.1"
+    tag: "1.2.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -301,7 +350,7 @@ frontend:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: "1.1.1"
+    tag: "1.2.1"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -389,7 +438,7 @@ transformWorker:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: "1.1.1"
+    tag: "1.2.1"
     digest: ""
     pullPolicy: IfNotPresent
 

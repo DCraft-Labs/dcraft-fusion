@@ -89,6 +89,11 @@ spec:
             - name: REDIS_URL
               value: {{ $root.Values.externalRedis.url | quote }}
             {{- end }}
+            {{- $kafkaBs := include "fusion-cdc.kafkaBootstrapServers" $root -}}
+            {{- if $kafkaBs }}
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: {{ $kafkaBs | quote }}
+            {{- end }}
             {{- include "fusion-cdc.renderEnv" (dict "env" $root.Values.cdcWorkers.env "extraEnv" $root.Values.cdcWorkers.extraEnv) | nindent 12 }}
           livenessProbe:
             httpGet:
