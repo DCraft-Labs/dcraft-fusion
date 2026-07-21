@@ -1,7 +1,7 @@
 # Local Docker Desktop overrides for dcraft-fusion (fits ~3Gi VM).
 controlPlaneKernel:
   image:
-    tag: "1.2.1"
+    tag: "1.2.2"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 1000
@@ -16,10 +16,10 @@ controlPlaneKernel:
       cpu: 250m
       memory: 256Mi
 
-# Official nginx image runs as root on port 80 — disable non-root for local smoke.
+# Official nginx image runs as root on port 80 â€” disable non-root for local smoke.
 web:
   image:
-    tag: "1.2.1"
+    tag: "1.2.2"
   podSecurityContext: null
   securityContext: null
   resources:

@@ -1,4 +1,4 @@
-# DCraft Fusion control plane — default values
+# DCraft Fusion control plane â€” default values
 # Never commit real passwords. Prefer global.secrets.existingSecret in production.
 
 global:
@@ -36,14 +36,14 @@ fullnameOverride: ""
 externalRedis:
   addr: ""
 
-# ── Control plane kernel ──────────────────────────────────────────────────────
+# â”€â”€ Control plane kernel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 controlPlaneKernel:
   enabled: true
   replicaCount: 2
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-control-plane-kernel
-    tag: "1.2.1"
+    tag: "1.2.2"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -123,14 +123,14 @@ controlPlaneKernel:
   podAnnotations: {}
   podLabels: {}
 
-# ── Web UI ────────────────────────────────────────────────────────────────────
+# â”€â”€ Web UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 web:
   enabled: true
   replicaCount: 2
 
   image:
     repository: ghcr.io/dcraft-labs/dcraft-fusion-web
-    tag: "1.2.1"
+    tag: "1.2.2"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -201,7 +201,7 @@ web:
   podAnnotations: {}
   podLabels: {}
 
-# ── Ingress ───────────────────────────────────────────────────────────────────
+# â”€â”€ Ingress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ingress:
   enabled: false
   className: nginx

@@ -4,6 +4,59 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.2] — 2026-07-21
+
+Hotfix for the v1.2.1 regression: the CDC metadata DB stayed empty
+(`connector-definitions`, `sources`, `destinations`, `connections` all
+returned `total: 0`) even though `deploy.ps1` reported a successful seed
+and the admin user existed. Root cause and self-healing fix live in the
+private `fusion-cdc-engine` repo; this public release bumps chart/image
+versions so `deploy.ps1` pulls the fixed control-plane image.
+
+### Fixed
+- **CDC seed still empty after v1.2.1 (BLOCKER).** The v1.2.1
+  `deploy.ps1` fail-fast caught `psql` exit codes but the seed SQL itself
+  was broken: `scripts/seed-admin.sql` INSERTed into `destinations` with
+  columns (`host`, `port`, `database_name`, `schema_name`, `username`,
+  `password_encrypted`, `ssl_enabled`, `ssl_config`, `config`) that do
+  NOT exist on the `destinations` table — those fields live inside the
+  `connection_config` JSONB column. The `connections` INSERT likewise
+  listed `sync_enabled`, `replication_slot`, `publication`,
+  `namespace_definition`, `namespace_format`, `stream_prefix`, `config`,
+  which do not exist on `connections`. Because the whole seed runs as a
+  single atomic `DO $$ ... $$;` block, the first non-existent-column
+  error rolled back the entire transaction — including the
+  `connector_definitions` INSERTs that ran earlier in the block —
+  leaving every CDC table at `total: 0`. The admin user existed only
+  because it had been registered manually via `/auth/register` (the
+  control-plane has NO startup admin-creation hook). Fixed in the
+  private repo by rewriting the `destinations`/`connections` INSERTs
+  against the real schema and, more importantly, by adding a
+  self-healing seed hook to the control-plane startup
+  (`control-plane/app/seed/seed_admin.py`) that re-seeds
+  `connector_definitions` whenever it finds an empty DB — so the
+  deployment no longer depends on `kubectl cp` succeeding.
+- **`infra/local-dev/k8s/deploy.ps1` — seed path is now a fallback.** The
+  `kubectl cp + psql -f` seed step is retained as a manual re-seed
+  fallback, but the primary seed mechanism is now the control-plane's
+  startup hook (the seed SQL is idempotent, so running both is a no-op
+  when the DB is already populated). Added a note in `deploy.ps1`
+  explaining the new ordering.
+
+### Changed
+- **Helm chart + image tags bumped `1.2.1` → `1.2.2`** so `deploy.ps1`
+  pulls the fixed control-plane image:
+  `infra/helm/dcraft-fusion/Chart.yaml`,
+  `infra/helm/fusion-cdc/Chart.yaml`,
+  `infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`,
+  `infra/helm/dcraft-fusion/examples/values-minimal.yaml`,
+  `infra/helm/fusion-cdc/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-fusion-local.yaml`,
+  `infra/local-dev/k8s/values-cdc-local.yaml`,
+  `infra/helm/README.md`, and the two `--version` flags in
+  `infra/local-dev/k8s/deploy.ps1`.
+
 ## [1.2.1] — 2026-07-21
 
 Hotfix release addressing the three hard blockers found when verifying v1.2.0

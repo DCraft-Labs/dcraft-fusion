@@ -61,7 +61,7 @@ Write-Host "==> helm install dcraft-fusion"
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 & $helm upgrade --install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion `
-  --version 1.2.1 `
+  --version 1.2.2 `
   --namespace dcraft-local `
   -f "$root\infra\helm\dcraft-fusion\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-fusion-local.yaml" `
@@ -74,7 +74,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "==> helm install fusion-cdc"
 & $helm upgrade --install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc `
-  --version 1.2.1 `
+  --version 1.2.2 `
   --namespace dcraft-local `
   -f "$root\infra\helm\fusion-cdc\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-cdc-local.yaml" `
@@ -103,6 +103,14 @@ kubectl -n dcraft-local rollout status deploy/fusion-dcraft-fusion-web --timeout
 if ($LASTEXITCODE -ne 0) { throw "fusion-dcraft-fusion-web rollout failed (exit $LASTEXITCODE) — aborting deploy" }
 
 Write-Host "==> seeding CDC default admin + connectors (admin / Admin@123)"
+# NOTE (v1.2.2): The PRIMARY seed mechanism is now the control-plane's
+# self-healing startup hook (control-plane/app/seed/seed_admin.py), which runs
+# AFTER Alembic migrations on every boot and re-seeds connector_definitions
+# whenever it finds an empty DB. The kubectl cp + psql -f path below is kept
+# as a FALLBACK for manual re-seeding and for environments where the
+# control-plane image hasn't been rebuilt with the new seed module yet.
+# If the control-plane already seeded the DB, the seed SQL is idempotent
+# (ON CONFLICT DO NOTHING / WHERE NOT EXISTS) and will be a no-op.
 $seedSql = "$root\.tmp\fusion-cdc-engine-private\scripts\seed-admin.sql"
 if (-not (Test-Path $seedSql)) {
   # The full seed (admin user + connector definitions + sample source/destination)

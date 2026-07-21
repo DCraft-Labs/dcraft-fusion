@@ -1,11 +1,11 @@
 # Local Docker Desktop overrides for fusion-cdc (fits ~3Gi VM).
-# Transform worker alone requests 2Gi — leave it off locally.
+# Transform worker alone requests 2Gi â€” leave it off locally.
 transformWorker:
   enabled: false
 
 controlPlane:
   image:
-    tag: "1.2.1"
+    tag: "1.2.2"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -14,7 +14,7 @@ controlPlane:
     fsGroup: 999
     seccompProfile:
       type: RuntimeDefault
-  # Image default is 4 uvicorn workers — OOM under ~384Mi on Docker Desktop.
+  # Image default is 4 uvicorn workers â€” OOM under ~384Mi on Docker Desktop.
   securityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: false
@@ -34,7 +34,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.2.1"
+    tag: "1.2.2"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101
@@ -77,7 +77,7 @@ cdcWorkers:
   mongodb:
     enabled: false
 
-# In-cluster Kafka for local-dev CDC pipeline (cdc-workers → Kafka →
+# In-cluster Kafka for local-dev CDC pipeline (cdc-workers â†’ Kafka â†’
 # spark-consumer). Single broker, KRaft mode, small heap to fit the Docker
 # Desktop VM. Production should set kafka.enabled=false and provide
 # KAFKA_BOOTSTRAP_SERVERS via cdcWorkers.env / sparkConsumer.env.

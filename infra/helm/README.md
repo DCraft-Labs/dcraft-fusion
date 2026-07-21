@@ -19,7 +19,7 @@ There is **no Bitnami / bundled Postgres or Redis**. Bring your own datastores.
 Install the control plane first, then CDC. Use separate namespaces or the same namespace as you prefer.
 
 ```bash
-# ── Secrets (placeholders — replace values; do not commit) ────────────────────
+# â”€â”€ Secrets (placeholders â€” replace values; do not commit) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 kubectl create namespace dcraft-fusion
 kubectl create namespace fusion-cdc
 
@@ -38,16 +38,16 @@ kubectl -n fusion-cdc create secret generic fusion-cdc-secrets \
   --from-literal=WORKER_TOKEN_SECRET='CHANGE_ME' \
   --from-literal=WORKER_TOKEN='CHANGE_ME'
 
-# ── 1. Control plane ──────────────────────────────────────────────────────────
+# â”€â”€ 1. Control plane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 helm install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion \
-  --version 1.2.1 \
+  --version 1.2.2 \
   --namespace dcraft-fusion \
   -f dcraft-fusion/examples/values-minimal.yaml \
   --set externalRedis.addr=redis:6379
 
-# ── 2. CDC (image-only) ───────────────────────────────────────────────────────
+# â”€â”€ 2. CDC (image-only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
-  --version 1.2.1 \
+  --version 1.2.2 \
   --namespace fusion-cdc \
   -f fusion-cdc/examples/values-minimal.yaml
 ```

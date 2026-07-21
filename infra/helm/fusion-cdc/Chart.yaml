@@ -1,12 +1,12 @@
 apiVersion: v2
 name: fusion-cdc
 description: >
-  Fusion CDC — image-only Helm chart for official DCraft Labs CDC images.
+  Fusion CDC â€” image-only Helm chart for official DCraft Labs CDC images.
   CDC engine source is proprietary; this chart deploys pre-built GHCR images only.
   Bring your own Postgres and Redis (no bundled databases).
 type: application
-version: 1.2.1
-appVersion: "1.2.1"
+version: 1.2.2
+appVersion: "1.2.2"
 keywords:
   - cdc
   - change-data-capture
