@@ -90,6 +90,22 @@ data:
 # LOCAL-DEV-ONLY escape hatch. Production MUST use a real storage class or an
 # external managed Postgres (RDS, Cloud SQL, etc.) — hostPath is single-node
 # only and does not survive node replacement.
+#
+# ── Cross-platform hostPath override ─────────────────────────────────────────
+# The hostPath `path` below is parameterized via the placeholder
+# `${DCRAFT_PGDATA_HOSTPATH}`. `deploy.ps1` substitutes this placeholder from
+# the `DCRAFT_PGDATA_HOSTPATH` environment variable before `kubectl apply`, so
+# operators can override the path without editing this file:
+#
+#   Windows (Docker Desktop, bind to repo .tmp/pgdata):
+#     $env:DCRAFT_PGDATA_HOSTPATH = "E:/Dcraft/.tmp/pgdata"
+#   Linux / Mac (Docker Desktop VM or minikube):
+#     export DCRAFT_PGDATA_HOSTPATH=/var/dcraft-local/postgres-data
+#     # or: /tmp/dcraft-pgdata
+#
+# If `DCRAFT_PGDATA_HOSTPATH` is unset, `deploy.ps1` falls back to
+# `/var/dcraft-local/postgres-data` (the Docker Desktop Linux VM default that
+# works on all platforms when no host bind is required).
 # ─────────────────────────────────────────────────────────────────────────────
 apiVersion: v1
 kind: PersistentVolume
@@ -106,7 +122,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   hostPath:
-    path: /var/dcraft-local/postgres-data
+    path: ${DCRAFT_PGDATA_HOSTPATH}
     type: DirectoryOrCreate
 ---
 apiVersion: v1

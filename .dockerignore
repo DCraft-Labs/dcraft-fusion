@@ -1,0 +1,31 @@
+# Build artifacts — must NEVER be shipped into the image; the image always
+# rebuilds them from source via `npm run build` inside the Dockerfile.
+**/dist/
+**/node_modules/
+**/.turbo/
+**/.vite/
+**/coverage/
+
+# Local-only scratch
+.tmp/
+.private/
+.playwright-cli/
+.output/
+.idea/
+.vscode/
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs / temp
+*.log
+*.tmp
+
+# Python
+**/__pycache__/
+*.pyc
+**/.venv/

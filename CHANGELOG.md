@@ -4,6 +4,68 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.5] — 2026-07-22
+
+Follow-up to v1.2.4. The v1.2.4 live verification + codebase map audit
+found that the v1.2.4 SPA fixes never took effect because the deployed
+bundle was a stale v1.0.0 build (the image was never rebuilt from source),
+and the CDC alert_rules/suppressions migrations were incomplete. This
+release fixes the SPA build pipeline, hardens the kernel HTTP API
+context scoping, and makes the local-dev Postgres hostPath cross-platform.
+
+### Fixed (Fusion SPA — root cause of v1.2.4 not taking effect)
+- **SPA bundle staleness** (`apps/web/Dockerfile`): the production bundle
+  is now ALWAYS rebuilt from source inside the image. Added a defensive
+  `rm -rf apps/web/dist` before `npm run build` so a cached/committed
+  `dist/` can never leak into production, and a build-time check that
+  fails if `dist/` is older than the newest `src/` file. Added a root
+  `.dockerignore` that excludes `**/dist/`, `**/node_modules/`, and
+  secrets from the build context. Fixes #1 (crypto polyfill), #2 (SPA-side
+  context headers), #6 (Test Connection chip), #7 (DEMO banner) — all
+  were already correct in source but missing from the deployed bundle.
+- **CI freshness check** (`.github/workflows/ci.yml`): the `web` job now
+  verifies `apps/web/dist` is fresh relative to `src/` and fails if any
+  `dist/` artifacts are committed to git.
+- **Makefile target** (`Makefile`): added `verify-fresh-bundle` so the
+  same check can be run locally.
+
+### Fixed (Fusion kernel — codebase map audit)
+- **`listOrganizations` context scoping** (`services/control-plane-kernel/
+  internal/httpapi/server.go`): now calls `fusioncontext.FromHeaders` and
+  filters the result to the caller's organization when
+  `X-Fusion-Organization-Id` is present. A platform superadmin (no org
+  header) still sees all organizations. Previously this endpoint was
+  effectively public after the auth middleware and bypassed tenant
+  scoping.
+- **`listAuditEvents` superadmin-only** (`services/control-plane-kernel/
+  internal/httpapi/server.go`): now requires a valid request context AND
+  platform superadmin access (via `phase1.PlatformOverview`). Audit
+  events are platform-wide and may contain cross-tenant data.
+
+### Fixed (local-dev infra)
+- **HostPath PV cross-platform** (`infra/local-dev/k8s/00-infra.yaml`):
+  the Postgres hostPath `path` is now parameterized via the
+  `${DCRAFT_PGDATA_HOSTPATH}` placeholder. `deploy.ps1` substitutes it
+  from the `DCRAFT_PGDATA_HOSTPATH` env var (default
+  `/var/dcraft-local/postgres-data` for Docker Desktop Linux VM).
+  Operators can override to a Windows host bind (e.g.
+  `E:/Dcraft/.tmp/pgdata`) without editing the YAML.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.5`
+  / `appVersion: "1.2.5"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.4` → `1.2.5` in
+  `infra/helm/*/values.yaml`, `infra/helm/*/examples/values-minimal.yaml`,
+  and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.5` in `infra/local-dev/k8s/deploy.ps1` and the
+  helm install examples in `infra/helm/README.md`.
+
+### Notes
+- The CDC-side fixes (alert_rules/suppressions migrations, system_alerts
+  model cleanup, JWT/encryption/worker-secret fail-fast, seed health
+  surface, dq_policies router dedup) live in the private
+  `fusion-cdc-engine` repo and ship in its v1.2.5 release.
+
 ## [1.2.4] — 2026-07-22
 
 Follow-up to v1.2.3. The v1.2.3 verification + Fusion UI audit (HTTP-only,

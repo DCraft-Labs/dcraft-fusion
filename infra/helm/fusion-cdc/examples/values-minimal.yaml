@@ -9,7 +9,7 @@ global:
 controlPlane:
   replicaCount: 1
   image:
-    tag: "1.2.4"
+    tag: "1.2.5"
   hpa:
     enabled: false
   podDisruptionBudget:
@@ -30,9 +30,9 @@ sparkConsumer:
 frontend:
   replicaCount: 1
   image:
-    tag: "1.2.4"
+    tag: "1.2.5"
 
 transformWorker:
   enabled: true
   image:
-    tag: "1.2.4"
+    tag: "1.2.5"

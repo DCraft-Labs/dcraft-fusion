@@ -93,6 +93,28 @@ jobs:
       - run: npm test
       - run: npm run typecheck
       - run: npm run build
+      - name: Verify bundle is fresh (no stale dist/)
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEWEST_SRC="$(find apps/web/src packages/domain/src -type f -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          NEWEST_DIST="$(find apps/web/dist -type f -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          if [ -n "${NEWEST_SRC}" ] && [ -n "${NEWEST_DIST}" ] && \
+             [ "$(stat -c %Y "${NEWEST_DIST}")" -lt "$(stat -c %Y "${NEWEST_SRC}")" ]; then
+            echo "::error:: apps/web/dist is older than newest src/ — bundle was not rebuilt"
+            exit 1
+          fi
+          echo "OK: apps/web/dist is fresh relative to src/"
+      - name: Forbid committed dist/ artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files 'apps/web/dist/*' 'apps/*/dist/*' 'packages/*/dist/*' | grep -q .; then
+            echo "::error:: Committed dist/ artifacts found — dist/ must never be committed"
+            git ls-files 'apps/web/dist/*' 'apps/*/dist/*' 'packages/*/dist/*'
+            exit 1
+          fi
+          echo "OK: no committed dist/ artifacts"
       - run: npm audit --audit-level=high
 
   kernel:

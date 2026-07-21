@@ -87,8 +87,28 @@ func (server *Server) createOrganization(w http.ResponseWriter, r *http.Request)
 	writeJSON(w, http.StatusCreated, organization)
 }
 
-func (server *Server) listOrganizations(w http.ResponseWriter, _ *http.Request) {
-	writeJSON(w, http.StatusOK, server.organizations.FindAll())
+func (server *Server) listOrganizations(w http.ResponseWriter, r *http.Request) {
+	// Require a valid request context so this endpoint is not effectively
+	// public after the auth middleware. If the caller is scoped to a
+	// specific organization (X-Fusion-Organization-Id header present),
+	// filter the result to that org only — a scoped user must not see
+	// other organizations. A platform superadmin (no org header) sees all.
+	ctx, err := fusioncontext.FromHeaders(r.Header)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err)
+		return
+	}
+	organizations := server.organizations.FindAll()
+	if ctx.OrganizationID != "" {
+		filtered := make([]tenancy.Organization, 0, len(organizations))
+		for _, organization := range organizations {
+			if organization.ID == ctx.OrganizationID {
+				filtered = append(filtered, organization)
+			}
+		}
+		organizations = filtered
+	}
+	writeJSON(w, http.StatusOK, organizations)
 }
 
 func (server *Server) createTenant(w http.ResponseWriter, r *http.Request) {
@@ -406,7 +426,19 @@ func (server *Server) listAIRecommendations(w http.ResponseWriter, r *http.Reque
 	writeJSON(w, http.StatusOK, recommendations)
 }
 
-func (server *Server) listAuditEvents(w http.ResponseWriter, _ *http.Request) {
+func (server *Server) listAuditEvents(w http.ResponseWriter, r *http.Request) {
+	// Audit events are platform-wide and may contain cross-tenant data.
+	// Require a valid request context AND platform superadmin access so
+	// the endpoint is not effectively public after the auth middleware.
+	ctx, err := fusioncontext.FromHeaders(r.Header)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, err)
+		return
+	}
+	if _, err := server.phase1.PlatformOverview(ctx); err != nil {
+		writeError(w, http.StatusForbidden, err)
+		return
+	}
 	writeJSON(w, http.StatusOK, server.auditLog.Events())
 }
 

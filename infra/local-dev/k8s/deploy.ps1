@@ -16,7 +16,21 @@ kubectl cluster-info | Select-Object -First 3
 kubectl get nodes
 
 Write-Host "==> applying infra (postgres/redis/secrets)"
-kubectl apply -f "$PSScriptRoot\00-infra.yaml"
+# Render 00-infra.yaml with the DCRAFT_PGDATA_HOSTPATH placeholder substituted
+# from the environment. Default to the Docker Desktop Linux VM path that works
+# cross-platform; operators can override (e.g. to a Windows host bind path)
+# by setting DCRAFT_PGDATA_HOSTPATH before running this script.
+$pgDataHostPath = if ($env:DCRAFT_PGDATA_HOSTPATH) {
+  $env:DCRAFT_PGDATA_HOSTPATH
+} else {
+  "/var/dcraft-local/postgres-data"
+}
+Write-Host "    hostPath: $pgDataHostPath (override via DCRAFT_PGDATA_HOSTPATH)"
+$infraTemplate = Get-Content -Raw -Path "$PSScriptRoot\00-infra.yaml"
+$infraRendered = $infraTemplate.Replace('${DCRAFT_PGDATA_HOSTPATH}', $pgDataHostPath)
+$infraRenderedPath = Join-Path $env:TEMP "dcraft-00-infra-rendered.yaml"
+Set-Content -Path $infraRenderedPath -Value $infraRendered -Encoding ascii
+kubectl apply -f $infraRenderedPath
 if ($LASTEXITCODE -ne 0) { throw "kubectl apply 00-infra.yaml failed (exit $LASTEXITCODE) — aborting deploy" }
 kubectl -n dcraft-local rollout status deploy/postgres --timeout=180s
 if ($LASTEXITCODE -ne 0) { throw "postgres rollout failed (exit $LASTEXITCODE) — aborting deploy" }
@@ -61,7 +75,7 @@ Write-Host "==> helm install dcraft-fusion"
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 & $helm upgrade --install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion `
-  --version 1.2.4 `
+  --version 1.2.5 `
   --namespace dcraft-local `
   -f "$root\infra\helm\dcraft-fusion\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-fusion-local.yaml" `
@@ -74,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "==> helm install fusion-cdc"
 & $helm upgrade --install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc `
-  --version 1.2.4 `
+  --version 1.2.5 `
   --namespace dcraft-local `
   -f "$root\infra\helm\fusion-cdc\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-cdc-local.yaml" `
