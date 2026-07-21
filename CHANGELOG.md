@@ -4,6 +4,36 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.8] — 2026-07-22
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.8. The
+v1.2.7 live stability audit found that `/api/v1/alerts/suppressions`
+still returned HTTP 500 (the v1.2.5 `f7a8b9c0d1e2` migration only added
+`rule_ids`/`connection_ids`; the `is_recurring`, `recurrence_pattern`,
+and `updated_by` columns the `AlertSuppression` model declares were
+never created) and `/api/v1/data-quality/templates` returned HTTP 501
+from a stub handler. The CDC-side fixes ship in the private repo's
+v1.2.8 release (new migration `a8b9c0d1e2f3` + templates stub replaced
+with an empty 200 response). This public release re-tags all images
+and charts to `1.2.8` so the public `fusion-cdc` chart deploys the
+fixed CDC images.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.8`
+  / `appVersion: "1.2.8"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.7` → `1.2.8` in
+  `infra/helm/*/values.yaml`, `infra/helm/*/examples/values-minimal.yaml`,
+  and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.8` in `infra/local-dev/k8s/deploy.ps1` and the
+  helm install examples in `infra/helm/README.md`.
+
+### Notes
+- The CDC-side code fixes (alert_suppressions migration
+  `a8b9c0d1e2f3`, data-quality/templates 501 → 200, FastAPI app version
+  bump) ship in the private `fusion-cdc-engine` repo's v1.2.8 release.
+- pg-source discovery returning 0 tables is operational and already
+  documented in `docs/POST_DEPLOY_CHECKLIST.md` §2 — no code change.
+
 ## [1.2.7] — 2026-07-22
 
 Follow-up to v1.2.6. The v1.2.6 `Publish images` and `Publish Helm charts`
