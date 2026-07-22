@@ -4,6 +4,29 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.20] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.20 —
+**bulletproof connection lifecycle for every source × destination combo**.
+The public repo has no source change in this release — only chart/image
+tag bumps to keep the public charts in sync with the rebuilt GHCR images.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.20`
+  / `appVersion: "1.2.20"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.19` → `1.2.20` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.20` in `infra/local-dev/k8s/deploy.ps1`.
+
+### Notes
+- No source-code change in the public repo. The bulletproof routing
+  (`_dest_needs_transform_worker`), the new Postgres source initial-load
+  path, and the integration/contract tests live in the private
+  `fusion-cdc-engine` repo. See the private `CHANGELOG.md` v1.2.20 entry
+  for the full Fix A/B/C/D details and the 6-combination audit matrix.
+
 ## [1.2.19] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.19. The
