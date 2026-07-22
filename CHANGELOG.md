@@ -4,6 +4,23 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.21] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.21 — CI fix
+for the v1.2.20 `test` job (`cryptography` import in the postgres
+initial-load unit tests). The public repo has no source change in this
+release — only chart/image tag bumps to keep the public charts in sync
+with the rebuilt GHCR images.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.21`
+  / `appVersion: "1.2.21"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.20` → `1.2.21` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.21` in `infra/local-dev/k8s/deploy.ps1`.
+
 ## [1.2.20] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.20 —
