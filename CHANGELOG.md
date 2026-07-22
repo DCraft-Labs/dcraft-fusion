@@ -4,6 +4,41 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.10] — 2026-07-22
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.10. v1.2.9
+verified the UI was live and solid, but the E2E CDC audit found the runtime
+non-functional. v1.2.10 ships the local-dev infrastructure pods and the
+re-tagged Helm charts that point at the v1.2.10 CDC images.
+
+### Added
+- **Local-dev infra pods (BLOCKER 7)** — `infra/local-dev/k8s/00-infra.yaml`
+  now deploys `mysql-source` (MySQL 8.0 with binlog + self-seeding init SQL
+  for customers/products/orders), `mongo-source` (MongoDB 7, no auth),
+  `minio` (S3-compatible API :9000 + console :9001 + PVC + bucket-init Job
+  that creates `iceberg-warehouse`), and `nessie` (Iceberg REST catalog
+  :19120 + mgmt :19121). All with startup/readiness probes and small
+  (128Mi–256Mi) resource requests. LOCAL-DEV ONLY — production must use
+  managed equivalents (RDS, DocumentDB, S3, Nessie/Polaris, etc.).
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.10`
+  / `appVersion: "1.2.10"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.9` → `1.2.10` in
+  `infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, the `examples/values-minimal.yaml`
+  overlays, and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.10` in `infra/local-dev/k8s/deploy.ps1` and the
+  `infra/helm/README.md` install snippets.
+
+### Coordinated
+- The CDC runtime fixes (worker assignment, MongoDB connections, Iceberg
+  seed, pg discovery, UI form fields, port defaults) ship in the private
+  `fusion-cdc-engine` repo's v1.2.10 release. This public repo re-tags the
+  Fusion web + control-plane-kernel images to `1.2.10` and adds the
+  local-dev infra pods so the seeded Mongo/MySQL/MinIO/Nessie hostnames
+  resolve.
+
 ## [1.2.9] — 2026-07-22
 
 UI polish pass on top of the verified-stable v1.2.8 backend. The v1.2.8 UX

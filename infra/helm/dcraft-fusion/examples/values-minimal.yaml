@@ -1,4 +1,4 @@
-# Minimal values â€” local / smoke test
+# Minimal values Ã¢â‚¬â€ local / smoke test
 # Requires a pre-created Secret named fusion-secrets (or set createSecret).
 
 global:
@@ -12,7 +12,7 @@ externalRedis:
 controlPlaneKernel:
   replicaCount: 1
   image:
-    tag: "1.2.9"
+    tag: "1.2.10"
   resources:
     requests:
       cpu: 50m
@@ -24,7 +24,7 @@ controlPlaneKernel:
 web:
   replicaCount: 1
   image:
-    tag: "1.2.9"
+    tag: "1.2.10"
 
 ingress:
   enabled: false
