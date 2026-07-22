@@ -4,6 +4,25 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.13] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.13. Closes the
+three honest gaps the v1.2.12 worker audit flagged: Postgres-bound CDC now
+derives `dest_dsn` from the destination block, the Create Destination wizard
+actually calls the validate-write endpoint before allowing finish, and a
+live E2E verification script is included for post-deploy validation.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.13`
+  / `appVersion: "1.2.13"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.12` → `1.2.13` in the values files and
+  `--version 1.2.13` in `deploy.ps1` / `infra/helm/README.md`.
+
+### Added
+- `infra/local-dev/v113-verify/verify_v113.py` (in the private repo) — live
+  E2E verification script the operator runs after deploying v1.2.13 to
+  confirm Iceberg test-conn, validate-write, and Postgres → Postgres CDC.
+
 ## [1.2.12] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.12. This repo
