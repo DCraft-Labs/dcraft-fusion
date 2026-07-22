@@ -4,6 +4,31 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.19] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.19. The
+private v1.2.18 wrongly deleted `cdc-workers/cdc_consumer.py` (the CDC
+consumer deployed via `kubernetes/base/cdc-consumer.yaml`); v1.2.19
+restores it and reverts the `snapshot_mode` default back to `inline`.
+The public repo has no source change in this release — only chart/image
+tag bumps to keep the public charts in sync with the rebuilt GHCR images.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.19`
+  / `appVersion: "1.2.19"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.18` → `1.2.19` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.19` in `infra/local-dev/k8s/deploy.ps1` /
+  `infra/helm/README.md`.
+
+### Notes
+- No source-code change in the public repo. The `cdc_consumer.py`
+  restoration and `snapshot_mode` default revert live in the private
+  `fusion-cdc-engine` repo. See the private `CHANGELOG.md` v1.2.19 entry
+  for the full P0 regression fix details.
+
 ## [1.2.18] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.18. Fixes the
