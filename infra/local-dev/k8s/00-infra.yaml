@@ -6,6 +6,36 @@ kind: Namespace
 metadata:
   name: dcraft-local
 ---
+# v1.2.18: LimitRange for the dcraft-local namespace.
+#
+# The user investigation found that the local-dev cluster had a 1 Gi
+# max.memory LimitRange (dcraft-local-limits) that rejected the
+# transform-worker pod outright — baseline Python + pyarrow + polars +
+# duckdb needs ~1.5 Gi. This LimitRange is now committed to the repo
+# (previously it was only applied out-of-band) and raised to 2 Gi so the
+# transform-worker has headroom while keeping a safety net for runaway
+# pods. Production should use proper ResourceQuota + per-workload resource
+# requests/limits instead of a namespace-wide LimitRange.
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: dcraft-local-limits
+  namespace: dcraft-local
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "1000m"
+        memory: "1Gi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      max:
+        cpu: "4000m"
+        memory: "2Gi"
+      maxLimitRequestRatio:
+        memory: "8"
+---
 apiVersion: v1
 kind: Secret
 metadata:

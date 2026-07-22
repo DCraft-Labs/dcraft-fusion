@@ -4,6 +4,60 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.18] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.18. Fixes the
+chart + UX issues found in the user investigation of v1.2.16 (v1.2.17 fixed
+the `fetchall()` OOM regression in the transform-worker; v1.2.18 fixes the
+chart bugs that prevented the transform-worker from starting at all, plus
+the missing retry/snapshot-mode UX).
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.18`
+  / `appVersion: "1.2.18"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.17` → `1.2.18` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.18` in `infra/local-dev/k8s/deploy.ps1` /
+  `infra/helm/README.md`.
+
+### Added
+- **Default `podSecurityContext` for the transform-worker** in
+  `infra/helm/fusion-cdc/values.yaml` — pins `runAsUser: 2001` /
+  `fsGroup: 2001` to match the image's non-numeric `transform` user
+  (see `docker/Dockerfile.transform-worker`). Without these, Kubernetes
+  rejects the pod with `CreateContainerConfigError`. The values are
+  overridable via `.Values.transformWorker.podSecurityContext`.
+- **LimitRange `dcraft-local-limits`** in
+  `infra/local-dev/k8s/00-infra.yaml` with `max.memory: 2Gi` (was 1 Gi
+  when applied out-of-band — the 1 Gi ceiling rejected the
+  transform-worker pod, which needs ~1.5 Gi for baseline Python + pyarrow
+  + polars + duckdb). The LimitRange is now committed to the repo so the
+  constraint is explicit and adequate.
+
+### Removed
+- `infra/local-dev/k8s/patch-cdc-worker-metadata-dsn.json` — obsolete
+  after the transform-worker `worker.py` was renamed to read `DATABASE_URL`
+  (the env var the chart already injects) instead of `METADATA_DB_DSN`.
+
+### Fixed (in fusion-cdc-engine v1.2.18, referenced here for coordination)
+- Removed orphaned `cdc-workers/cdc_consumer.py` (dead code — the chart's
+  `Dockerfile.cdc-worker` runs `python -m cdc_worker.worker`, which never
+  imported it).
+- Changed the default `snapshot_mode` from `inline` (no-op, cdc_consumer.py
+  removed) to `transform_worker` (canonical) in
+  `control-plane/app/api/connections.py`.
+- Added `POST /api/v1/connections/{id}/retry-initial-load` endpoint so
+  users can re-enqueue the initial-load snapshot without deleting +
+  recreating the connection.
+- Renamed `METADATA_DB_DSN` → `DATABASE_URL` in
+  `transform-worker/worker.py` to match the env var the chart injects.
+- Added a `snapshot_mode` select field to the Iceberg destination form
+  (`frontend/src/components/iceberg/IcebergDestinationForm.tsx`) and a
+  "Retry Initial Load" button to the connection detail page
+  (`frontend/src/pages/connections/ConnectionDetailPage.tsx`).
+
 ## [1.2.17] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.17. This repo
