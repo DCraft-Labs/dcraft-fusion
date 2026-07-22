@@ -4,6 +4,37 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.16] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.16. This repo
+holds the public Helm charts and local-dev values that reference the CDC
+images, so the chart + image tags move `1.2.15` → `1.2.16` to match the three
+v1.2.14 gap-closing fixes shipped in `fusion-cdc-engine` v1.2.16 (initial_load
+producer + MySQL/Mongo destination connector defs + InitialLoadTask direct
+source fetch + /internal/load-checkpoints endpoint).
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.16`
+  / `appVersion: "1.2.16"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.15` → `1.2.16` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and `--version 1.2.16`
+  in `infra/local-dev/k8s/deploy.ps1` / `infra/helm/README.md`.
+
+### Fixed (in fusion-cdc-engine v1.2.16, referenced here for coordination)
+- Wired an initial_load task producer in `connections.py` that enqueues
+  `initial_load` tasks to `fusion:transforms:high` when a destination's
+  `connection_config.snapshot_mode` is `transform_worker` (default `inline`
+  preserves the existing `cdc_consumer.py` snapshot path).
+- Seeded `MySQL Destination` and `MongoDB Destination` connector definitions
+  in `seed-admin.sql` so users can create MySQL/MongoDB destinations (the
+  v1.2.14 DSN builders now have matching connector defs).
+- Rewrote `InitialLoadTask._fetch_rows` to connect to the source DB directly
+  (psycopg2/pymysql/pymongo) instead of the non-existent
+  `/internal/data-proxy/fetch` endpoint; added `POST /internal/load-checkpoints`
+  for chunk progress upserts.
+
 ## [1.2.15] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.15. This repo
