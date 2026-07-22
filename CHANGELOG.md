@@ -4,6 +4,28 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.14] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.14. Closes the
+two real gaps the v1.2.13 audit flagged: the initial-load (snapshot) path no
+longer calls a non-existent control-plane endpoint to fetch the destination
+DSN (it derives the DSN from the task payload, mirroring the v1.2.13 CDC
+fix), and MySQL/MongoDB DSN builders have been added so non-Postgres
+destinations can be routed when their connector definitions are added.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.14`
+  / `appVersion: "1.2.14"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.13` → `1.2.14` in the values files and
+  `--version 1.2.14` in `deploy.ps1` / `infra/helm/README.md`.
+
+### Added
+- `.tmp/v114-verify/verify_v114.py` (in the private repo) — live E2E
+  verification script the operator runs after deploying v1.2.14. Extends
+  the v1.2.13 script with DSN-builder unit assertions (Postgres / MySQL /
+  MongoDB / unknown) and a Postgres initial-load (snapshot) E2E that
+  creates a fresh connection and polls until the snapshot completes.
+
 ## [1.2.13] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.13. Closes the
