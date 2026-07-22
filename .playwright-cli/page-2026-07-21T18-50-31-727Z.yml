@@ -1,0 +1,91 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e3]:
+    - complementary [ref=f10e4]:
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]: DCraft Fusion CDC
+        - button [ref=f10e7]
+      - navigation [ref=f10e11]:
+        - generic [ref=f10e12]:
+          - text: MAIN
+          - generic [ref=f10e13]:
+            - link "Dashboard" [ref=f10e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f10e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f10e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f10e26]:
+            - link "Sources" [ref=f10e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f10e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f10e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f10e43]:
+          - text: PROCESSING
+          - generic [ref=f10e44]:
+            - link "Transformations" [ref=f10e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f10e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f10e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f10e60]:
+            - link "Data Quality" [ref=f10e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f10e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f10e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f10e77]:
+          - text: OPERATIONS
+          - generic [ref=f10e78]:
+            - link "Monitoring" [ref=f10e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f10e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f10e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f10e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f10e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f10e101]:
+      - banner [ref=f10e102]:
+        - generic [ref=f10e103]:
+          - button [ref=f10e104]
+          - link "Schema evolution" [ref=f10e108] [cursor=pointer]:
+            - /url: /schema-evolution
+        - generic [ref=f10e109]:
+          - button [ref=f10e110]
+          - button [ref=f10e115]
+          - button "User" [ref=f10e120]
+      - main [ref=f10e126]:
+        - generic [ref=f10e127]:
+          - heading "Schema Evolution" [level=1] [ref=f10e133]
+          - generic [ref=f10e134]:
+            - generic [ref=f10e136]:
+              - paragraph [ref=f10e137]: Pending Approval
+              - paragraph [ref=f10e138]: "0"
+            - generic [ref=f10e140]:
+              - paragraph [ref=f10e141]: Auto-Applied (24h)
+              - paragraph [ref=f10e142]: "0"
+            - generic [ref=f10e144]:
+              - paragraph [ref=f10e145]: Rejected
+              - paragraph [ref=f10e146]: "0"
+          - generic [ref=f10e147]:
+            - heading "Schema Change Events" [level=3] [ref=f10e149]
+            - table [ref=f10e152]:
+              - rowgroup [ref=f10e153]:
+                - row [ref=f10e154]:
+                  - columnheader "Status" [ref=f10e155]
+                  - columnheader "Connection" [ref=f10e156]
+                  - columnheader "Change" [ref=f10e157]
+                  - columnheader "Type" [ref=f10e158]
+                  - columnheader "Breaking?" [ref=f10e159]
+                  - columnheader "Action" [ref=f10e160]
+              - rowgroup [ref=f10e161]:
+                - row [ref=f10e162]:
+                  - cell "Loading..." [ref=f10e163]
+  - region "Notifications (F8)":
+    - list

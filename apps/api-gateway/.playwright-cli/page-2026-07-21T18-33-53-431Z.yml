@@ -1,0 +1,110 @@
+- generic [ref=f2e3]:
+  - complementary "Workspace navigation" [ref=f2e4]:
+    - generic [ref=f2e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f2e8]
+      - paragraph [ref=f2e9]: Control plane
+    - generic [ref=f2e10]:
+      - generic [ref=f2e11]:
+        - strong [ref=f2e12]: Founder Admin
+        - generic [ref=f2e13]: founder@dcraftlabs.com
+      - button "Sign out" [ref=f2e14] [cursor=pointer]
+    - navigation [ref=f2e15]:
+      - link "Command Center" [ref=f2e16] [cursor=pointer]:
+        - /url: /workspace/command-center
+      - link "Integration Hub" [ref=f2e17] [cursor=pointer]:
+        - /url: /workspace/integrations
+      - link "Metadata Explorer" [ref=f2e18] [cursor=pointer]:
+        - /url: /workspace/metadata
+      - link "Workflow Runs" [ref=f2e19] [cursor=pointer]:
+        - /url: /workspace/runs
+      - link "Audit Center" [ref=f2e20] [cursor=pointer]:
+        - /url: /workspace/audit
+      - link "Settings" [ref=f2e21] [cursor=pointer]:
+        - /url: /workspace/settings
+      - link "AI Operator" [ref=f2e22] [cursor=pointer]:
+        - /url: /workspace/ai
+  - main [ref=f2e23]:
+    - generic [ref=f2e24]:
+      - generic [ref=f2e25]:
+        - paragraph [ref=f2e26]: Tenant control plane
+        - heading "Production Data Platform" [level=2] [ref=f2e27]
+      - generic [ref=f2e28]:
+        - generic "Active workspace context" [ref=f2e29]:
+          - generic [ref=f2e30]:
+            - generic [ref=f2e31]: Organization
+            - generic [ref=f2e32]: Commerce Platform Co.
+          - generic [ref=f2e33]:
+            - generic [ref=f2e34]: Tenant
+            - generic [ref=f2e35]: Brand A
+          - generic [ref=f2e36]:
+            - generic [ref=f2e37]: Environment
+            - generic [ref=f2e38]: PROD
+          - generic [ref=f2e39]:
+            - generic [ref=f2e40]: Deployment
+            - generic [ref=f2e41]: customer vpc
+          - generic [ref=f2e42]:
+            - generic [ref=f2e43]: Region
+            - generic [ref=f2e44]: us-east-1
+        - group "Theme" [ref=f2e45]:
+          - button "Dark" [ref=f2e46] [cursor=pointer]
+          - button "Light" [ref=f2e47] [cursor=pointer]
+    - generic [ref=f2e48]:
+      - generic [ref=f2e49]:
+        - heading "Integration Hub" [level=2] [ref=f2e50]
+        - paragraph [ref=f2e51]: Read-only adapter entry point for Phase 1 connections and health checks.
+      - generic [ref=f2e52]:
+        - article [ref=f2e53]:
+          - generic [ref=f2e54]:
+            - heading "Postgres" [level=3] [ref=f2e55]
+            - generic [ref=f2e56]: ready
+          - paragraph [ref=f2e57]: Read-only metadata discovery and connection health.
+        - article [ref=f2e58]:
+          - generic [ref=f2e59]:
+            - heading "Airflow" [level=3] [ref=f2e60]
+            - generic [ref=f2e61]: ready
+          - paragraph [ref=f2e62]: Read-only DAG and run ingestion for Phase 1.
+        - article [ref=f2e63]:
+          - generic [ref=f2e64]:
+            - heading "GitHub" [level=3] [ref=f2e65]
+            - generic [ref=f2e66]: ready
+          - paragraph [ref=f2e67]: Change review and future approval integration.
+        - article [ref=f2e68]:
+          - generic [ref=f2e69]:
+            - heading "Fusion CDC Engine" [level=3] [ref=f2e70]
+            - generic [ref=f2e71]: preview
+          - paragraph [ref=f2e72]: Optional data-plane engine for later CDC-enabled deployments.
+      - generic [ref=f2e73]:
+        - generic [ref=f2e74]:
+          - generic [ref=f2e75]:
+            - heading "Create Connection" [level=3] [ref=f2e76]
+            - paragraph [ref=f2e77]: Requests are now tied to a real login session and OIDC token exchange.
+          - generic [ref=f2e78]:
+            - text: Name
+            - textbox "Name" [ref=f2e79]: Brand A Read Replica
+          - generic [ref=f2e80]:
+            - text: Connector
+            - combobox "Connector" [ref=f2e81]:
+              - option "Postgres" [selected]
+              - option "Airflow"
+              - option "GitHub"
+              - option "Slack"
+              - option "Fusion CDC Engine"
+          - generic [ref=f2e82]:
+            - text: Secret Reference
+            - textbox "Secret Reference" [ref=f2e83]: vault/brand-a/postgres-readonly
+          - button "Create Read-only Connection" [ref=f2e84] [cursor=pointer]
+        - generic [ref=f2e85]:
+          - generic [ref=f2e86]:
+            - heading "Connection Health" [level=3] [ref=f2e87]
+            - paragraph [ref=f2e88]: Health checks run through the control plane and persist job + audit state.
+          - combobox [ref=f2e89]:
+            - option "Brand A Postgres" [selected]
+            - option "Brand A Airflow"
+          - generic [ref=f2e90]:
+            - paragraph [ref=f2e91]:
+              - strong [ref=f2e92]: Status
+              - generic [ref=f2e93]: healthy
+            - paragraph [ref=f2e94]:
+              - strong [ref=f2e95]: Secret
+              - text: secretref:vault/brand-a/postgres-readonly
+          - button "Test Connection" [ref=f2e96] [cursor=pointer]

@@ -4,6 +4,58 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.9] — 2026-07-22
+
+UI polish pass on top of the verified-stable v1.2.8 backend. The v1.2.8 UX
+audit (`E:\Dcraft\.tmp\v128-ux-audit\REPORT_v128_ux_audit.md`) found that
+the Fusion workspace nav active state was invisible (no CSS for
+`.nav-item.active`), the Audit Center table had no timestamp column, and
+Recent Runs status had no semantic color. This release fixes those plus
+the emilkowalski button `:active` scale finding. Coordinated with the
+private `fusion-cdc-engine` v1.2.9 release which fixes the superadmin
+role mapping (BLOCKER), the connectors "Used by" count, the localhost
+GraphQL link, and adds keyboard-accessible dropdowns + button active scale
+on the CDC frontend.
+
+### Changed (Fusion public repo)
+- Added `.nav-item` / `.nav-item.active` / `.nav-item:hover` styles in
+  `apps/web/src/styles.css` — bolder font weight, brand-tinted background,
+  and a 2px left accent border so the active workspace page is clearly
+  distinguishable.
+- Added `:active { transform: scale(0.97) }` to `.btn`, `.primary-button`,
+  `.secondary-button`, `.primary-link`, `.secondary-link` in
+  `apps/web/src/styles.css` (emilkowalski polish — buttons no longer feel
+  dead on click).
+- Added a "Timestamp" column to the Audit Center table
+  (`apps/web/src/ui/App.tsx` `AuditCenter`) showing relative time
+  ("2 min ago") with the absolute timestamp on hover via the `title`
+  attribute. `AuditEvent.occurredAt` added to
+  `apps/web/src/ui/workspace.ts` (optional) and populated in
+  `apps/web/src/ui/demo-workspace.ts`. `DataTable` cell type relaxed from
+  `string` to `ReactNode` so cells can carry hover titles.
+- Added semantic color badges to the Recent Runs status column
+  (`apps/web/src/ui/App.tsx` `RunCenter`): `succeeded` → green
+  (`--success`/`--success-text`), `failed`/`canceled` → red
+  (`--error-bg`/`--error-text`), `running` → brand blue/teal
+  (`--brand-soft`/`--brand-strong`), `queued`/`unknown` → muted gray.
+  New `.status[data-tone="success|failed|running|pending"]` rules in
+  `apps/web/src/styles.css` use existing design tokens (no hardcoded hex).
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.9`
+  / `appVersion: "1.2.9"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.8` → `1.2.9` in
+  `infra/helm/*/values.yaml`, `infra/helm/*/examples/values-minimal.yaml`,
+  and `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`.
+- Bumped `--version 1.2.9` in `infra/local-dev/k8s/deploy.ps1` and the
+  helm install examples in `infra/helm/README.md`.
+
+### Notes
+- The CDC-side fixes (superadmin role mapping, connector usage_count,
+  localhost GraphQL link, button active scale, keyboard-accessible
+  dropdowns) ship in the private `fusion-cdc-engine` repo's v1.2.9
+  release.
+- No backend changes in this public repo — the v1.2.8 control-plane
+  kernel is verified live and stable; v1.2.9 is UI + chart re-tag only.
+
 ## [1.2.8] — 2026-07-22
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.8. The

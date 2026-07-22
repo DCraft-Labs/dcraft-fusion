@@ -177,6 +177,14 @@ textarea {
   transform: translateY(-1px);
 }
 
+.btn:active,
+.primary-button:active,
+.secondary-button:active,
+.primary-link:active,
+.secondary-link:active {
+  transform: scale(0.97);
+}
+
 .btn-primary,
 .primary-button,
 .primary-link {
@@ -528,6 +536,32 @@ textarea {
   color: var(--brand-strong);
 }
 
+/* Workspace sidebar nav items. The active state is intentionally stronger
+   than .nav-link: bolder weight, brand-tinted background, and a 2px left
+   accent so users can always tell which page they're on. */
+.nav-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-weight: 550;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.nav-item:hover {
+  background: var(--bg-muted);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-weight: 700;
+  border-left-color: var(--brand);
+}
+
 .signed-in {
   display: flex;
   flex-direction: column;
@@ -698,6 +732,26 @@ textarea {
 .status[data-tone="ready"] {
   background: var(--success);
   color: var(--success-text);
+}
+
+.status[data-tone="success"] {
+  background: var(--success);
+  color: var(--success-text);
+}
+
+.status[data-tone="failed"] {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.status[data-tone="running"] {
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+.status[data-tone="pending"] {
+  background: var(--bg-muted);
+  color: var(--muted);
 }
 
 .theme-chip {

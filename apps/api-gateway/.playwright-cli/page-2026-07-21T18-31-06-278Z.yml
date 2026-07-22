@@ -1,0 +1,26 @@
+- main [ref=e73]:
+  - generic [ref=e74]:
+    - link "DCraft Fusion" [ref=e75] [cursor=pointer]:
+      - /url: /
+    - group "Theme" [ref=e77]:
+      - button "Dark" [ref=e78] [cursor=pointer]
+      - button "Light" [ref=e79] [cursor=pointer]
+  - generic [ref=e80]:
+    - paragraph [ref=e81]: Community access
+    - heading "Sign in" [level=1] [ref=e82]
+    - paragraph [ref=e83]: Email and password. No OIDC redirect for the open-source default.
+    - generic [ref=e92]: crypto.randomUUID is not a function
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - text: Email
+        - textbox "Email" [ref=e86]:
+          - /placeholder: you@company.com
+          - text: founder@dcraftlabs.com
+      - generic [ref=e87]:
+        - text: Password
+        - textbox "Password" [ref=e88]: changeme-founder
+      - button "Sign in" [ref=e89] [cursor=pointer]
+    - paragraph [ref=e90]:
+      - text: Local seeds are configured via environment variables. See
+      - code [ref=e91]: infra/local-dev/.env.example
+      - text: .

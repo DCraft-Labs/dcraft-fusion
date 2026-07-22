@@ -1,0 +1,32 @@
+- generic [ref=f15e2]:
+  - generic [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - heading "Create Account" [level=3] [ref=f15e6]
+      - paragraph [ref=f15e7]: Sign up for Fusion
+    - generic [ref=f15e9]:
+      - generic [ref=f15e10]:
+        - generic [ref=f15e11]:
+          - text: First Name
+          - textbox [ref=f15e12]
+        - generic [ref=f15e13]:
+          - text: Last Name
+          - textbox [ref=f15e14]
+      - generic [ref=f15e15]:
+        - text: Username
+        - textbox [ref=f15e16]
+      - generic [ref=f15e17]:
+        - text: Email
+        - textbox [ref=f15e18]
+      - generic [ref=f15e19]:
+        - text: Password
+        - textbox [ref=f15e20]
+      - generic [ref=f15e21]:
+        - text: Confirm Password
+        - textbox [ref=f15e22]
+      - button "Create Account" [ref=f15e23]
+      - paragraph [ref=f15e24]:
+        - text: Already have an account?
+        - link "Sign in" [ref=f15e25] [cursor=pointer]:
+          - /url: /login
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,83 @@
+- generic [ref=f30e2]:
+  - generic [ref=f30e3]:
+    - complementary [ref=f30e4]:
+      - generic [ref=f30e5]:
+        - generic [ref=f30e6]: DCraft Fusion CDC
+        - button [ref=f30e7]
+      - navigation [ref=f30e11]:
+        - generic [ref=f30e12]:
+          - text: MAIN
+          - generic [ref=f30e13]:
+            - link "Dashboard" [ref=f30e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f30e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f30e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f30e26]:
+            - link "Sources" [ref=f30e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f30e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f30e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f30e43]:
+          - text: PROCESSING
+          - generic [ref=f30e44]:
+            - link "Transformations" [ref=f30e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f30e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f30e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f30e60]:
+            - link "Data Quality" [ref=f30e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f30e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f30e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f30e77]:
+          - text: OPERATIONS
+          - generic [ref=f30e78]:
+            - link "Monitoring" [ref=f30e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f30e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f30e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f30e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f30e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f30e101]:
+      - banner [ref=f30e102]:
+        - generic [ref=f30e103]:
+          - button [ref=f30e104]
+          - generic [ref=f30e106]:
+            - link "Alerts" [ref=f30e108] [cursor=pointer]:
+              - /url: /alerts
+            - link "Channels" [ref=f30e112] [cursor=pointer]:
+              - /url: /alerts/channels
+        - generic [ref=f30e113]:
+          - button [ref=f30e114]
+          - button [ref=f30e119]
+          - button "User" [ref=f30e124]
+      - main [ref=f30e130]:
+        - generic [ref=f30e131]:
+          - generic [ref=f30e132]:
+            - heading "Notification Channels" [level=1] [ref=f30e133]
+            - button "Create Channel" [ref=f30e134]
+          - table [ref=f30e139]:
+            - rowgroup [ref=f30e140]:
+              - row [ref=f30e141]:
+                - columnheader "Channel Name" [ref=f30e142]
+                - columnheader "Type" [ref=f30e143]
+                - columnheader "Rate Limit" [ref=f30e144]
+                - columnheader "Status" [ref=f30e145]
+                - columnheader "Actions" [ref=f30e146]
+            - rowgroup [ref=f30e147]:
+              - row [ref=f30e148]:
+                - cell "Loading..." [ref=f30e149]
+  - region "Notifications (F8)":
+    - list

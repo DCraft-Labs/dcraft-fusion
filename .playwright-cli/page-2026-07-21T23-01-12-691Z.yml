@@ -1,0 +1,92 @@
+- generic [ref=f29e2]:
+  - generic [ref=f29e3]:
+    - complementary [ref=f29e4]:
+      - generic [ref=f29e5]:
+        - generic [ref=f29e6]: DCraft Fusion CDC
+        - button [ref=f29e7]
+      - navigation [ref=f29e11]:
+        - generic [ref=f29e12]:
+          - text: MAIN
+          - generic [ref=f29e13]:
+            - link "Dashboard" [ref=f29e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f29e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f29e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f29e26]:
+            - link "Sources" [ref=f29e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f29e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f29e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f29e43]:
+          - text: PROCESSING
+          - generic [ref=f29e44]:
+            - link "Transformations" [ref=f29e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f29e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f29e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f29e60]:
+            - link "Data Quality" [ref=f29e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f29e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f29e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f29e77]:
+          - text: OPERATIONS
+          - generic [ref=f29e78]:
+            - link "Monitoring" [ref=f29e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f29e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f29e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f29e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f29e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f29e101]:
+      - banner [ref=f29e102]:
+        - generic [ref=f29e103]:
+          - button [ref=f29e104]
+          - generic [ref=f29e106]:
+            - link "Connections" [ref=f29e108] [cursor=pointer]:
+              - /url: /connections
+            - link "New" [ref=f29e112] [cursor=pointer]:
+              - /url: /connections/new
+        - generic [ref=f29e113]:
+          - button [ref=f29e114]
+          - button [ref=f29e119]
+          - button "User" [ref=f29e124]
+      - main [ref=f29e130]:
+        - generic [ref=f29e131]:
+          - heading "Create Connection" [level=1] [ref=f29e132]
+          - generic [ref=f29e133]:
+            - generic [ref=f29e134]: Source
+            - generic [ref=f29e139]: Destination
+            - generic [ref=f29e145]: Streams & Transforms
+            - generic [ref=f29e151]: Config
+            - generic [ref=f29e157]: Review
+          - generic [ref=f29e186]:
+            - heading "Select Destination" [level=3] [ref=f29e188]
+            - generic [ref=f29e189]:
+              - generic [ref=f29e190] [cursor=pointer]:
+                - radio "Local PostgreSQL Destination active" [ref=f29e191]
+                - generic [ref=f29e193]: Local PostgreSQL Destination
+                - generic [ref=f29e194]: active
+              - generic [ref=f29e195] [cursor=pointer]:
+                - radio "Local Iceberg (MinIO + Nessie) active" [ref=f29e196]
+                - generic [ref=f29e198]: Local Iceberg (MinIO + Nessie)
+                - generic [ref=f29e199]: active
+          - generic [ref=f29e168]:
+            - generic [ref=f29e169]:
+              - button "← Back" [ref=f29e200]
+              - button "Cancel" [ref=f29e201]
+            - button "Next →" [disabled]
+  - region "Notifications (F8)":
+    - list

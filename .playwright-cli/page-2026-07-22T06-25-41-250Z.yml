@@ -1,0 +1,83 @@
+- generic [ref=f41e2]:
+  - generic [ref=f41e3]:
+    - complementary [ref=f41e4]:
+      - generic [ref=f41e5]:
+        - generic [ref=f41e6]: DCraft Fusion CDC
+        - button [ref=f41e7]
+      - navigation [ref=f41e11]:
+        - generic [ref=f41e12]:
+          - text: MAIN
+          - generic [ref=f41e13]:
+            - link "Dashboard" [ref=f41e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f41e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f41e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f41e26]:
+            - link "Sources" [ref=f41e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f41e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f41e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f41e43]:
+          - text: PROCESSING
+          - generic [ref=f41e44]:
+            - link "Transformations" [ref=f41e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f41e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f41e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f41e60]:
+            - link "Data Quality" [ref=f41e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f41e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f41e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f41e77]:
+          - text: OPERATIONS
+          - generic [ref=f41e78]:
+            - link "Monitoring" [ref=f41e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f41e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f41e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f41e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f41e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f41e101]:
+      - banner [ref=f41e102]:
+        - generic [ref=f41e103]:
+          - button [ref=f41e104]
+          - generic [ref=f41e106]:
+            - link "Settings" [ref=f41e108] [cursor=pointer]:
+              - /url: /settings
+            - link "System" [ref=f41e112] [cursor=pointer]:
+              - /url: /settings/system
+        - generic [ref=f41e113]:
+          - button [ref=f41e114]
+          - button [ref=f41e119]
+          - button "User" [ref=f41e124]
+      - main [ref=f41e130]:
+        - generic [ref=f41e131]:
+          - generic [ref=f41e132]:
+            - generic [ref=f41e133]:
+              - heading "System Configuration" [level=1] [ref=f41e134]
+              - paragraph [ref=f41e135]: Platform-wide configuration parameters (superadmin only)
+            - button "Add Config Key" [ref=f41e136]
+          - table [ref=f41e141]:
+            - rowgroup [ref=f41e142]:
+              - row [ref=f41e143]:
+                - columnheader "Key" [ref=f41e144]
+                - columnheader "Value" [ref=f41e145]
+                - columnheader "Actions" [ref=f41e146]
+            - rowgroup [ref=f41e147]:
+              - row [ref=f41e148]:
+                - cell "Loading configuration..." [ref=f41e149]
+  - region "Notifications (F8)":
+    - list

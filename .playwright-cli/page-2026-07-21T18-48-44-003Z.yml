@@ -1,0 +1,147 @@
+- generic [ref=e2]:
+  - generic [ref=e36]:
+    - complementary [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]: DCraft Fusion CDC
+        - button [ref=e40]
+      - navigation [ref=e44]:
+        - generic [ref=e45]:
+          - text: MAIN
+          - generic [ref=e46]:
+            - link "Dashboard" [ref=e47] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=e54] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=e58]:
+          - text: DATA PIPELINE
+          - generic [ref=e59]:
+            - link "Sources" [ref=e60] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=e66] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=e70] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=e76]:
+          - text: PROCESSING
+          - generic [ref=e77]:
+            - link "Transformations" [ref=e78] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=e86] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=e92]:
+          - text: QUALITY & ALERTS
+          - generic [ref=e93]:
+            - link "Data Quality" [ref=e94] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=e99] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=e104] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=e110]:
+          - text: OPERATIONS
+          - generic [ref=e111]:
+            - link "Monitoring" [ref=e112] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=e116] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=e122] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=e127]:
+          - text: ADMIN
+          - link "Settings" [ref=e129] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=e134]:
+      - banner [ref=e135]:
+        - generic [ref=e136]:
+          - button [ref=e137]
+          - link "Dashboard" [ref=e141] [cursor=pointer]:
+            - /url: /dashboard
+        - generic [ref=e142]:
+          - button [ref=e143]
+          - button [ref=e148]
+          - button "User" [ref=e153]
+      - main [ref=e159]:
+        - generic [ref=e160]:
+          - generic [ref=e161]:
+            - heading "Dashboard" [level=1] [ref=e162]
+            - generic [ref=e163]:
+              - combobox [ref=e164]:
+                - generic: Last 24h
+              - button [ref=e167]
+          - generic [ref=e173]:
+            - generic [ref=e174]:
+              - heading "Active Connections" [level=3] [ref=e176]
+              - generic [ref=e181]:
+                - generic [ref=e182]: "1"
+                - generic [ref=e183]: Live data
+            - generic [ref=e186]:
+              - heading "Events/sec" [level=3] [ref=e188]
+              - generic [ref=e191]:
+                - generic [ref=e192]: —
+                - generic [ref=e193]: Live data
+            - generic [ref=e196]:
+              - heading "CDC Lag" [level=3] [ref=e198]
+              - generic [ref=e202]:
+                - generic [ref=e203]: —
+                - generic [ref=e204]: Live data
+            - generic [ref=e207]:
+              - heading "DQ Score" [level=3] [ref=e209]
+              - generic [ref=e213]:
+                - generic [ref=e214]: 100.0%
+                - generic [ref=e215]: Live data
+          - generic [ref=e218]:
+            - generic [ref=e219]:
+              - heading "Pipeline Status 1 active 0 paused" [level=3] [ref=e221]:
+                - text: Pipeline Status
+                - generic [ref=e222]:
+                  - generic [ref=e223]: 1 active
+                  - generic [ref=e224]: 0 paused
+              - generic [ref=e230] [cursor=pointer]:
+                - generic [ref=e231]: pg-source → pg-dest (REALTIME)
+                - generic [ref=e234]: ● Active
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - heading "Recent Alerts" [level=3] [ref=e239]
+                - generic [ref=e240]:
+                  - paragraph [ref=e241]: No active alerts
+                  - button "View all →" [ref=e242]
+              - generic [ref=e243]:
+                - heading "System Health" [level=3] [ref=e245]
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - generic [ref=e248]: PostgreSQL Meta DB
+                    - generic [ref=e251]: OK
+                  - generic [ref=e252]:
+                    - generic [ref=e253]: Redis
+                    - generic [ref=e256]: OK
+                  - generic [ref=e257]:
+                    - generic [ref=e258]: CDC Workers
+                    - generic [ref=e261]: OK
+                  - generic [ref=e262]:
+                    - generic [ref=e263]: Active Workers
+                    - generic [ref=e264]: "1"
+          - generic [ref=e265]:
+            - heading "Data Quality Overview" [level=3] [ref=e267]
+            - generic [ref=e268]:
+              - generic [ref=e269]:
+                - generic [ref=e270]:
+                  - generic [ref=e271]: 100%
+                  - generic [ref=e272]: completeness
+                - generic [ref=e273]:
+                  - generic [ref=e274]: 100%
+                  - generic [ref=e275]: accuracy
+                - generic [ref=e276]:
+                  - generic [ref=e277]: 100%
+                  - generic [ref=e278]: consistency
+                - generic [ref=e279]:
+                  - generic [ref=e280]: 100%
+                  - generic [ref=e281]: validity
+                - generic [ref=e282]:
+                  - generic [ref=e283]: 100%
+                  - generic [ref=e284]: timeliness
+                - generic [ref=e285]:
+                  - generic [ref=e286]: 100%
+                  - generic [ref=e287]: uniqueness
+              - generic [ref=e288]: 1 connections monitored · 0 active violations
+  - region "Notifications (F8)":
+    - list

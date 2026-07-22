@@ -1,0 +1,106 @@
+- generic [ref=f22e3]:
+  - complementary "Superadmin navigation" [ref=f22e4]:
+    - generic [ref=f22e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f22e8]
+      - paragraph [ref=f22e9]: Control plane
+    - generic [ref=f22e10]:
+      - generic [ref=f22e11]:
+        - strong [ref=f22e12]: Platform Superadmin
+        - generic [ref=f22e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f22e14] [cursor=pointer]
+    - navigation [ref=f22e15]:
+      - link "Overview" [ref=f22e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f22e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f22e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f22e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f22e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f22e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f22e22]:
+    - generic [ref=f22e23]:
+      - generic [ref=f22e24]:
+        - paragraph [ref=f22e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f22e26]
+      - generic [ref=f22e27]:
+        - generic [ref=f22e28]:
+          - generic [ref=f22e29]:
+            - generic [ref=f22e30]: Organizations
+            - generic [ref=f22e31]: "3"
+          - generic [ref=f22e32]:
+            - generic [ref=f22e33]: Identity
+            - generic [ref=f22e34]: oidc
+          - generic [ref=f22e35]:
+            - generic [ref=f22e36]: HA
+            - generic [ref=f22e37]: configured
+          - generic [ref=f22e38]:
+            - generic [ref=f22e39]: Backup
+            - generic [ref=f22e40]: scheduled
+        - group "Theme" [ref=f22e41]:
+          - button "Dark" [ref=f22e42] [cursor=pointer]
+          - button "Light" [ref=f22e43] [cursor=pointer]
+    - generic [ref=f22e44]:
+      - generic [ref=f22e45]:
+        - heading "Superadmin Overview" [level=2] [ref=f22e46]
+        - paragraph [ref=f22e47]: Platform-wide status across identity, org topology, HA, backup, and adapters.
+      - generic [ref=f22e48]:
+        - article [ref=f22e49]:
+          - text: Organizations
+          - paragraph [ref=f22e50]: "3"
+        - article [ref=f22e51]:
+          - text: Superadmins
+          - paragraph [ref=f22e52]: "1"
+        - article [ref=f22e53]:
+          - text: API Replicas
+          - paragraph [ref=f22e54]: "2"
+        - article [ref=f22e55]:
+          - text: Backup Status
+          - paragraph [ref=f22e56]: scheduled
+      - generic [ref=f22e57]:
+        - generic [ref=f22e58]:
+          - generic [ref=f22e59]:
+            - heading "Runtime Identity" [level=3] [ref=f22e60]
+            - paragraph [ref=f22e61]: Live OIDC configuration shared by the browser shell and the control plane.
+          - generic [ref=f22e62]:
+            - paragraph [ref=f22e63]:
+              - strong [ref=f22e64]: Issuer
+            - paragraph [ref=f22e65]:
+              - strong [ref=f22e66]: Authorize
+              - text: /oidc/authorize
+            - paragraph [ref=f22e67]:
+              - strong [ref=f22e68]: Token
+              - text: /oidc/token
+            - paragraph [ref=f22e69]:
+              - strong [ref=f22e70]: JWKS
+              - text: /oidc/jwks
+        - generic [ref=f22e71]:
+          - generic [ref=f22e72]:
+            - heading "Organization Coverage" [level=3] [ref=f22e73]
+            - paragraph [ref=f22e74]: Rollout spans B2B, B2C, B2B2C, shared infra, dedicated infra, and customer-managed profiles.
+          - table [ref=f22e76]:
+            - rowgroup [ref=f22e77]:
+              - row [ref=f22e78]:
+                - columnheader "Organization" [ref=f22e79]
+                - columnheader "Type" [ref=f22e80]
+                - columnheader "Deployment" [ref=f22e81]
+                - columnheader "Tenants" [ref=f22e82]
+            - rowgroup [ref=f22e83]:
+              - row [ref=f22e84]:
+                - cell "Commerce Platform Co." [ref=f22e85]
+                - cell "consumer_app" [ref=f22e86]
+                - cell "customer vpc" [ref=f22e87]
+                - cell "2" [ref=f22e88]
+              - row [ref=f22e89]:
+                - cell "Acme Analytics" [ref=f22e90]
+                - cell "business" [ref=f22e91]
+                - cell "pooled saas" [ref=f22e92]
+                - cell "1" [ref=f22e93]
+              - row [ref=f22e94]:
+                - cell "Global Enterprise Platform" [ref=f22e95]
+                - cell "internal_platform" [ref=f22e96]
+                - cell "dedicated stack" [ref=f22e97]
+                - cell "0" [ref=f22e98]

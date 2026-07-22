@@ -1,0 +1,91 @@
+- generic [ref=f26e2]:
+  - generic [ref=f26e3]:
+    - complementary [ref=f26e4]:
+      - generic [ref=f26e5]:
+        - generic [ref=f26e6]: DCraft Fusion CDC
+        - button [ref=f26e7]
+      - navigation [ref=f26e11]:
+        - generic [ref=f26e12]:
+          - text: MAIN
+          - generic [ref=f26e13]:
+            - link "Dashboard" [ref=f26e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f26e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f26e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f26e26]:
+            - link "Sources" [ref=f26e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f26e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f26e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f26e43]:
+          - text: PROCESSING
+          - generic [ref=f26e44]:
+            - link "Transformations" [ref=f26e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f26e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f26e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f26e60]:
+            - link "Data Quality" [ref=f26e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f26e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f26e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f26e77]:
+          - text: OPERATIONS
+          - generic [ref=f26e78]:
+            - link "Monitoring" [ref=f26e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f26e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f26e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f26e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f26e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f26e101]:
+      - banner [ref=f26e102]:
+        - generic [ref=f26e103]:
+          - button [ref=f26e104]
+          - generic [ref=f26e106]:
+            - link "Destinations" [ref=f26e108] [cursor=pointer]:
+              - /url: /destinations
+            - link "New" [ref=f26e112] [cursor=pointer]:
+              - /url: /destinations/new
+        - generic [ref=f26e113]:
+          - button [ref=f26e114]
+          - button [ref=f26e119]
+          - button "User" [ref=f26e124]
+      - main [ref=f26e130]:
+        - generic [ref=f26e131]:
+          - heading "Create New Destination" [level=1] [ref=f26e132]
+          - generic [ref=f26e133]:
+            - generic [ref=f26e134]: Select Type
+            - generic [ref=f26e139]: Configure
+            - generic [ref=f26e145]: Test Connection
+          - generic [ref=f26e157]:
+            - generic [ref=f26e159] [cursor=pointer]:
+              - generic [ref=f26e160]: 🔌
+              - generic [ref=f26e161]: Amazon S3
+              - generic [ref=f26e162]: CDC · Full Refresh · Incremental
+            - generic [ref=f26e164] [cursor=pointer]:
+              - generic [ref=f26e165]: 🧊
+              - generic [ref=f26e166]: Apache Iceberg
+              - generic [ref=f26e167]: CDC · Full Refresh · Incremental
+              - generic [ref=f26e173]: Selected
+            - generic [ref=f26e169] [cursor=pointer]:
+              - generic [ref=f26e170]: 🐘
+              - generic [ref=f26e171]: PostgreSQL Destination
+              - generic [ref=f26e172]: Full Refresh · Incremental
+          - generic [ref=f26e155]:
+            - button "Cancel" [ref=f26e156]
+            - button "Next →" [ref=f26e174]
+  - region "Notifications (F8)":
+    - list

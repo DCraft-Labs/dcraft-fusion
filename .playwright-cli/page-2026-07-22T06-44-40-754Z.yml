@@ -1,0 +1,92 @@
+- generic [ref=f33e3]:
+  - complementary "Superadmin navigation" [ref=f33e4]:
+    - generic [ref=f33e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f33e8]
+      - paragraph [ref=f33e9]: Control plane
+    - generic [ref=f33e10]:
+      - generic [ref=f33e11]:
+        - strong [ref=f33e12]: Platform Superadmin
+        - generic [ref=f33e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f33e14] [cursor=pointer]
+    - navigation [ref=f33e15]:
+      - link "Overview" [ref=f33e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f33e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f33e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f33e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f33e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f33e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f33e22]:
+    - generic [ref=f33e23]:
+      - generic [ref=f33e24]:
+        - paragraph [ref=f33e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f33e26]
+      - generic [ref=f33e27]:
+        - generic [ref=f33e28]:
+          - generic [ref=f33e29]:
+            - generic [ref=f33e30]: Organizations
+            - generic [ref=f33e31]: "3"
+          - generic [ref=f33e32]:
+            - generic [ref=f33e33]: Identity
+            - generic [ref=f33e34]: oidc
+          - generic [ref=f33e35]:
+            - generic [ref=f33e36]: HA
+            - generic [ref=f33e37]: configured
+          - generic [ref=f33e38]:
+            - generic [ref=f33e39]: Backup
+            - generic [ref=f33e40]: scheduled
+        - group "Theme" [ref=f33e41]:
+          - button "Dark" [ref=f33e42] [cursor=pointer]
+          - button "Light" [ref=f33e43] [cursor=pointer]
+    - generic [ref=f33e44]:
+      - generic [ref=f33e45]:
+        - heading "Secrets" [level=2] [ref=f33e46]
+        - paragraph [ref=f33e47]: Platform-wide secret manager coverage and deployment scope.
+      - generic [ref=f33e48]:
+        - article [ref=f33e49]:
+          - text: Secret Providers
+          - paragraph [ref=f33e50]: "4"
+        - article [ref=f33e51]:
+          - text: Platform Scope
+          - paragraph [ref=f33e52]: "1"
+        - article [ref=f33e53]:
+          - text: Customer Scope
+          - paragraph [ref=f33e54]: "3"
+      - table [ref=f33e57]:
+        - rowgroup [ref=f33e58]:
+          - row [ref=f33e59]:
+            - columnheader "Provider" [ref=f33e60]
+            - columnheader "Kind" [ref=f33e61]
+            - columnheader "Scope" [ref=f33e62]
+            - columnheader "Endpoint" [ref=f33e63]
+            - columnheader "Status" [ref=f33e64]
+        - rowgroup [ref=f33e65]:
+          - row [ref=f33e66]:
+            - cell "HashiCorp Vault" [ref=f33e67]
+            - cell "vault" [ref=f33e68]
+            - cell "platform" [ref=f33e69]
+            - cell "https://vault.example.com" [ref=f33e70]
+            - cell "configured" [ref=f33e71]
+          - row [ref=f33e72]:
+            - cell "AWS Secrets Manager" [ref=f33e73]
+            - cell "aws_secrets_manager" [ref=f33e74]
+            - cell "customer_vpc" [ref=f33e75]
+            - cell "arn:aws:secretsmanager:*" [ref=f33e76]
+            - cell "configured" [ref=f33e77]
+          - row [ref=f33e78]:
+            - cell "GCP Secret Manager" [ref=f33e79]
+            - cell "gcp_secret_manager" [ref=f33e80]
+            - cell "customer_project" [ref=f33e81]
+            - cell "projects/*/secrets/*" [ref=f33e82]
+            - cell "configured" [ref=f33e83]
+          - row [ref=f33e84]:
+            - cell "Azure Key Vault" [ref=f33e85]
+            - cell "azure_key_vault" [ref=f33e86]
+            - cell "customer_subscription" [ref=f33e87]
+            - cell "https://*.vault.azure.net" [ref=f33e88]
+            - cell "configured" [ref=f33e89]

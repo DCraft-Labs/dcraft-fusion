@@ -82,6 +82,9 @@ export interface AuditEvent {
   readonly correlationId: string;
   readonly resourceType: string;
   readonly resourceId: string;
+  // ISO timestamp of when the event occurred. Optional so the UI degrades
+  // gracefully if a future backend returns events without it.
+  readonly occurredAt?: string;
 }
 
 export interface Policy {

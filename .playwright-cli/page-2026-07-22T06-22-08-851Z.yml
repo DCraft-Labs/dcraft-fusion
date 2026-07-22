@@ -1,0 +1,84 @@
+- generic [ref=f31e2]:
+  - generic [ref=f31e3]:
+    - complementary [ref=f31e4]:
+      - generic [ref=f31e5]:
+        - generic [ref=f31e6]: DCraft Fusion CDC
+        - button [ref=f31e7]
+      - navigation [ref=f31e11]:
+        - generic [ref=f31e12]:
+          - text: MAIN
+          - generic [ref=f31e13]:
+            - link "Dashboard" [ref=f31e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f31e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f31e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f31e26]:
+            - link "Sources" [ref=f31e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f31e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f31e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f31e43]:
+          - text: PROCESSING
+          - generic [ref=f31e44]:
+            - link "Transformations" [ref=f31e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f31e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f31e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f31e60]:
+            - link "Data Quality" [ref=f31e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f31e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f31e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f31e77]:
+          - text: OPERATIONS
+          - generic [ref=f31e78]:
+            - link "Monitoring" [ref=f31e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f31e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f31e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f31e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f31e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f31e101]:
+      - banner [ref=f31e102]:
+        - generic [ref=f31e103]:
+          - button [ref=f31e104]
+          - generic [ref=f31e106]:
+            - link "Alerts" [ref=f31e108] [cursor=pointer]:
+              - /url: /alerts
+            - link "Suppressions" [ref=f31e112] [cursor=pointer]:
+              - /url: /alerts/suppressions
+        - generic [ref=f31e113]:
+          - button [ref=f31e114]
+          - button [ref=f31e119]
+          - button "User" [ref=f31e124]
+      - main [ref=f31e130]:
+        - generic [ref=f31e131]:
+          - generic [ref=f31e132]:
+            - generic [ref=f31e133]:
+              - heading "Alert Suppressions" [level=1] [ref=f31e134]
+              - paragraph [ref=f31e135]: Suppressions temporarily silence alerts during maintenance windows or known incidents.
+            - button "Create Suppression" [ref=f31e136]
+          - table [ref=f31e141]:
+            - rowgroup [ref=f31e142]:
+              - row [ref=f31e143]:
+                - columnheader "Name" [ref=f31e144]
+                - columnheader "Scope" [ref=f31e145]
+                - columnheader "Window" [ref=f31e146]
+                - columnheader "Status" [ref=f31e147]
+            - rowgroup [ref=f31e148]:
+              - row [ref=f31e149]:
+                - cell "Loading..." [ref=f31e150]
+  - region "Notifications (F8)":
+    - list

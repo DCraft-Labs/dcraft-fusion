@@ -1,0 +1,48 @@
+- generic [ref=f10e3]:
+  - complementary "Superadmin navigation" [ref=f10e4]:
+    - generic [ref=f10e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f10e8]
+      - paragraph [ref=f10e9]: Control plane
+    - generic [ref=f10e10]:
+      - generic [ref=f10e11]:
+        - strong [ref=f10e12]: Platform Superadmin
+        - generic [ref=f10e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f10e14] [cursor=pointer]
+    - navigation [ref=f10e15]:
+      - link "Overview" [ref=f10e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f10e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f10e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f10e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f10e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f10e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f10e22]:
+    - generic [ref=f10e23]:
+      - generic [ref=f10e24]:
+        - paragraph [ref=f10e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f10e26]
+      - generic [ref=f10e27]:
+        - generic [ref=f10e28]:
+          - generic [ref=f10e29]:
+            - generic [ref=f10e30]: Organizations
+            - generic [ref=f10e31]: "0"
+          - generic [ref=f10e32]:
+            - generic [ref=f10e33]: Identity
+            - generic [ref=f10e34]: loading
+          - generic [ref=f10e35]:
+            - generic [ref=f10e36]: HA
+            - generic [ref=f10e37]: loading
+          - generic [ref=f10e38]:
+            - generic [ref=f10e39]: Backup
+            - generic [ref=f10e40]: unknown
+        - group "Theme" [ref=f10e41]:
+          - button "Dark" [ref=f10e42] [cursor=pointer]
+          - button "Light" [ref=f10e43] [cursor=pointer]
+    - generic [ref=f10e45]:
+      - heading "Organizations" [level=3] [ref=f10e46]
+      - paragraph [ref=f10e47]: Platform overview is unavailable.

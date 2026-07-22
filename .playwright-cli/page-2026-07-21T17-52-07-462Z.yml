@@ -1,0 +1,89 @@
+- generic [ref=f12e22]:
+  - complementary "Workspace navigation" [ref=f12e23]:
+    - generic [ref=f12e26]:
+      - heading "DCraft Fusion" [level=1] [ref=f12e27]
+      - paragraph [ref=f12e28]: Control plane
+    - generic [ref=f12e29]:
+      - generic [ref=f12e30]:
+        - strong [ref=f12e31]: Founder Admin
+        - generic [ref=f12e32]: founder@dcraftlabs.com
+      - button "Sign out" [ref=f12e33] [cursor=pointer]
+    - navigation [ref=f12e34]:
+      - link "Command Center" [ref=f12e35] [cursor=pointer]:
+        - /url: /workspace/command-center
+      - link "Integration Hub" [ref=f12e36] [cursor=pointer]:
+        - /url: /workspace/integrations
+      - link "Metadata Explorer" [ref=f12e37] [cursor=pointer]:
+        - /url: /workspace/metadata
+      - link "Workflow Runs" [ref=f12e38] [cursor=pointer]:
+        - /url: /workspace/runs
+      - link "Audit Center" [ref=f12e39] [cursor=pointer]:
+        - /url: /workspace/audit
+      - link "Settings" [ref=f12e40] [cursor=pointer]:
+        - /url: /workspace/settings
+      - link "AI Operator" [ref=f12e41] [cursor=pointer]:
+        - /url: /workspace/ai
+  - main [ref=f12e42]:
+    - generic [ref=f12e43]:
+      - generic [ref=f12e44]:
+        - paragraph [ref=f12e45]: Tenant control plane
+        - heading "Production Data Platform" [level=2] [ref=f12e46]
+      - generic [ref=f12e47]:
+        - generic "Active workspace context" [ref=f12e48]:
+          - generic [ref=f12e49]:
+            - generic [ref=f12e50]: Organization
+            - generic [ref=f12e51]: Commerce Platform Co.
+          - generic [ref=f12e52]:
+            - generic [ref=f12e53]: Tenant
+            - generic [ref=f12e54]: Brand A
+          - generic [ref=f12e55]:
+            - generic [ref=f12e56]: Environment
+            - generic [ref=f12e57]: PROD
+          - generic [ref=f12e58]:
+            - generic [ref=f12e59]: Deployment
+            - generic [ref=f12e60]: customer vpc
+          - generic [ref=f12e61]:
+            - generic [ref=f12e62]: Region
+            - generic [ref=f12e63]: us-east-1
+        - group "Theme" [ref=f12e64]:
+          - button "Dark" [ref=f12e65] [cursor=pointer]
+          - button "Light" [ref=f12e66] [cursor=pointer]
+    - generic [ref=f12e67]:
+      - generic [ref=f12e68]:
+        - heading "Command Center" [level=2] [ref=f12e69]
+        - paragraph [ref=f12e70]: Operational state for the active tenant, environment, and production metadata workflows.
+      - generic [ref=f12e71]:
+        - article [ref=f12e72]:
+          - text: Healthy Connections
+          - paragraph [ref=f12e73]: "2"
+        - article [ref=f12e74]:
+          - text: Datasets
+          - paragraph [ref=f12e75]: "2"
+        - article [ref=f12e76]:
+          - text: Failed Runs
+          - paragraph [ref=f12e77]: "1"
+        - article [ref=f12e78]:
+          - text: AI Drafts
+          - paragraph [ref=f12e79]: "1"
+      - generic [ref=f12e80]:
+        - generic [ref=f12e81]:
+          - heading "Recent Runs" [level=3] [ref=f12e82]
+          - paragraph [ref=f12e83]: Failure and freshness coverage stays visible from the first tenant screen.
+        - table [ref=f12e85]:
+          - rowgroup [ref=f12e86]:
+            - row [ref=f12e87]:
+              - columnheader "Workflow" [ref=f12e88]
+              - columnheader "Status" [ref=f12e89]
+              - columnheader "Environment" [ref=f12e90]
+              - columnheader "Artifact" [ref=f12e91]
+          - rowgroup [ref=f12e92]:
+            - row [ref=f12e93]:
+              - cell "daily_revenue_snapshot" [ref=f12e94]
+              - cell "succeeded" [ref=f12e95]
+              - cell "production" [ref=f12e96]
+              - cell "airflow://dag/daily_revenue_snapshot/run/2026-05-18" [ref=f12e97]
+            - row [ref=f12e98]:
+              - cell "customer_freshness_check" [ref=f12e99]
+              - cell "failed" [ref=f12e100]
+              - cell "production" [ref=f12e101]
+              - cell "airflow://dag/customer_freshness_check/run/2026-05-18" [ref=f12e102]

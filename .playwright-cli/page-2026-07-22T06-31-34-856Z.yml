@@ -1,0 +1,73 @@
+- main [ref=f3e3]:
+  - generic [ref=f3e4]:
+    - link "DCraft Fusion" [ref=f3e5] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f3e7]:
+      - link "GitHub" [ref=f3e8] [cursor=pointer]:
+        - /url: https://github.com/DCraft-Labs/dcraft-fusion
+      - link "Docs" [ref=f3e9] [cursor=pointer]:
+        - /url: /docs/
+      - group "Theme" [ref=f3e10]:
+        - button "Dark" [ref=f3e11] [cursor=pointer]
+        - button "Light" [ref=f3e12] [cursor=pointer]
+      - link "Open console" [ref=f3e13] [cursor=pointer]:
+        - /url: /workspace/command-center
+  - generic [ref=f3e14]:
+    - generic [ref=f3e15]:
+      - paragraph [ref=f3e16]: DCraft Fusion
+      - heading "One brain. Many muscles." [level=1] [ref=f3e17]
+      - paragraph [ref=f3e18]: The open-source control plane for modern data platforms — govern connections, metadata, workflows, audit, and CDC from one operator surface.
+      - generic [ref=f3e19]:
+        - link "Enter workspace" [ref=f3e20] [cursor=pointer]:
+          - /url: /workspace/command-center
+        - link "Star on GitHub" [ref=f3e21] [cursor=pointer]:
+          - /url: https://github.com/DCraft-Labs/dcraft-fusion
+    - generic [ref=f3e23]:
+      - generic [ref=f3e24]:
+        - generic [ref=f3e25]: Control plane
+        - strong [ref=f3e26]: Fusion Kernel
+      - generic [ref=f3e27]:
+        - generic [ref=f3e28]:
+          - generic [ref=f3e29]: Engine
+          - strong [ref=f3e30]: CDC
+        - generic [ref=f3e31]:
+          - generic [ref=f3e32]: Engine
+          - strong [ref=f3e33]: dbt / Airflow
+        - generic [ref=f3e34]:
+          - generic [ref=f3e35]: Observe
+          - strong [ref=f3e36]: Audit · Runs
+  - generic [ref=f3e37]:
+    - generic [ref=f3e38]:
+      - heading "Built for operators who run real systems" [level=2] [ref=f3e39]
+      - paragraph [ref=f3e40]: Community edition includes the Fusion control plane and Fusion CDC Engine under Apache 2.0.
+    - generic [ref=f3e41]:
+      - article [ref=f3e42]:
+        - heading "B2B" [level=3] [ref=f3e43]
+        - paragraph [ref=f3e44]: Dedicated business tenants with shared, dedicated, or customer-managed infrastructure patterns.
+      - article [ref=f3e45]:
+        - heading "B2C" [level=3] [ref=f3e46]
+        - paragraph [ref=f3e47]: High-volume product operations with platform-level controls and project-by-project rollout.
+      - article [ref=f3e48]:
+        - heading "B2B2C" [level=3] [ref=f3e49]
+        - paragraph [ref=f3e50]: Brand and end-customer segmentation across shared control and isolated data-plane boundaries.
+      - article [ref=f3e51]:
+        - heading "Dedicated" [level=3] [ref=f3e52]
+        - paragraph [ref=f3e53]: Customer VPC, dedicated stack, or on-prem deployment topologies from day one.
+  - generic [ref=f3e54]:
+    - generic [ref=f3e55]:
+      - heading "Ship, observe, harden" [level=2] [ref=f3e56]
+      - paragraph [ref=f3e57]: A clear path from local alpha to enterprise posture — without burying the product under dashboard chrome.
+    - generic [ref=f3e58]:
+      - article [ref=f3e59]:
+        - generic [ref=f3e60]: Phase 1
+        - heading "Private alpha control plane" [level=3] [ref=f3e61]
+        - paragraph [ref=f3e62]: Read-only connectors, metadata discovery, audit, AI draft workflows, tenant and platform admin foundations.
+      - article [ref=f3e63]:
+        - generic [ref=f3e64]: Phase 2
+        - heading "Identity and workflow hardening" [level=3] [ref=f3e65]
+        - paragraph [ref=f3e66]: External IdP onboarding, adapter expansion, deeper policy controls, stronger platform operations and managed rollout flows.
+      - article [ref=f3e67]:
+        - generic [ref=f3e68]: Phase 3
+        - heading "Enterprise scale posture" [level=3] [ref=f3e69]
+        - paragraph [ref=f3e70]: Dedicated customer deployments, external secret orchestration, stronger observability and workload expansion beyond alpha.
+  - generic [ref=f3e71]: DCraft Labs · Apache 2.0 · One brain. Many muscles.

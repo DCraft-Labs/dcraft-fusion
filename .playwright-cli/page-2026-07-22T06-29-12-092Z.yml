@@ -1,0 +1,84 @@
+- generic [ref=f49e2]:
+  - generic [ref=f49e3]:
+    - complementary [ref=f49e4]:
+      - generic [ref=f49e5]:
+        - generic [ref=f49e6]: DCraft Fusion CDC
+        - button [ref=f49e7]
+      - navigation [ref=f49e11]:
+        - generic [ref=f49e12]:
+          - text: MAIN
+          - generic [ref=f49e13]:
+            - link "Dashboard" [ref=f49e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f49e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f49e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f49e26]:
+            - link "Sources" [ref=f49e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f49e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f49e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f49e43]:
+          - text: PROCESSING
+          - generic [ref=f49e44]:
+            - link "Transformations" [ref=f49e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f49e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f49e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f49e60]:
+            - link "Data Quality" [ref=f49e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f49e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f49e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f49e77]:
+          - text: OPERATIONS
+          - generic [ref=f49e78]:
+            - link "Monitoring" [ref=f49e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f49e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f49e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f49e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f49e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f49e101]:
+      - banner [ref=f49e102]:
+        - generic [ref=f49e103]:
+          - button [ref=f49e104]
+          - generic [ref=f49e106]:
+            - link "Destinations" [ref=f49e108] [cursor=pointer]:
+              - /url: /destinations
+            - link "New" [ref=f49e112] [cursor=pointer]:
+              - /url: /destinations/new
+        - generic [ref=f49e113]:
+          - button [ref=f49e114]
+          - button [ref=f49e119]
+          - button "User" [ref=f49e124]
+      - main [ref=f49e130]:
+        - generic [ref=f49e131]:
+          - heading "Create New Destination" [level=1] [ref=f49e132]
+          - generic [ref=f49e133]:
+            - generic [ref=f49e134]: Select Type
+            - generic [ref=f49e139]: Configure
+            - generic [ref=f49e145]: Test Connection
+          - generic [ref=f49e151]:
+            - paragraph [ref=f49e152]: No destination connectors available.
+            - paragraph [ref=f49e153]:
+              - text: Create connector definitions first in
+              - link "Connectors" [ref=f49e154] [cursor=pointer]:
+                - /url: /connectors
+              - text: .
+          - generic [ref=f49e155]:
+            - button "Cancel" [ref=f49e156]
+            - button "Next →" [disabled]
+  - region "Notifications (F8)":
+    - list

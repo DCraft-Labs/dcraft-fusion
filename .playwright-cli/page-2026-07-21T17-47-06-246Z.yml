@@ -1,0 +1,195 @@
+- generic [ref=f9e2]:
+  - generic [ref=f9e3]:
+    - complementary [ref=f9e4]:
+      - generic [ref=f9e5]:
+        - generic [ref=f9e6]: DCraft Fusion CDC
+        - button [ref=f9e7]
+      - navigation [ref=f9e11]:
+        - generic [ref=f9e12]:
+          - text: MAIN
+          - generic [ref=f9e13]:
+            - link "Dashboard" [ref=f9e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f9e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f9e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f9e26]:
+            - link "Sources" [ref=f9e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f9e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f9e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f9e43]:
+          - text: PROCESSING
+          - generic [ref=f9e44]:
+            - link "Transformations" [ref=f9e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f9e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f9e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f9e60]:
+            - link "Data Quality" [ref=f9e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f9e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f9e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f9e77]:
+          - text: OPERATIONS
+          - generic [ref=f9e78]:
+            - link "Monitoring" [ref=f9e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f9e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f9e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f9e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f9e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f9e101]:
+      - banner [ref=f9e102]:
+        - generic [ref=f9e103]:
+          - button [ref=f9e104]
+          - generic [ref=f9e106]:
+            - link "Destinations" [ref=f9e108] [cursor=pointer]:
+              - /url: /destinations
+            - link "New" [ref=f9e192] [cursor=pointer]:
+              - /url: /destinations/new
+        - generic [ref=f9e109]:
+          - button [ref=f9e110]
+          - button [ref=f9e115]
+          - button "User" [ref=f9e120]
+      - main [ref=f9e126]:
+        - generic [ref=f9e193]:
+          - heading "Create New Destination" [level=1] [ref=f9e194]
+          - generic [ref=f9e195]:
+            - generic [ref=f9e196]: Select Type
+            - generic [ref=f9e201]: Configure
+            - generic [ref=f9e207]: Test Connection
+          - generic [ref=f9e236]:
+            - heading "Configure Apache Iceberg Destination" [level=3] [ref=f9e238]
+            - generic [ref=f9e239]:
+              - generic [ref=f9e240]:
+                - text: Destination Name *
+                - textbox "e.g. Data Lake - Iceberg" [ref=f9e241]
+              - generic [ref=f9e242]:
+                - generic [ref=f9e243]:
+                  - heading "Catalog" [level=3] [ref=f9e244]
+                  - generic [ref=f9e245]:
+                    - generic [ref=f9e246]:
+                      - generic [ref=f9e247]: Catalog type *
+                      - combobox [ref=f9e248]:
+                        - generic: Nessie
+                      - paragraph [ref=f9e251]: Glue / REST / Hive / SQL / Nessie / DynamoDB
+                    - generic [ref=f9e252]:
+                      - generic [ref=f9e253]: Catalog name *
+                      - textbox [ref=f9e254]: fusion_cdc
+                    - generic [ref=f9e255]:
+                      - generic [ref=f9e256]: Namespace *
+                      - textbox [ref=f9e257]: fusion
+                      - paragraph [ref=f9e258]: Iceberg namespace / Glue database
+                    - generic [ref=f9e259]:
+                      - generic [ref=f9e260]: Nessie URI *
+                      - textbox "http://nessie:19120/api/v2" [ref=f9e261]
+                    - generic [ref=f9e262]:
+                      - generic [ref=f9e263]: Nessie ref (branch)
+                      - textbox "main" [ref=f9e264]
+                - generic [ref=f9e265]:
+                  - heading "Storage (S3 / MinIO)" [level=3] [ref=f9e266]
+                  - generic [ref=f9e267]:
+                    - generic [ref=f9e268]:
+                      - generic [ref=f9e269]: Warehouse *
+                      - textbox "s3://iceberg-warehouse/fusion-cdc/" [ref=f9e270]
+                      - paragraph [ref=f9e271]: Accepts s3:// or s3a:// (normalized to s3://)
+                    - generic [ref=f9e272]:
+                      - generic [ref=f9e273]: S3 region
+                      - textbox "us-east-1" [ref=f9e274]
+                    - generic [ref=f9e275]:
+                      - generic [ref=f9e276]: S3 endpoint (MinIO / VPC)
+                      - textbox "http://minio:9000" [ref=f9e277]
+                    - generic [ref=f9e278] [cursor=pointer]:
+                      - checkbox "Path-style access (required for MinIO)" [ref=f9e279]
+                      - text: Path-style access (required for MinIO)
+                    - generic [ref=f9e280] [cursor=pointer]:
+                      - checkbox "Force virtual addressing (AWS-hosted buckets only)" [ref=f9e281]
+                      - text: Force virtual addressing (AWS-hosted buckets only)
+                    - generic [ref=f9e282]:
+                      - generic [ref=f9e283]: SSE type
+                      - combobox [ref=f9e284]:
+                        - generic: none
+                    - generic [ref=f9e287]:
+                      - generic [ref=f9e288]: Proxy URI (optional)
+                      - textbox [ref=f9e289]
+                    - generic [ref=f9e290] [cursor=pointer]:
+                      - checkbox "Anonymous (public bucket)" [ref=f9e291]
+                      - text: Anonymous (public bucket)
+                    - generic [ref=f9e292]:
+                      - text: "Azure ADLS / GCS storage:"
+                      - strong [ref=f9e293]: coming soon
+                      - text: (backend not yet implemented).
+                - generic [ref=f9e294]:
+                  - heading "Authentication" [level=3] [ref=f9e295]
+                  - generic [ref=f9e296]:
+                    - generic [ref=f9e297]:
+                      - generic [ref=f9e298] [cursor=pointer]:
+                        - radio "Access keys" [checked] [ref=f9e299]
+                        - text: Access keys
+                      - generic [ref=f9e300] [cursor=pointer]:
+                        - radio "STS assume role" [ref=f9e301]
+                        - text: STS assume role
+                      - generic [ref=f9e302] [cursor=pointer]:
+                        - radio "IRSA / workload identity" [ref=f9e303]
+                        - text: IRSA / workload identity
+                    - generic [ref=f9e304]:
+                      - generic [ref=f9e305]: AWS access key id *
+                      - textbox [ref=f9e306]
+                    - generic [ref=f9e307]:
+                      - generic [ref=f9e308]: AWS secret access key *
+                      - textbox [ref=f9e309]
+                    - generic [ref=f9e310]:
+                      - generic [ref=f9e311]: Session token (optional)
+                      - textbox [ref=f9e312]
+                    - generic [ref=f9e313]:
+                      - generic [ref=f9e314]: AWS region
+                      - textbox [ref=f9e315]: us-east-1
+                    - generic [ref=f9e316]:
+                      - generic [ref=f9e317]: AWS profile (optional)
+                      - textbox [ref=f9e318]
+                    - generic [ref=f9e319] [cursor=pointer]:
+                      - checkbox "Use same creds for catalog + S3 (if off, supply separate S3 keys below)" [checked] [ref=f9e320]
+                      - text: Use same creds for catalog + S3 (if off, supply separate S3 keys below)
+                - generic [ref=f9e321]:
+                  - heading "Table defaults" [level=3] [ref=f9e322]
+                  - generic [ref=f9e323]:
+                    - generic [ref=f9e324]:
+                      - generic [ref=f9e325]: Iceberg format version
+                      - combobox [ref=f9e326]:
+                        - generic: "2"
+                    - generic [ref=f9e329]:
+                      - generic [ref=f9e330]: Parquet compression
+                      - combobox [ref=f9e331]:
+                        - generic: zstd
+                    - generic [ref=f9e334] [cursor=pointer]:
+                      - checkbox "Object-storage layout enabled (hash prefixes — reduces S3 throttling)" [checked] [ref=f9e335]
+                      - text: Object-storage layout enabled (hash prefixes — reduces S3 throttling)
+                    - generic [ref=f9e336] [cursor=pointer]:
+                      - checkbox "Partitioned paths" [checked] [ref=f9e337]
+                      - text: Partitioned paths
+                    - generic [ref=f9e338]:
+                      - generic [ref=f9e339]: CDC apply strategy
+                      - combobox [ref=f9e340]:
+                        - generic: upsert
+                    - generic [ref=f9e343] [cursor=pointer]:
+                      - checkbox "Delete metadata after commit" [ref=f9e344]
+                      - text: Delete metadata after commit
+                - group [ref=f9e345]:
+                  - generic "Advanced (optional / legacy Spark)" [ref=f9e346] [cursor=pointer]
+          - generic [ref=f9e229]:
+            - 'button "â† Back" [ref=f9e347]'
+            - button "Next â†’" [disabled]
+  - region "Notifications (F8)":
+    - list

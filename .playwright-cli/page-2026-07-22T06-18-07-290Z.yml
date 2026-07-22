@@ -1,0 +1,150 @@
+- generic [ref=f21e2]:
+  - generic [ref=f21e36]:
+    - complementary [ref=f21e37]:
+      - generic [ref=f21e38]:
+        - generic [ref=f21e39]: DCraft Fusion CDC
+        - button [ref=f21e40]
+      - navigation [ref=f21e44]:
+        - generic [ref=f21e45]:
+          - text: MAIN
+          - generic [ref=f21e46]:
+            - link "Dashboard" [ref=f21e47] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f21e54] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f21e58]:
+          - text: DATA PIPELINE
+          - generic [ref=f21e59]:
+            - link "Sources" [ref=f21e60] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f21e66] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f21e70] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f21e76]:
+          - text: PROCESSING
+          - generic [ref=f21e77]:
+            - link "Transformations" [ref=f21e78] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f21e86] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f21e92]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f21e93]:
+            - link "Data Quality" [ref=f21e94] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f21e99] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f21e104] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f21e110]:
+          - text: OPERATIONS
+          - generic [ref=f21e111]:
+            - link "Monitoring" [ref=f21e112] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f21e116] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f21e122] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f21e127]:
+          - text: ADMIN
+          - link "Settings" [ref=f21e129] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f21e134]:
+      - banner [ref=f21e135]:
+        - generic [ref=f21e136]:
+          - button [ref=f21e137]
+          - link "Dashboard" [ref=f21e141] [cursor=pointer]:
+            - /url: /dashboard
+        - generic [ref=f21e142]:
+          - button [ref=f21e143]
+          - button [ref=f21e148]
+          - button "User" [ref=f21e153]
+      - main [ref=f21e159]:
+        - generic [ref=f21e160]:
+          - generic [ref=f21e161]:
+            - heading "Dashboard" [level=1] [ref=f21e162]
+            - generic [ref=f21e163]:
+              - combobox [ref=f21e164]:
+                - generic: Last 24h
+              - button [ref=f21e167]
+          - generic [ref=f21e173]:
+            - generic [ref=f21e174]:
+              - heading "Active Connections" [level=3] [ref=f21e176]
+              - generic [ref=f21e181]:
+                - generic [ref=f21e182]: "1"
+                - generic [ref=f21e183]: Live data
+            - generic [ref=f21e186]:
+              - heading "Events/sec" [level=3] [ref=f21e188]
+              - generic [ref=f21e191]:
+                - generic [ref=f21e192]: —
+                - generic [ref=f21e193]: Live data
+            - generic [ref=f21e196]:
+              - heading "CDC Lag" [level=3] [ref=f21e198]
+              - generic [ref=f21e202]:
+                - generic [ref=f21e203]: —
+                - generic [ref=f21e204]: Live data
+            - generic [ref=f21e207]:
+              - heading "DQ Score" [level=3] [ref=f21e209]
+              - generic [ref=f21e213]:
+                - generic [ref=f21e214]: 100.0%
+                - generic [ref=f21e215]: Live data
+          - generic [ref=f21e218]:
+            - generic [ref=f21e219]:
+              - heading "Pipeline Status 1 active 0 paused" [level=3] [ref=f21e221]:
+                - text: Pipeline Status
+                - generic [ref=f21e222]:
+                  - generic [ref=f21e223]: 1 active
+                  - generic [ref=f21e224]: 0 paused
+              - generic [ref=f21e230] [cursor=pointer]:
+                - generic [ref=f21e231]: pg-source → pg-dest (REALTIME)
+                - generic [ref=f21e234]: ● Active
+            - generic [ref=f21e236]:
+              - generic [ref=f21e237]:
+                - heading "Recent Alerts" [level=3] [ref=f21e239]
+                - generic [ref=f21e240]:
+                  - paragraph [ref=f21e241]: No active alerts
+                  - button "View all →" [ref=f21e242]
+              - generic [ref=f21e243]:
+                - heading "System Health" [level=3] [ref=f21e245]
+                - generic [ref=f21e246]:
+                  - generic [ref=f21e247]:
+                    - generic [ref=f21e248]: PostgreSQL Meta DB
+                    - generic [ref=f21e251]: OK
+                  - generic [ref=f21e252]:
+                    - generic [ref=f21e253]: Redis
+                    - generic [ref=f21e256]: OK
+                  - generic [ref=f21e257]:
+                    - generic [ref=f21e258]: Kafka
+                    - generic [ref=f21e261]: OK
+                  - generic [ref=f21e262]:
+                    - generic [ref=f21e263]: CDC Workers
+                    - generic [ref=f21e266]: OK
+                  - generic [ref=f21e267]:
+                    - generic [ref=f21e268]: Active Workers
+                    - generic [ref=f21e269]: "1"
+          - generic [ref=f21e270]:
+            - heading "Data Quality Overview" [level=3] [ref=f21e272]
+            - generic [ref=f21e273]:
+              - generic [ref=f21e274]:
+                - generic [ref=f21e275]:
+                  - generic [ref=f21e276]: 100%
+                  - generic [ref=f21e277]: completeness
+                - generic [ref=f21e278]:
+                  - generic [ref=f21e279]: 100%
+                  - generic [ref=f21e280]: accuracy
+                - generic [ref=f21e281]:
+                  - generic [ref=f21e282]: 100%
+                  - generic [ref=f21e283]: consistency
+                - generic [ref=f21e284]:
+                  - generic [ref=f21e285]: 100%
+                  - generic [ref=f21e286]: validity
+                - generic [ref=f21e287]:
+                  - generic [ref=f21e288]: 100%
+                  - generic [ref=f21e289]: timeliness
+                - generic [ref=f21e290]:
+                  - generic [ref=f21e291]: 100%
+                  - generic [ref=f21e292]: uniqueness
+              - generic [ref=f21e293]: 1 connections monitored · 0 active violations
+  - region "Notifications (F8)":
+    - list

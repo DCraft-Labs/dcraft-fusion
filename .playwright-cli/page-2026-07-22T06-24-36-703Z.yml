@@ -1,0 +1,85 @@
+- generic [ref=f38e2]:
+  - generic [ref=f38e3]:
+    - complementary [ref=f38e4]:
+      - generic [ref=f38e5]:
+        - generic [ref=f38e6]: DCraft Fusion CDC
+        - button [ref=f38e7]
+      - navigation [ref=f38e11]:
+        - generic [ref=f38e12]:
+          - text: MAIN
+          - generic [ref=f38e13]:
+            - link "Dashboard" [ref=f38e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f38e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f38e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f38e26]:
+            - link "Sources" [ref=f38e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f38e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f38e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f38e43]:
+          - text: PROCESSING
+          - generic [ref=f38e44]:
+            - link "Transformations" [ref=f38e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f38e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f38e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f38e60]:
+            - link "Data Quality" [ref=f38e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f38e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f38e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f38e77]:
+          - text: OPERATIONS
+          - generic [ref=f38e78]:
+            - link "Monitoring" [ref=f38e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f38e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f38e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f38e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f38e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f38e101]:
+      - banner [ref=f38e102]:
+        - generic [ref=f38e103]:
+          - button [ref=f38e104]
+          - generic [ref=f38e106]:
+            - link "Settings" [ref=f38e108] [cursor=pointer]:
+              - /url: /settings
+            - link "Users" [ref=f38e112] [cursor=pointer]:
+              - /url: /settings/users
+        - generic [ref=f38e113]:
+          - button [ref=f38e114]
+          - button [ref=f38e119]
+          - button "User" [ref=f38e124]
+      - main [ref=f38e130]:
+        - generic [ref=f38e131]:
+          - generic [ref=f38e132]:
+            - generic [ref=f38e133]:
+              - heading "User Management" [level=1] [ref=f38e134]
+              - paragraph [ref=f38e135]: Manage team members and their access
+            - button "Invite User" [ref=f38e136]
+          - table [ref=f38e141]:
+            - rowgroup [ref=f38e142]:
+              - row [ref=f38e143]:
+                - columnheader "User" [ref=f38e144]
+                - columnheader "Email" [ref=f38e145]
+                - columnheader "Role" [ref=f38e146]
+                - columnheader "Active" [ref=f38e147]
+                - columnheader "Actions" [ref=f38e148]
+            - rowgroup [ref=f38e149]:
+              - row [ref=f38e150]:
+                - cell "Loading users..." [ref=f38e151]
+  - region "Notifications (F8)":
+    - list

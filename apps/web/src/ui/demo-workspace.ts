@@ -171,7 +171,8 @@ export function createDemoWorkspace(): FusionWorkspace {
         actorId: "user-founder",
         correlationId: "corr-1",
         resourceType: "Connection",
-        resourceId: "conn-postgres-brand-a"
+        resourceId: "conn-postgres-brand-a",
+        occurredAt: new Date(Date.now() - 1000 * 60 * 2).toISOString()
       },
       {
         id: "audit-discovery",
@@ -179,7 +180,8 @@ export function createDemoWorkspace(): FusionWorkspace {
         actorId: "user-founder",
         correlationId: "corr-2",
         resourceType: "Connection",
-        resourceId: "conn-postgres-brand-a"
+        resourceId: "conn-postgres-brand-a",
+        occurredAt: new Date(Date.now() - 1000 * 60 * 37).toISOString()
       }
     ],
     policies: [

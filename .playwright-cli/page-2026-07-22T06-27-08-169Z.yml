@@ -1,0 +1,86 @@
+- generic [ref=f45e2]:
+  - generic [ref=f45e3]:
+    - complementary [ref=f45e4]:
+      - generic [ref=f45e5]:
+        - generic [ref=f45e6]: DCraft Fusion CDC
+        - button [ref=f45e7]
+      - navigation [ref=f45e11]:
+        - generic [ref=f45e12]:
+          - text: MAIN
+          - generic [ref=f45e13]:
+            - link "Dashboard" [ref=f45e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f45e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f45e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f45e26]:
+            - link "Sources" [ref=f45e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f45e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f45e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f45e43]:
+          - text: PROCESSING
+          - generic [ref=f45e44]:
+            - link "Transformations" [ref=f45e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f45e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f45e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f45e60]:
+            - link "Data Quality" [ref=f45e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f45e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f45e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f45e77]:
+          - text: OPERATIONS
+          - generic [ref=f45e78]:
+            - link "Monitoring" [ref=f45e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f45e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f45e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f45e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f45e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f45e101]:
+      - banner [ref=f45e102]:
+        - generic [ref=f45e103]:
+          - button [ref=f45e104]
+          - generic [ref=f45e106]:
+            - link "Monitoring" [ref=f45e108] [cursor=pointer]:
+              - /url: /monitoring
+            - link "Workers" [ref=f45e112] [cursor=pointer]:
+              - /url: /monitoring/workers
+        - generic [ref=f45e113]:
+          - button [ref=f45e114]
+          - button [ref=f45e119]
+          - button "User" [ref=f45e124]
+      - main [ref=f45e130]:
+        - generic [ref=f45e131]:
+          - heading "Workers" [level=1] [ref=f45e132]
+          - generic [ref=f45e133]:
+            - heading "Worker Status" [level=3] [ref=f45e135]
+            - table [ref=f45e138]:
+              - rowgroup [ref=f45e139]:
+                - row [ref=f45e140]:
+                  - columnheader "Worker ID" [ref=f45e141]
+                  - columnheader "Type" [ref=f45e142]
+                  - columnheader "Status" [ref=f45e143]
+                  - columnheader "CPU" [ref=f45e144]
+                  - columnheader "Memory" [ref=f45e145]
+                  - columnheader "Active Connections" [ref=f45e146]
+                  - columnheader "Last Heartbeat" [ref=f45e147]
+                  - columnheader "Actions" [ref=f45e148]
+              - rowgroup [ref=f45e149]:
+                - row [ref=f45e150]:
+                  - cell "Loading..." [ref=f45e151]
+  - region "Notifications (F8)":
+    - list

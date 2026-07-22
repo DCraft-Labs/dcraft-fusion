@@ -1,0 +1,90 @@
+- generic [ref=f35e2]:
+  - generic [ref=f35e3]:
+    - complementary [ref=f35e4]:
+      - generic [ref=f35e5]:
+        - generic [ref=f35e6]: DCraft Fusion CDC
+        - button [ref=f35e7]
+      - navigation [ref=f35e11]:
+        - generic [ref=f35e12]:
+          - text: MAIN
+          - generic [ref=f35e13]:
+            - link "Dashboard" [ref=f35e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f35e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f35e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f35e26]:
+            - link "Sources" [ref=f35e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f35e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f35e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f35e43]:
+          - text: PROCESSING
+          - generic [ref=f35e44]:
+            - link "Transformations" [ref=f35e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f35e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f35e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f35e60]:
+            - link "Data Quality" [ref=f35e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f35e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f35e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f35e77]:
+          - text: OPERATIONS
+          - generic [ref=f35e78]:
+            - link "Monitoring" [ref=f35e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f35e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f35e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f35e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f35e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f35e101]:
+      - banner [ref=f35e102]:
+        - generic [ref=f35e103]:
+          - button [ref=f35e104]
+          - generic [ref=f35e106]:
+            - link "Data quality" [ref=f35e108] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Violations" [ref=f35e112] [cursor=pointer]:
+              - /url: /data-quality/violations
+        - generic [ref=f35e113]:
+          - button [ref=f35e114]
+          - button [ref=f35e119]
+          - button "User" [ref=f35e124]
+      - main [ref=f35e130]:
+        - generic [ref=f35e131]:
+          - heading "DQ Violations" [level=1] [ref=f35e132]
+          - generic [ref=f35e133]:
+            - combobox [ref=f35e134]:
+              - generic: All Status
+            - combobox [ref=f35e137]:
+              - generic: All Connections
+            - combobox [ref=f35e140]:
+              - generic: All Policies
+          - table [ref=f35e146]:
+            - rowgroup [ref=f35e147]:
+              - row [ref=f35e148]:
+                - columnheader "Violation ID" [ref=f35e149]
+                - columnheader "Policy" [ref=f35e150]
+                - columnheader "Connection" [ref=f35e151]
+                - columnheader "Detected At" [ref=f35e152]
+                - columnheader "Count" [ref=f35e153]
+                - columnheader "Status" [ref=f35e154]
+                - columnheader "Actions" [ref=f35e155]
+            - rowgroup [ref=f35e156]:
+              - row [ref=f35e157]:
+                - cell "Loading..." [ref=f35e158]
+  - region "Notifications (F8)":
+    - list

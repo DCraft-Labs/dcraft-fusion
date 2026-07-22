@@ -1,0 +1,83 @@
+- generic [ref=f36e2]:
+  - generic [ref=f36e3]:
+    - complementary [ref=f36e4]:
+      - generic [ref=f36e5]:
+        - generic [ref=f36e6]: DCraft Fusion CDC
+        - button [ref=f36e7]
+      - navigation [ref=f36e11]:
+        - generic [ref=f36e12]:
+          - text: MAIN
+          - generic [ref=f36e13]:
+            - link "Dashboard" [ref=f36e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f36e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f36e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f36e26]:
+            - link "Sources" [ref=f36e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f36e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f36e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f36e43]:
+          - text: PROCESSING
+          - generic [ref=f36e44]:
+            - link "Transformations" [ref=f36e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f36e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f36e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f36e60]:
+            - link "Data Quality" [ref=f36e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f36e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f36e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f36e77]:
+          - text: OPERATIONS
+          - generic [ref=f36e78]:
+            - link "Monitoring" [ref=f36e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f36e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f36e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f36e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f36e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f36e101]:
+      - banner [ref=f36e102]:
+        - generic [ref=f36e103]:
+          - button [ref=f36e104]
+          - generic [ref=f36e106]:
+            - link "Data quality" [ref=f36e108] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Profiling" [ref=f36e112] [cursor=pointer]:
+              - /url: /data-quality/profiling
+        - generic [ref=f36e113]:
+          - button [ref=f36e114]
+          - button [ref=f36e119]
+          - button "User" [ref=f36e124]
+      - main [ref=f36e130]:
+        - generic [ref=f36e131]:
+          - heading "Data Profiling" [level=1] [ref=f36e132]
+          - generic [ref=f36e133]:
+            - heading "Profile a Table" [level=3] [ref=f36e135]
+            - generic [ref=f36e136]:
+              - generic [ref=f36e137]:
+                - generic [ref=f36e138]:
+                  - text: Connection
+                  - combobox [ref=f36e139]:
+                    - generic: Select connection
+                - generic [ref=f36e142]:
+                  - text: Table
+                  - combobox [disabled] [ref=f36e143]:
+                    - generic: Select connection first
+              - button "Run Profiling" [disabled]
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,82 @@
+- generic [ref=f7e3]:
+  - complementary "Workspace navigation" [ref=f7e4]:
+    - generic [ref=f7e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f7e8]
+      - paragraph [ref=f7e9]: Control plane
+    - generic [ref=f7e10]:
+      - generic [ref=f7e11]:
+        - strong [ref=f7e12]: Founder Admin
+        - generic [ref=f7e13]: founder@dcraftlabs.com
+      - button "Sign out" [ref=f7e14] [cursor=pointer]
+    - navigation [ref=f7e15]:
+      - link "Command Center" [ref=f7e16] [cursor=pointer]:
+        - /url: /workspace/command-center
+      - link "Integration Hub" [ref=f7e17] [cursor=pointer]:
+        - /url: /workspace/integrations
+      - link "Metadata Explorer" [ref=f7e18] [cursor=pointer]:
+        - /url: /workspace/metadata
+      - link "Workflow Runs" [ref=f7e19] [cursor=pointer]:
+        - /url: /workspace/runs
+      - link "Audit Center" [ref=f7e20] [cursor=pointer]:
+        - /url: /workspace/audit
+      - link "Settings" [ref=f7e21] [cursor=pointer]:
+        - /url: /workspace/settings
+      - link "AI Operator" [ref=f7e22] [cursor=pointer]:
+        - /url: /workspace/ai
+  - main [ref=f7e23]:
+    - generic [ref=f7e24]:
+      - generic [ref=f7e25]:
+        - paragraph [ref=f7e26]: Tenant control plane
+        - heading "Production Data Platform" [level=2] [ref=f7e27]
+      - generic [ref=f7e28]:
+        - generic "Active workspace context" [ref=f7e29]:
+          - generic [ref=f7e30]:
+            - generic [ref=f7e31]: Organization
+            - generic [ref=f7e32]: Commerce Platform Co.
+          - generic [ref=f7e33]:
+            - generic [ref=f7e34]: Tenant
+            - generic [ref=f7e35]: Brand A
+          - generic [ref=f7e36]:
+            - generic [ref=f7e37]: Environment
+            - generic [ref=f7e38]: PROD
+          - generic [ref=f7e39]:
+            - generic [ref=f7e40]: Deployment
+            - generic [ref=f7e41]: customer vpc
+          - generic [ref=f7e42]:
+            - generic [ref=f7e43]: Region
+            - generic [ref=f7e44]: us-east-1
+        - group "Theme" [ref=f7e45]:
+          - button "Dark" [ref=f7e46] [cursor=pointer]
+          - button "Light" [ref=f7e47] [cursor=pointer]
+    - generic [ref=f7e48]:
+      - generic [ref=f7e49]:
+        - heading "Settings" [level=2] [ref=f7e50]
+        - paragraph [ref=f7e51]: Tenant deployment posture, isolation signals, and active guardrails.
+      - generic [ref=f7e52]:
+        - article [ref=f7e53]:
+          - text: Deployment Profile
+          - paragraph [ref=f7e54]: customer vpc
+        - article [ref=f7e55]:
+          - text: Data Region
+          - paragraph [ref=f7e56]: us-east-1
+        - article [ref=f7e57]:
+          - text: Tenants
+          - paragraph [ref=f7e58]: "3"
+        - article [ref=f7e59]:
+          - text: Projects
+          - paragraph [ref=f7e60]: "2"
+      - table [ref=f7e63]:
+        - rowgroup [ref=f7e64]:
+          - row [ref=f7e65]:
+            - columnheader "Policy" [ref=f7e66]
+            - columnheader "Type" [ref=f7e67]
+            - columnheader "Mode" [ref=f7e68]
+        - rowgroup [ref=f7e69]:
+          - row [ref=f7e70]:
+            - cell "AI actions require approval" [ref=f7e71]
+            - cell "ai_action_policy" [ref=f7e72]
+            - cell "draft_only" [ref=f7e73]
+          - row [ref=f7e74]:
+            - cell "No raw data movement" [ref=f7e75]
+            - cell "data_movement_policy" [ref=f7e76]
+            - cell "deny_raw_data_movement" [ref=f7e77]

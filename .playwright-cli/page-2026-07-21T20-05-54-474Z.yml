@@ -1,0 +1,24 @@
+- main [ref=f10e3]:
+  - generic [ref=f10e4]:
+    - link "DCraft Fusion" [ref=f10e5] [cursor=pointer]:
+      - /url: /
+    - group "Theme" [ref=f10e7]:
+      - button "Dark" [ref=f10e8] [cursor=pointer]
+      - button "Light" [ref=f10e9] [cursor=pointer]
+  - generic [ref=f10e10]:
+    - paragraph [ref=f10e11]: Community access
+    - heading "Sign in" [level=1] [ref=f10e12]
+    - paragraph [ref=f10e13]: Email and password. No OIDC redirect for the open-source default.
+    - generic [ref=f10e14]:
+      - generic [ref=f10e15]:
+        - text: Email
+        - textbox "Email" [ref=f10e16]:
+          - /placeholder: you@company.com
+      - generic [ref=f10e17]:
+        - text: Password
+        - textbox "Password" [ref=f10e18]
+      - button "Sign in" [ref=f10e19] [cursor=pointer]
+    - paragraph [ref=f10e20]:
+      - text: Local seeds are configured via environment variables. See
+      - code [ref=f10e21]: infra/local-dev/.env.example
+      - text: .

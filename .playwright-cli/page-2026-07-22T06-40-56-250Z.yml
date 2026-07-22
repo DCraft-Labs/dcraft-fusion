@@ -1,0 +1,89 @@
+- generic [ref=f26e3]:
+  - complementary "Workspace navigation" [ref=f26e4]:
+    - generic [ref=f26e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f26e8]
+      - paragraph [ref=f26e9]: Control plane
+    - generic [ref=f26e10]:
+      - generic [ref=f26e11]:
+        - strong [ref=f26e12]: Founder Admin
+        - generic [ref=f26e13]: founder@dcraftlabs.com
+      - button "Sign out" [ref=f26e14] [cursor=pointer]
+    - navigation [ref=f26e15]:
+      - link "Command Center" [ref=f26e16] [cursor=pointer]:
+        - /url: /workspace/command-center
+      - link "Integration Hub" [ref=f26e17] [cursor=pointer]:
+        - /url: /workspace/integrations
+      - link "Metadata Explorer" [ref=f26e18] [cursor=pointer]:
+        - /url: /workspace/metadata
+      - link "Workflow Runs" [ref=f26e19] [cursor=pointer]:
+        - /url: /workspace/runs
+      - link "Audit Center" [ref=f26e20] [cursor=pointer]:
+        - /url: /workspace/audit
+      - link "Settings" [ref=f26e21] [cursor=pointer]:
+        - /url: /workspace/settings
+      - link "AI Operator" [ref=f26e22] [cursor=pointer]:
+        - /url: /workspace/ai
+  - main [ref=f26e23]:
+    - generic [ref=f26e24]:
+      - generic [ref=f26e25]:
+        - paragraph [ref=f26e26]: Tenant control plane
+        - heading "Production Data Platform" [level=2] [ref=f26e27]
+      - generic [ref=f26e28]:
+        - generic "Active workspace context" [ref=f26e29]:
+          - generic [ref=f26e30]:
+            - generic [ref=f26e31]: Organization
+            - generic [ref=f26e32]: Commerce Platform Co.
+          - generic [ref=f26e33]:
+            - generic [ref=f26e34]: Tenant
+            - generic [ref=f26e35]: Brand A
+          - generic [ref=f26e36]:
+            - generic [ref=f26e37]: Environment
+            - generic [ref=f26e38]: PROD
+          - generic [ref=f26e39]:
+            - generic [ref=f26e40]: Deployment
+            - generic [ref=f26e41]: customer vpc
+          - generic [ref=f26e42]:
+            - generic [ref=f26e43]: Region
+            - generic [ref=f26e44]: us-east-1
+        - group "Theme" [ref=f26e45]:
+          - button "Dark" [ref=f26e46] [cursor=pointer]
+          - button "Light" [ref=f26e47] [cursor=pointer]
+    - generic [ref=f26e48]:
+      - generic [ref=f26e49]:
+        - heading "Command Center" [level=2] [ref=f26e50]
+        - paragraph [ref=f26e51]: Operational state for the active tenant, environment, and production metadata workflows.
+      - generic [ref=f26e52]:
+        - article [ref=f26e53]:
+          - text: Healthy Connections
+          - paragraph [ref=f26e54]: "2"
+        - article [ref=f26e55]:
+          - text: Datasets
+          - paragraph [ref=f26e56]: "2"
+        - article [ref=f26e57]:
+          - text: Failed Runs
+          - paragraph [ref=f26e58]: "1"
+        - article [ref=f26e59]:
+          - text: AI Drafts
+          - paragraph [ref=f26e60]: "1"
+      - generic [ref=f26e61]:
+        - generic [ref=f26e62]:
+          - heading "Recent Runs" [level=3] [ref=f26e63]
+          - paragraph [ref=f26e64]: Failure and freshness coverage stays visible from the first tenant screen.
+        - table [ref=f26e66]:
+          - rowgroup [ref=f26e67]:
+            - row [ref=f26e68]:
+              - columnheader "Workflow" [ref=f26e69]
+              - columnheader "Status" [ref=f26e70]
+              - columnheader "Environment" [ref=f26e71]
+              - columnheader "Artifact" [ref=f26e72]
+          - rowgroup [ref=f26e73]:
+            - row [ref=f26e74]:
+              - cell "daily_revenue_snapshot" [ref=f26e75]
+              - cell "succeeded" [ref=f26e76]
+              - cell "production" [ref=f26e77]
+              - cell "airflow://dag/daily_revenue_snapshot/run/2026-05-18" [ref=f26e78]
+            - row [ref=f26e79]:
+              - cell "customer_freshness_check" [ref=f26e80]
+              - cell "failed" [ref=f26e81]
+              - cell "production" [ref=f26e82]
+              - cell "airflow://dag/customer_freshness_check/run/2026-05-18" [ref=f26e83]

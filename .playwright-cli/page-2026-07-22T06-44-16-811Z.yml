@@ -1,0 +1,113 @@
+- generic [ref=f32e3]:
+  - complementary "Superadmin navigation" [ref=f32e4]:
+    - generic [ref=f32e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f32e8]
+      - paragraph [ref=f32e9]: Control plane
+    - generic [ref=f32e10]:
+      - generic [ref=f32e11]:
+        - strong [ref=f32e12]: Platform Superadmin
+        - generic [ref=f32e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f32e14] [cursor=pointer]
+    - navigation [ref=f32e15]:
+      - link "Overview" [ref=f32e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f32e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f32e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f32e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f32e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f32e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f32e22]:
+    - generic [ref=f32e23]:
+      - generic [ref=f32e24]:
+        - paragraph [ref=f32e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f32e26]
+      - generic [ref=f32e27]:
+        - generic [ref=f32e28]:
+          - generic [ref=f32e29]:
+            - generic [ref=f32e30]: Organizations
+            - generic [ref=f32e31]: "3"
+          - generic [ref=f32e32]:
+            - generic [ref=f32e33]: Identity
+            - generic [ref=f32e34]: saml
+          - generic [ref=f32e35]:
+            - generic [ref=f32e36]: HA
+            - generic [ref=f32e37]: configured
+          - generic [ref=f32e38]:
+            - generic [ref=f32e39]: Backup
+            - generic [ref=f32e40]: scheduled
+        - group "Theme" [ref=f32e41]:
+          - button "Dark" [ref=f32e42] [cursor=pointer]
+          - button "Light" [ref=f32e43] [cursor=pointer]
+    - generic [ref=f32e44]:
+      - generic [ref=f32e45]:
+        - heading "Identity" [level=2] [ref=f32e46]
+        - paragraph [ref=f32e47]: OIDC runtime, local login credentials, and future SSO provider posture.
+      - generic [ref=f32e48]:
+        - generic [ref=f32e49]:
+          - generic [ref=f32e50]:
+            - heading "Local OIDC Provider" [level=3] [ref=f32e51]
+            - paragraph [ref=f32e52]: Login now uses typed credentials and a server-side auth session before the authorization code flow.
+          - table [ref=f32e54]:
+            - rowgroup [ref=f32e55]:
+              - row [ref=f32e56]:
+                - columnheader "Field" [ref=f32e57]
+                - columnheader "Value" [ref=f32e58]
+            - rowgroup [ref=f32e59]:
+              - row [ref=f32e60]:
+                - cell "Issuer" [ref=f32e61]
+                - cell [ref=f32e62]
+              - row [ref=f32e63]:
+                - cell "Authorize" [ref=f32e64]
+                - cell "/oidc/authorize" [ref=f32e65]
+              - row [ref=f32e66]:
+                - cell "Token" [ref=f32e67]
+                - cell "/oidc/token" [ref=f32e68]
+              - row [ref=f32e69]:
+                - cell "JWKS" [ref=f32e70]
+                - cell "/oidc/jwks" [ref=f32e71]
+        - generic [ref=f32e72]:
+          - generic [ref=f32e73]:
+            - heading "Seeded Login Credentials" [level=3] [ref=f32e74]
+            - paragraph [ref=f32e75]: Local runtime identities that can sign in through the real form.
+          - table [ref=f32e77]:
+            - rowgroup [ref=f32e78]:
+              - row [ref=f32e79]:
+                - columnheader "User" [ref=f32e80]
+                - columnheader "Email" [ref=f32e81]
+                - columnheader "Scope" [ref=f32e82]
+            - rowgroup [ref=f32e83]:
+              - row [ref=f32e84]:
+                - cell "Founder Admin" [ref=f32e85]
+                - cell "founder@dcraftlabs.com" [ref=f32e86]
+                - cell "tenant" [ref=f32e87]
+              - row [ref=f32e88]:
+                - cell "Platform Superadmin" [ref=f32e89]
+                - cell "superadmin@dcraftlabs.com" [ref=f32e90]
+                - cell "platform" [ref=f32e91]
+      - generic [ref=f32e92]:
+        - generic [ref=f32e93]:
+          - heading "Provider Inventory" [level=3] [ref=f32e94]
+          - paragraph [ref=f32e95]: Configured OIDC and planned SAML surfaces tracked in the platform dataset.
+        - table [ref=f32e97]:
+          - rowgroup [ref=f32e98]:
+            - row [ref=f32e99]:
+              - columnheader "Provider" [ref=f32e100]
+              - columnheader "Protocol" [ref=f32e101]
+              - columnheader "Issuer" [ref=f32e102]
+              - columnheader "Status" [ref=f32e103]
+          - rowgroup [ref=f32e104]:
+            - row [ref=f32e105]:
+              - cell "Enterprise SAML" [ref=f32e106]
+              - cell "saml" [ref=f32e107]
+              - cell "https://sso.example.com/metadata" [ref=f32e108]
+              - cell "design_ready" [ref=f32e109]
+            - row [ref=f32e110]:
+              - cell "Platform OIDC" [ref=f32e111]
+              - cell "oidc" [ref=f32e112]
+              - cell "https://identity.example.com" [ref=f32e113]
+              - cell "configured" [ref=f32e114]

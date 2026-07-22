@@ -1,0 +1,76 @@
+- generic [ref=f37e2]:
+  - generic [ref=f37e3]:
+    - complementary [ref=f37e4]:
+      - generic [ref=f37e5]:
+        - generic [ref=f37e6]: DCraft Fusion CDC
+        - button [ref=f37e7]
+      - navigation [ref=f37e11]:
+        - generic [ref=f37e12]:
+          - text: MAIN
+          - generic [ref=f37e13]:
+            - link "Dashboard" [ref=f37e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f37e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f37e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f37e26]:
+            - link "Sources" [ref=f37e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f37e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f37e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f37e43]:
+          - text: PROCESSING
+          - generic [ref=f37e44]:
+            - link "Transformations" [ref=f37e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f37e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f37e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f37e60]:
+            - link "Data Quality" [ref=f37e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f37e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f37e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f37e77]:
+          - text: OPERATIONS
+          - generic [ref=f37e78]:
+            - link "Monitoring" [ref=f37e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f37e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f37e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f37e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f37e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f37e101]:
+      - banner [ref=f37e102]:
+        - generic [ref=f37e103]:
+          - button [ref=f37e104]
+          - link "Settings" [ref=f37e108] [cursor=pointer]:
+            - /url: /settings
+        - generic [ref=f37e109]:
+          - button [ref=f37e110]
+          - button [ref=f37e115]
+          - button "User" [ref=f37e120]
+      - main [ref=f37e126]:
+        - generic [ref=f37e127]:
+          - generic [ref=f37e128]:
+            - heading "Settings" [level=1] [ref=f37e129]
+            - paragraph [ref=f37e130]: Manage your account, team, and platform configuration
+          - generic [ref=f37e131]:
+            - generic [ref=f37e132] [cursor=pointer]:
+              - heading "Profile" [level=3] [ref=f37e139]
+              - paragraph [ref=f37e141]: Manage your account information and preferences
+            - generic [ref=f37e142] [cursor=pointer]:
+              - heading "Change Password" [level=3] [ref=f37e149]
+              - paragraph [ref=f37e151]: Update your password and security settings
+  - region "Notifications (F8)":
+    - list

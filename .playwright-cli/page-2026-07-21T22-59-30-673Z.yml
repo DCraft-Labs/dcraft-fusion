@@ -1,0 +1,109 @@
+- generic [ref=f28e3]:
+  - complementary "Superadmin navigation" [ref=f28e4]:
+    - generic [ref=f28e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f28e8]
+      - paragraph [ref=f28e9]: Control plane
+    - generic [ref=f28e10]:
+      - generic [ref=f28e11]:
+        - strong [ref=f28e12]: Platform Superadmin
+        - generic [ref=f28e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f28e14] [cursor=pointer]
+    - navigation [ref=f28e15]:
+      - link "Overview" [ref=f28e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f28e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f28e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f28e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f28e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f28e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f28e22]:
+    - generic [ref=f28e23]:
+      - generic [ref=f28e24]:
+        - paragraph [ref=f28e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f28e26]
+      - generic [ref=f28e27]:
+        - generic [ref=f28e28]:
+          - generic [ref=f28e29]:
+            - generic [ref=f28e30]: Organizations
+            - generic [ref=f28e31]: "3"
+          - generic [ref=f28e32]:
+            - generic [ref=f28e33]: Identity
+            - generic [ref=f28e34]: oidc
+          - generic [ref=f28e35]:
+            - generic [ref=f28e36]: HA
+            - generic [ref=f28e37]: configured
+          - generic [ref=f28e38]:
+            - generic [ref=f28e39]: Backup
+            - generic [ref=f28e40]: scheduled
+        - group "Theme" [ref=f28e41]:
+          - button "Dark" [ref=f28e42] [cursor=pointer]
+          - button "Light" [ref=f28e43] [cursor=pointer]
+    - generic [ref=f28e44]:
+      - generic [ref=f28e45]:
+        - heading "Operations" [level=2] [ref=f28e46]
+        - paragraph [ref=f28e47]: Backup, observability, HA posture, and recent platform audit activity.
+      - generic [ref=f28e48]:
+        - generic [ref=f28e49]:
+          - heading "Backup" [level=3] [ref=f28e51]
+          - generic [ref=f28e52]:
+            - paragraph [ref=f28e53]:
+              - strong [ref=f28e54]: Target
+              - text: postgres
+            - paragraph [ref=f28e55]:
+              - strong [ref=f28e56]: Schedule
+              - text: 0 2 * * *
+            - paragraph [ref=f28e57]:
+              - strong [ref=f28e58]: Status
+              - text: scheduled
+            - paragraph [ref=f28e59]:
+              - strong [ref=f28e60]: Runbook
+              - text: docs/operations/BACKUP_RESTORE_RUNBOOK.md
+        - generic [ref=f28e61]:
+          - heading "Observability" [level=3] [ref=f28e63]
+          - generic [ref=f28e64]:
+            - paragraph [ref=f28e65]:
+              - strong [ref=f28e66]: Metrics
+              - text: /metrics
+            - paragraph [ref=f28e67]:
+              - strong [ref=f28e68]: Logs
+              - text: json
+            - paragraph [ref=f28e69]:
+              - strong [ref=f28e70]: OTel Ready
+              - text: "yes"
+        - generic [ref=f28e71]:
+          - heading "High Availability" [level=3] [ref=f28e73]
+          - generic [ref=f28e74]:
+            - paragraph [ref=f28e75]:
+              - strong [ref=f28e76]: API Replicas
+              - text: "2"
+            - paragraph [ref=f28e77]:
+              - strong [ref=f28e78]: Web Replicas
+              - text: "2"
+            - paragraph [ref=f28e79]:
+              - strong [ref=f28e80]: Autoscaling
+              - text: enabled
+            - paragraph [ref=f28e81]:
+              - strong [ref=f28e82]: Status
+              - text: configured
+      - generic [ref=f28e83]:
+        - generic [ref=f28e84]:
+          - heading "Recent Audit Events" [level=3] [ref=f28e85]
+          - paragraph [ref=f28e86]: Newest platform-visible activity without opening the database.
+        - table [ref=f28e88]:
+          - rowgroup [ref=f28e89]:
+            - row [ref=f28e90]:
+              - columnheader "Action" [ref=f28e91]
+              - columnheader "Actor" [ref=f28e92]
+              - columnheader "Resource" [ref=f28e93]
+              - columnheader "Occurred" [ref=f28e94]
+          - rowgroup [ref=f28e95]:
+            - row [ref=f28e96]:
+              - cell "connection.tested" [ref=f28e97]
+              - cell "user-founder" [ref=f28e98]
+              - cell "Connection:conn-postgres-brand-a" [ref=f28e99]
+              - cell "7/22/2026, 4:27:11 AM" [ref=f28e100]

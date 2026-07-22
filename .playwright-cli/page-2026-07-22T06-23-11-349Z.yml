@@ -1,0 +1,153 @@
+- generic [ref=f34e2]:
+  - generic [ref=f34e3]:
+    - complementary [ref=f34e4]:
+      - generic [ref=f34e5]:
+        - generic [ref=f34e6]: DCraft Fusion CDC
+        - button [ref=f34e7]
+      - navigation [ref=f34e11]:
+        - generic [ref=f34e12]:
+          - text: MAIN
+          - generic [ref=f34e13]:
+            - link "Dashboard" [ref=f34e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f34e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f34e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f34e26]:
+            - link "Sources" [ref=f34e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f34e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f34e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f34e43]:
+          - text: PROCESSING
+          - generic [ref=f34e44]:
+            - link "Transformations" [ref=f34e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f34e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f34e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f34e60]:
+            - link "Data Quality" [ref=f34e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f34e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f34e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f34e77]:
+          - text: OPERATIONS
+          - generic [ref=f34e78]:
+            - link "Monitoring" [ref=f34e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f34e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f34e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f34e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f34e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f34e101]:
+      - banner [ref=f34e102]:
+        - generic [ref=f34e103]:
+          - button [ref=f34e104]
+          - generic [ref=f34e106]:
+            - link "Data quality" [ref=f34e108] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Templates" [ref=f34e112] [cursor=pointer]:
+              - /url: /data-quality/templates
+        - generic [ref=f34e113]:
+          - button [ref=f34e114]
+          - button [ref=f34e119]
+          - button "User" [ref=f34e124]
+      - main [ref=f34e130]:
+        - generic [ref=f34e131]:
+          - generic [ref=f34e132]:
+            - heading "Rule Templates" [level=1] [ref=f34e133]
+            - paragraph [ref=f34e134]: Pre-built rule templates to quickly create data quality policies
+          - generic [ref=f34e135]:
+            - generic [ref=f34e136]:
+              - generic [ref=f34e137]:
+                - heading "Null Check" [level=3] [ref=f34e138]
+                - generic [ref=f34e139]: null_check
+              - generic [ref=f34e140]:
+                - paragraph [ref=f34e141]: Ensure specified columns contain no null values
+                - generic [ref=f34e142]: "{ \"threshold\": 0 }"
+              - button "Use Template" [ref=f34e144]
+            - generic [ref=f34e145]:
+              - generic [ref=f34e146]:
+                - heading "Null Ratio Check" [level=3] [ref=f34e147]
+                - generic [ref=f34e148]: null_ratio_check
+              - generic [ref=f34e149]:
+                - paragraph [ref=f34e150]: Allow nulls up to a specified percentage threshold
+                - generic [ref=f34e151]: "{ \"threshold\": 0.05 }"
+              - button "Use Template" [ref=f34e153]
+            - generic [ref=f34e154]:
+              - generic [ref=f34e155]:
+                - heading "Range Validation" [level=3] [ref=f34e156]
+                - generic [ref=f34e157]: range_check
+              - generic [ref=f34e158]:
+                - paragraph [ref=f34e159]: Validate numeric values fall within an expected min/max range
+                - generic [ref=f34e160]: "{ \"min\": 0, \"max\": 100 }"
+              - button "Use Template" [ref=f34e162]
+            - generic [ref=f34e163]:
+              - generic [ref=f34e164]:
+                - heading "Regex Pattern Match" [level=3] [ref=f34e165]
+                - generic [ref=f34e166]: regex_check
+              - generic [ref=f34e167]:
+                - paragraph [ref=f34e168]: Match column values against a regex pattern (email, phone, etc.)
+                - generic [ref=f34e169]: "{ \"pattern\": \"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$\" }"
+              - button "Use Template" [ref=f34e171]
+            - generic [ref=f34e172]:
+              - generic [ref=f34e173]:
+                - heading "Freshness Check" [level=3] [ref=f34e174]
+                - generic [ref=f34e175]: freshness_check
+              - generic [ref=f34e176]:
+                - paragraph [ref=f34e177]: Ensure data has been updated within a specified time window
+                - generic [ref=f34e178]: "{ \"max_age_hours\": 24 }"
+              - button "Use Template" [ref=f34e180]
+            - generic [ref=f34e181]:
+              - generic [ref=f34e182]:
+                - heading "Row Count Match" [level=3] [ref=f34e183]
+                - generic [ref=f34e184]: row_count_match
+              - generic [ref=f34e185]:
+                - paragraph [ref=f34e186]: Compare row counts between source and destination to detect data loss
+                - generic [ref=f34e187]: "{ \"tolerance_percent\": 1 }"
+              - button "Use Template" [ref=f34e189]
+            - generic [ref=f34e190]:
+              - generic [ref=f34e191]:
+                - heading "Enum Validation" [level=3] [ref=f34e192]
+                - generic [ref=f34e193]: enum_check
+              - generic [ref=f34e194]:
+                - paragraph [ref=f34e195]: Ensure column values belong to a predefined set of allowed values
+                - generic [ref=f34e196]: "{ \"allowed_values\": [] }"
+              - button "Use Template" [ref=f34e198]
+            - generic [ref=f34e199]:
+              - generic [ref=f34e200]:
+                - heading "Custom SQL" [level=3] [ref=f34e201]
+                - generic [ref=f34e202]: custom_sql
+              - generic [ref=f34e203]:
+                - paragraph [ref=f34e204]: Write a custom SQL query that must return 0 rows to pass
+                - generic [ref=f34e205]: "{ \"query\": \"\" }"
+              - button "Use Template" [ref=f34e207]
+            - generic [ref=f34e208]:
+              - generic [ref=f34e209]:
+                - heading "Uniqueness Check" [level=3] [ref=f34e210]
+                - generic [ref=f34e211]: uniqueness
+              - generic [ref=f34e212]:
+                - paragraph [ref=f34e213]: Ensure column values are unique with no duplicates
+                - generic [ref=f34e214]: "{ \"threshold\": 0 }"
+              - button "Use Template" [ref=f34e216]
+            - generic [ref=f34e217]:
+              - generic [ref=f34e218]:
+                - heading "Referential Integrity" [level=3] [ref=f34e219]
+                - generic [ref=f34e220]: referential_integrity
+              - generic [ref=f34e221]:
+                - paragraph [ref=f34e222]: Validate foreign key references exist in the target table
+                - generic [ref=f34e223]: "{ \"reference_table\": \"\", \"reference_column\": \"\" }"
+              - button "Use Template" [ref=f34e225]
+  - region "Notifications (F8)":
+    - list

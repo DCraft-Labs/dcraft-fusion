@@ -1,0 +1,29 @@
+- generic [ref=f52e2]:
+  - generic [ref=f52e4]:
+    - generic [ref=f52e5]:
+      - heading "Fusion" [level=3] [ref=f52e10]
+      - paragraph [ref=f52e11]: CDC Platform — Sign in to your account
+    - generic [ref=f52e13]:
+      - generic [ref=f52e14]:
+        - text: Username or Email
+        - textbox "admin@example.com" [ref=f52e15]
+      - generic [ref=f52e16]:
+        - text: Password
+        - generic [ref=f52e17]:
+          - textbox "••••••••" [ref=f52e18]
+          - button [ref=f52e19]
+      - generic [ref=f52e23]:
+        - generic [ref=f52e24]:
+          - checkbox "Remember me" [ref=f52e25]
+          - text: Remember me
+        - link "Forgot password?" [ref=f52e26] [cursor=pointer]:
+          - /url: /forgot-password
+      - button "Sign In" [disabled]
+      - generic [ref=f52e27]: OR
+      - button "Sign in with SSO (OIDC)" [ref=f52e32]
+      - paragraph [ref=f52e33]:
+        - text: Don't have an account?
+        - link "Register" [ref=f52e34] [cursor=pointer]:
+          - /url: /register
+  - region "Notifications (F8)":
+    - list

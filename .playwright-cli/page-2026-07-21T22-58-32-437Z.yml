@@ -1,0 +1,50 @@
+- generic [ref=f23e3]:
+  - complementary "Superadmin navigation" [ref=f23e4]:
+    - generic [ref=f23e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f23e8]
+      - paragraph [ref=f23e9]: Control plane
+    - generic [ref=f23e10]:
+      - generic [ref=f23e11]:
+        - strong [ref=f23e12]: Platform Superadmin
+        - generic [ref=f23e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f23e14] [cursor=pointer]
+    - navigation [ref=f23e15]:
+      - link "Overview" [ref=f23e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f23e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f23e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f23e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f23e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f23e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f23e22]:
+    - generic [ref=f23e23]:
+      - generic [ref=f23e24]:
+        - paragraph [ref=f23e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f23e26]
+      - generic [ref=f23e27]:
+        - generic [ref=f23e28]:
+          - generic [ref=f23e29]:
+            - generic [ref=f23e30]: Organizations
+            - generic [ref=f23e31]: "0"
+          - generic [ref=f23e32]:
+            - generic [ref=f23e33]: Identity
+            - generic [ref=f23e34]: loading
+          - generic [ref=f23e35]:
+            - generic [ref=f23e36]: HA
+            - generic [ref=f23e37]: loading
+          - generic [ref=f23e38]:
+            - generic [ref=f23e39]: Backup
+            - generic [ref=f23e40]: unknown
+        - group "Theme" [ref=f23e41]:
+          - button "Dark" [ref=f23e42] [cursor=pointer]
+          - button "Light" [ref=f23e43] [cursor=pointer]
+    - generic [ref=f23e44]:
+      - generic [ref=f23e45]:
+        - heading "Superadmin Overview" [level=2] [ref=f23e46]
+        - paragraph [ref=f23e47]: Platform-wide status across identity, org topology, HA, backup, and adapters.
+      - paragraph [ref=f23e49]: Loading platform overview…

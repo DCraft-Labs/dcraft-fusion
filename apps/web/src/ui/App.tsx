@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Outlet, Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
 import {
   beginAuthorization,
@@ -28,7 +28,8 @@ import type {
   OpenIDConfiguration,
   PlatformOrganization,
   PlatformOverview,
-  UserSession
+  UserSession,
+  WorkflowRun
 } from "./workspace.js";
 import { validateWorkspaceContext } from "./workspace.js";
 
@@ -917,6 +918,22 @@ function MetadataExplorer({ workspace }: { readonly workspace: FusionWorkspace }
   );
 }
 
+function runStatusTone(status: WorkflowRun["status"]): "success" | "failed" | "running" | "pending" {
+  switch (status) {
+    case "succeeded":
+      return "success";
+    case "failed":
+    case "canceled":
+      return "failed";
+    case "running":
+      return "running";
+    case "queued":
+    case "unknown":
+    default:
+      return "pending";
+  }
+}
+
 function RunCenter({ workspace }: { readonly workspace: FusionWorkspace }) {
   return (
     <>
@@ -924,11 +941,34 @@ function RunCenter({ workspace }: { readonly workspace: FusionWorkspace }) {
       <section className="panel">
         <DataTable
           headers={["Workflow", "Status", "Correlation", "Artifact"]}
-          rows={workspace.runs.map((run) => [run.workflowName, run.status, run.correlationId, run.artifactRef])}
+          rows={workspace.runs.map((run) => [
+            run.workflowName,
+            <span key={run.id} className="status" data-tone={runStatusTone(run.status)}>
+              {run.status}
+            </span>,
+            run.correlationId,
+            run.artifactRef
+          ])}
         />
       </section>
     </>
   );
+}
+
+function formatRelativeTime(iso: string): string {
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  const diffMs = now - then;
+  if (Number.isNaN(diffMs)) return "—";
+  const sec = Math.round(diffMs / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hr ago`;
+  const day = Math.round(hr / 24);
+  if (day < 30) return `${day} day${day === 1 ? "" : "s"} ago`;
+  return new Date(iso).toLocaleDateString();
 }
 
 function AuditCenter({ workspace }: { readonly workspace: FusionWorkspace }) {
@@ -937,8 +977,20 @@ function AuditCenter({ workspace }: { readonly workspace: FusionWorkspace }) {
       <PageHeader title="Audit Center" description="Actor, resource, and correlation coverage for tenant operations." />
       <section className="panel">
         <DataTable
-          headers={["Action", "Actor", "Resource", "Correlation"]}
-          rows={workspace.auditEvents.map((event) => [event.action, event.actorId, `${event.resourceType}:${event.resourceId}`, event.correlationId])}
+          headers={["Action", "Actor", "Resource", "Correlation", "Timestamp"]}
+          rows={workspace.auditEvents.map((event) => [
+            event.action,
+            event.actorId,
+            `${event.resourceType}:${event.resourceId}`,
+            event.correlationId,
+            event.occurredAt ? (
+              <span title={new Date(event.occurredAt).toLocaleString()}>
+                {formatRelativeTime(event.occurredAt)}
+              </span>
+            ) : (
+              "—"
+            )
+          ])}
         />
       </section>
     </>
@@ -1532,7 +1584,7 @@ function InfoTile({ label, value }: { readonly label: string; readonly value: st
   );
 }
 
-function DataTable({ headers, rows }: { readonly headers: readonly string[]; readonly rows: readonly (readonly string[])[] }) {
+function DataTable({ headers, rows }: { readonly headers: readonly string[]; readonly rows: readonly (readonly ReactNode[])[] }) {
   return (
     <div className="table-wrap">
       <table>
@@ -1544,10 +1596,10 @@ function DataTable({ headers, rows }: { readonly headers: readonly string[]; rea
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.join(":")}>
-              {row.map((cell) => (
-                <td key={cell}>{cell}</td>
+          {rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <td key={cellIndex}>{cell}</td>
               ))}
             </tr>
           ))}

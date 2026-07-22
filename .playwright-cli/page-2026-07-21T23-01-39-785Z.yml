@@ -1,0 +1,90 @@
+- generic [ref=f29e2]:
+  - generic [ref=f29e3]:
+    - complementary [ref=f29e4]:
+      - generic [ref=f29e5]:
+        - generic [ref=f29e6]: DCraft Fusion CDC
+        - button [ref=f29e7]
+      - navigation [ref=f29e11]:
+        - generic [ref=f29e12]:
+          - text: MAIN
+          - generic [ref=f29e13]:
+            - link "Dashboard" [ref=f29e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f29e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f29e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f29e26]:
+            - link "Sources" [ref=f29e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f29e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f29e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f29e43]:
+          - text: PROCESSING
+          - generic [ref=f29e44]:
+            - link "Transformations" [ref=f29e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f29e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f29e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f29e60]:
+            - link "Data Quality" [ref=f29e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f29e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f29e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f29e77]:
+          - text: OPERATIONS
+          - generic [ref=f29e78]:
+            - link "Monitoring" [ref=f29e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f29e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f29e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f29e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f29e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f29e101]:
+      - banner [ref=f29e102]:
+        - generic [ref=f29e103]:
+          - button [ref=f29e104]
+          - generic [ref=f29e106]:
+            - link "Connections" [ref=f29e108] [cursor=pointer]:
+              - /url: /connections
+            - link "New" [ref=f29e112] [cursor=pointer]:
+              - /url: /connections/new
+        - generic [ref=f29e113]:
+          - button [ref=f29e114]
+          - button [ref=f29e119]
+          - button "User" [ref=f29e124]
+      - main [ref=f29e130]:
+        - generic [ref=f29e131]:
+          - heading "Create Connection" [level=1] [ref=f29e132]
+          - generic [ref=f29e133]:
+            - generic [ref=f29e134]: Source
+            - generic [ref=f29e139]: Destination
+            - generic [ref=f29e145]: Streams & Transforms
+            - generic [ref=f29e151]: Config
+            - generic [ref=f29e157]: Review
+          - generic [ref=f29e206]:
+            - generic [ref=f29e207]:
+              - generic [ref=f29e208]:
+                - heading "Select Tables & Configure Transforms" [level=2] [ref=f29e209]
+                - paragraph [ref=f29e210]: Select tables to sync. Expand each table to configure per-column transforms.
+              - generic [ref=f29e211]:
+                - generic [ref=f29e212]: 0 selected
+                - button "Select All" [ref=f29e213]
+            - generic [ref=f29e214]: No tables discovered. You can add streams after creation.
+          - generic [ref=f29e168]:
+            - generic [ref=f29e169]:
+              - button "← Back" [ref=f29e200]
+              - button "Cancel" [ref=f29e201]
+            - button "Next →" [disabled]
+  - region "Notifications (F8)":
+    - list

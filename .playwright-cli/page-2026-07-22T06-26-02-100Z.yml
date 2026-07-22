@@ -1,0 +1,88 @@
+- generic [ref=f42e2]:
+  - generic [ref=f42e3]:
+    - complementary [ref=f42e4]:
+      - generic [ref=f42e5]:
+        - generic [ref=f42e6]: DCraft Fusion CDC
+        - button [ref=f42e7]
+      - navigation [ref=f42e11]:
+        - generic [ref=f42e12]:
+          - text: MAIN
+          - generic [ref=f42e13]:
+            - link "Dashboard" [ref=f42e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f42e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f42e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f42e26]:
+            - link "Sources" [ref=f42e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f42e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f42e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f42e43]:
+          - text: PROCESSING
+          - generic [ref=f42e44]:
+            - link "Transformations" [ref=f42e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f42e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f42e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f42e60]:
+            - link "Data Quality" [ref=f42e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f42e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f42e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f42e77]:
+          - text: OPERATIONS
+          - generic [ref=f42e78]:
+            - link "Monitoring" [ref=f42e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f42e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f42e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f42e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f42e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f42e101]:
+      - banner [ref=f42e102]:
+        - generic [ref=f42e103]:
+          - button [ref=f42e104]
+          - link "Transformations" [ref=f42e108] [cursor=pointer]:
+            - /url: /transformations
+        - generic [ref=f42e109]:
+          - button [ref=f42e110]
+          - button [ref=f42e115]
+          - button "User" [ref=f42e120]
+      - main [ref=f42e126]:
+        - generic [ref=f42e127]:
+          - generic [ref=f42e128]:
+            - heading "Transformations" [level=1] [ref=f42e129]
+            - button "New Transform" [ref=f42e130]
+          - generic [ref=f42e132]:
+            - combobox [ref=f42e133]:
+              - generic: All Types
+            - combobox [ref=f42e136]:
+              - generic: All Languages
+            - combobox [ref=f42e139]:
+              - generic: All Statuses
+          - table [ref=f42e145]:
+            - rowgroup [ref=f42e146]:
+              - row [ref=f42e147]:
+                - columnheader "Name" [ref=f42e148]
+                - columnheader "Type" [ref=f42e149]
+                - columnheader "Language" [ref=f42e150]
+                - columnheader "Version" [ref=f42e151]
+                - columnheader "Status" [ref=f42e152]
+                - columnheader "Actions" [ref=f42e153]
+            - rowgroup [ref=f42e154]:
+              - row [ref=f42e155]:
+                - cell "Loading..." [ref=f42e156]
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,87 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e3]:
+    - complementary [ref=f3e4]:
+      - generic [ref=f3e5]:
+        - generic [ref=f3e6]: DCraft Fusion CDC
+        - button [ref=f3e7]
+      - navigation [ref=f3e11]:
+        - generic [ref=f3e12]:
+          - text: MAIN
+          - generic [ref=f3e13]:
+            - link "Dashboard" [ref=f3e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f3e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f3e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f3e26]:
+            - link "Sources" [ref=f3e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f3e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f3e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f3e43]:
+          - text: PROCESSING
+          - generic [ref=f3e44]:
+            - link "Transformations" [ref=f3e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f3e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f3e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f3e60]:
+            - link "Data Quality" [ref=f3e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f3e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f3e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f3e77]:
+          - text: OPERATIONS
+          - generic [ref=f3e78]:
+            - link "Monitoring" [ref=f3e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f3e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f3e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f3e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f3e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f3e101]:
+      - banner [ref=f3e102]:
+        - generic [ref=f3e103]:
+          - button [ref=f3e104]
+          - link "Destinations" [ref=f3e108] [cursor=pointer]:
+            - /url: /destinations
+        - generic [ref=f3e109]:
+          - button [ref=f3e110]
+          - button [ref=f3e115]
+          - button "User" [ref=f3e120]
+      - main [ref=f3e126]:
+        - generic [ref=f3e127]:
+          - generic [ref=f3e128]:
+            - heading "Destinations" [level=1] [ref=f3e129]
+            - button "New Destination" [ref=f3e130]
+          - generic [ref=f3e132]:
+            - combobox [ref=f3e133]:
+              - generic: All Status
+            - combobox [ref=f3e136]:
+              - generic: All Types
+            - textbox "Search destinations..." [ref=f3e143]
+          - table [ref=f3e147]:
+            - rowgroup [ref=f3e148]:
+              - row [ref=f3e149]:
+                - columnheader [ref=f3e150]
+                - columnheader "Name" [ref=f3e151]
+                - columnheader "Type" [ref=f3e152]
+                - columnheader "Status" [ref=f3e153]
+                - columnheader "Last Test" [ref=f3e154]
+                - columnheader "Actions" [ref=f3e155]
+            - rowgroup [ref=f3e156]:
+              - row [ref=f3e157]:
+                - cell "Loading destinations..." [ref=f3e158]
+  - region "Notifications (F8)":
+    - list

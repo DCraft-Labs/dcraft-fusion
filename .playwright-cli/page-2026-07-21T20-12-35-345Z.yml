@@ -1,0 +1,66 @@
+- generic [ref=f27e2]:
+  - generic [ref=f27e3]:
+    - complementary [ref=f27e4]:
+      - generic [ref=f27e5]:
+        - generic [ref=f27e6]: DCraft Fusion CDC
+        - button [ref=f27e7]
+      - navigation [ref=f27e11]:
+        - generic [ref=f27e12]:
+          - text: MAIN
+          - generic [ref=f27e13]:
+            - link "Dashboard" [ref=f27e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f27e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f27e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f27e26]:
+            - link "Sources" [ref=f27e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f27e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f27e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f27e43]:
+          - text: PROCESSING
+          - generic [ref=f27e44]:
+            - link "Transformations" [ref=f27e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f27e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f27e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f27e60]:
+            - link "Data Quality" [ref=f27e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f27e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f27e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f27e77]:
+          - text: OPERATIONS
+          - generic [ref=f27e78]:
+            - link "Monitoring" [ref=f27e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f27e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f27e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f27e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f27e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f27e101]:
+      - banner [ref=f27e102]:
+        - generic [ref=f27e103]:
+          - button [ref=f27e104]
+          - link "Connectors" [ref=f27e108] [cursor=pointer]:
+            - /url: /connectors
+        - generic [ref=f27e109]:
+          - button [ref=f27e110]
+          - button [ref=f27e115]
+          - button "User" [ref=f27e120]
+      - main [ref=f27e126]:
+        - generic [ref=f27e127]: Loading...
+  - region "Notifications (F8)":
+    - list

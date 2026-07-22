@@ -1,0 +1,73 @@
+- main [ref=f16e3]:
+  - generic [ref=f16e4]:
+    - link "DCraft Fusion" [ref=f16e5] [cursor=pointer]:
+      - /url: /
+    - generic [ref=f16e7]:
+      - link "GitHub" [ref=f16e8] [cursor=pointer]:
+        - /url: https://github.com/DCraft-Labs/dcraft-fusion
+      - link "Docs" [ref=f16e9] [cursor=pointer]:
+        - /url: /docs/
+      - group "Theme" [ref=f16e10]:
+        - button "Dark" [ref=f16e11] [cursor=pointer]
+        - button "Light" [ref=f16e12] [cursor=pointer]
+      - link "Open console" [ref=f16e13] [cursor=pointer]:
+        - /url: /superadmin/overview
+  - generic [ref=f16e14]:
+    - generic [ref=f16e15]:
+      - paragraph [ref=f16e16]: DCraft Fusion
+      - heading "One brain. Many muscles." [level=1] [ref=f16e17]
+      - paragraph [ref=f16e18]: The open-source control plane for modern data platforms — govern connections, metadata, workflows, audit, and CDC from one operator surface.
+      - generic [ref=f16e19]:
+        - link "Enter workspace" [ref=f16e20] [cursor=pointer]:
+          - /url: /superadmin/overview
+        - link "Star on GitHub" [ref=f16e21] [cursor=pointer]:
+          - /url: https://github.com/DCraft-Labs/dcraft-fusion
+    - generic [ref=f16e23]:
+      - generic [ref=f16e24]:
+        - generic [ref=f16e25]: Control plane
+        - strong [ref=f16e26]: Fusion Kernel
+      - generic [ref=f16e27]:
+        - generic [ref=f16e28]:
+          - generic [ref=f16e29]: Engine
+          - strong [ref=f16e30]: CDC
+        - generic [ref=f16e31]:
+          - generic [ref=f16e32]: Engine
+          - strong [ref=f16e33]: dbt / Airflow
+        - generic [ref=f16e34]:
+          - generic [ref=f16e35]: Observe
+          - strong [ref=f16e36]: Audit · Runs
+  - generic [ref=f16e37]:
+    - generic [ref=f16e38]:
+      - heading "Built for operators who run real systems" [level=2] [ref=f16e39]
+      - paragraph [ref=f16e40]: Community edition includes the Fusion control plane and Fusion CDC Engine under Apache 2.0.
+    - generic [ref=f16e41]:
+      - article [ref=f16e42]:
+        - heading "B2B" [level=3] [ref=f16e43]
+        - paragraph [ref=f16e44]: Dedicated business tenants with shared, dedicated, or customer-managed infrastructure patterns.
+      - article [ref=f16e45]:
+        - heading "B2C" [level=3] [ref=f16e46]
+        - paragraph [ref=f16e47]: High-volume product operations with platform-level controls and project-by-project rollout.
+      - article [ref=f16e48]:
+        - heading "B2B2C" [level=3] [ref=f16e49]
+        - paragraph [ref=f16e50]: Brand and end-customer segmentation across shared control and isolated data-plane boundaries.
+      - article [ref=f16e51]:
+        - heading "Dedicated" [level=3] [ref=f16e52]
+        - paragraph [ref=f16e53]: Customer VPC, dedicated stack, or on-prem deployment topologies from day one.
+  - generic [ref=f16e54]:
+    - generic [ref=f16e55]:
+      - heading "Ship, observe, harden" [level=2] [ref=f16e56]
+      - paragraph [ref=f16e57]: A clear path from local alpha to enterprise posture — without burying the product under dashboard chrome.
+    - generic [ref=f16e58]:
+      - article [ref=f16e59]:
+        - generic [ref=f16e60]: Phase 1
+        - heading "Private alpha control plane" [level=3] [ref=f16e61]
+        - paragraph [ref=f16e62]: Read-only connectors, metadata discovery, audit, AI draft workflows, tenant and platform admin foundations.
+      - article [ref=f16e63]:
+        - generic [ref=f16e64]: Phase 2
+        - heading "Identity and workflow hardening" [level=3] [ref=f16e65]
+        - paragraph [ref=f16e66]: External IdP onboarding, adapter expansion, deeper policy controls, stronger platform operations and managed rollout flows.
+      - article [ref=f16e67]:
+        - generic [ref=f16e68]: Phase 3
+        - heading "Enterprise scale posture" [level=3] [ref=f16e69]
+        - paragraph [ref=f16e70]: Dedicated customer deployments, external secret orchestration, stronger observability and workload expansion beyond alpha.
+  - generic [ref=f16e71]: DCraft Labs · Apache 2.0 · One brain. Many muscles.

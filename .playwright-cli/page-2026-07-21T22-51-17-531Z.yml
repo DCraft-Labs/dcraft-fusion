@@ -1,0 +1,73 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e3]:
+    - complementary [ref=f10e4]:
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]: DCraft Fusion CDC
+        - button [ref=f10e7]
+      - navigation [ref=f10e11]:
+        - generic [ref=f10e12]:
+          - text: MAIN
+          - generic [ref=f10e13]:
+            - link "Dashboard" [ref=f10e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f10e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f10e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f10e26]:
+            - link "Sources" [ref=f10e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f10e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f10e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f10e43]:
+          - text: PROCESSING
+          - generic [ref=f10e44]:
+            - link "Transformations" [ref=f10e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f10e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f10e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f10e60]:
+            - link "Data Quality" [ref=f10e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f10e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f10e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f10e77]:
+          - text: OPERATIONS
+          - generic [ref=f10e78]:
+            - link "Monitoring" [ref=f10e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f10e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f10e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f10e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f10e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f10e101]:
+      - banner [ref=f10e102]:
+        - generic [ref=f10e103]:
+          - button [ref=f10e104]
+          - link "Dashboard" [ref=f10e108] [cursor=pointer]:
+            - /url: /dashboard
+        - generic [ref=f10e109]:
+          - button [ref=f10e110]
+          - button [ref=f10e115]
+          - button "User" [ref=f10e120]
+      - main [ref=f10e126]:
+        - generic [ref=f10e129]:
+          - heading "Welcome to Fusion" [level=2] [ref=f10e135]
+          - paragraph [ref=f10e136]: Set up your first CDC pipeline in minutes.
+          - list [ref=f10e137]:
+            - listitem [ref=f10e138]: 1. Add a Source (MySQL, MongoDB, PostgreSQL)
+            - listitem [ref=f10e139]: 2. Add a Destination (PostgreSQL, Iceberg)
+            - listitem [ref=f10e140]: 3. Create a Connection to start syncing
+          - button "Get Started — Add Source →" [ref=f10e141]
+  - region "Notifications (F8)":
+    - list

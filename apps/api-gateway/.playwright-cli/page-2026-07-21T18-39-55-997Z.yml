@@ -1,0 +1,48 @@
+- generic [ref=f18e3]:
+  - complementary "Superadmin navigation" [ref=f18e4]:
+    - generic [ref=f18e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f18e8]
+      - paragraph [ref=f18e9]: Control plane
+    - generic [ref=f18e10]:
+      - generic [ref=f18e11]:
+        - strong [ref=f18e12]: Platform Superadmin
+        - generic [ref=f18e13]: superadmin@dcraftlabs.com
+      - button "Sign out" [ref=f18e14] [cursor=pointer]
+    - navigation [ref=f18e15]:
+      - link "Overview" [ref=f18e16] [cursor=pointer]:
+        - /url: /superadmin/overview
+      - link "Organizations" [ref=f18e17] [cursor=pointer]:
+        - /url: /superadmin/organizations
+      - link "Identity" [ref=f18e18] [cursor=pointer]:
+        - /url: /superadmin/identity
+      - link "Secrets" [ref=f18e19] [cursor=pointer]:
+        - /url: /superadmin/secrets
+      - link "Adapters" [ref=f18e20] [cursor=pointer]:
+        - /url: /superadmin/adapters
+      - link "Operations" [ref=f18e21] [cursor=pointer]:
+        - /url: /superadmin/operations
+  - main [ref=f18e22]:
+    - generic [ref=f18e23]:
+      - generic [ref=f18e24]:
+        - paragraph [ref=f18e25]: Platform superadmin
+        - heading "Control Plane" [level=2] [ref=f18e26]
+      - generic [ref=f18e27]:
+        - generic [ref=f18e28]:
+          - generic [ref=f18e29]:
+            - generic [ref=f18e30]: Organizations
+            - generic [ref=f18e31]: "0"
+          - generic [ref=f18e32]:
+            - generic [ref=f18e33]: Identity
+            - generic [ref=f18e34]: loading
+          - generic [ref=f18e35]:
+            - generic [ref=f18e36]: HA
+            - generic [ref=f18e37]: loading
+          - generic [ref=f18e38]:
+            - generic [ref=f18e39]: Backup
+            - generic [ref=f18e40]: unknown
+        - group "Theme" [ref=f18e41]:
+          - button "Dark" [ref=f18e42] [cursor=pointer]
+          - button "Light" [ref=f18e43] [cursor=pointer]
+    - generic [ref=f18e45]:
+      - heading "Superadmin Overview" [level=3] [ref=f18e46]
+      - paragraph [ref=f18e47]: Access is unavailable.

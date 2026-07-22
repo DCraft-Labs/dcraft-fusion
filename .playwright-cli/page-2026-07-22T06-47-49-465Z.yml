@@ -1,0 +1,91 @@
+- generic [ref=f50e2]:
+  - generic [ref=f50e3]:
+    - complementary [ref=f50e4]:
+      - generic [ref=f50e5]:
+        - generic [ref=f50e6]: DCraft Fusion CDC
+        - button [ref=f50e7]
+      - navigation [ref=f50e11]:
+        - generic [ref=f50e12]:
+          - text: MAIN
+          - generic [ref=f50e13]:
+            - link "Dashboard" [ref=f50e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f50e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f50e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f50e26]:
+            - link "Sources" [ref=f50e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f50e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f50e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f50e43]:
+          - text: PROCESSING
+          - generic [ref=f50e44]:
+            - link "Transformations" [ref=f50e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f50e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f50e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f50e60]:
+            - link "Data Quality" [ref=f50e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f50e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f50e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f50e77]:
+          - text: OPERATIONS
+          - generic [ref=f50e78]:
+            - link "Monitoring" [ref=f50e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f50e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f50e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f50e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f50e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f50e101]:
+      - banner [ref=f50e102]:
+        - generic [ref=f50e103]:
+          - button [ref=f50e104]
+          - generic [ref=f50e106]:
+            - link "Connections" [ref=f50e108] [cursor=pointer]:
+              - /url: /connections
+            - link "New" [ref=f50e112] [cursor=pointer]:
+              - /url: /connections/new
+        - generic [ref=f50e113]:
+          - button [ref=f50e114]
+          - button [ref=f50e119]
+          - button "User" [ref=f50e124]
+      - main [ref=f50e130]:
+        - generic [ref=f50e131]:
+          - heading "Create Connection" [level=1] [ref=f50e132]
+          - generic [ref=f50e133]:
+            - generic [ref=f50e134]: Source
+            - generic [ref=f50e139]: Destination
+            - generic [ref=f50e145]: Streams & Transforms
+            - generic [ref=f50e151]: Config
+            - generic [ref=f50e157]: Review
+          - generic [ref=f50e163]:
+            - heading "Select Source" [level=3] [ref=f50e165]
+            - generic [ref=f50e167]:
+              - heading "postgres" [level=4] [ref=f50e168]
+              - generic [ref=f50e170] [cursor=pointer]:
+                - radio "Local PostgreSQL Source pg-source / source_db active" [ref=f50e171]
+                - generic [ref=f50e173]:
+                  - text: Local PostgreSQL Source
+                  - generic [ref=f50e174]:
+                    - text: pg-source
+                    - generic [ref=f50e175]: / source_db
+                - generic [ref=f50e176]: active
+          - generic [ref=f50e177]:
+            - button "Cancel" [ref=f50e179]
+            - button "Next →" [disabled]
+  - region "Notifications (F8)":
+    - list

@@ -1,0 +1,195 @@
+- generic [ref=f26e2]:
+  - generic [ref=f26e3]:
+    - complementary [ref=f26e4]:
+      - generic [ref=f26e5]:
+        - generic [ref=f26e6]: DCraft Fusion CDC
+        - button [ref=f26e7]
+      - navigation [ref=f26e11]:
+        - generic [ref=f26e12]:
+          - text: MAIN
+          - generic [ref=f26e13]:
+            - link "Dashboard" [ref=f26e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f26e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f26e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f26e26]:
+            - link "Sources" [ref=f26e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f26e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f26e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f26e43]:
+          - text: PROCESSING
+          - generic [ref=f26e44]:
+            - link "Transformations" [ref=f26e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f26e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f26e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f26e60]:
+            - link "Data Quality" [ref=f26e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f26e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f26e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f26e77]:
+          - text: OPERATIONS
+          - generic [ref=f26e78]:
+            - link "Monitoring" [ref=f26e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f26e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f26e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f26e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f26e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f26e101]:
+      - banner [ref=f26e102]:
+        - generic [ref=f26e103]:
+          - button [ref=f26e104]
+          - generic [ref=f26e106]:
+            - link "Destinations" [ref=f26e108] [cursor=pointer]:
+              - /url: /destinations
+            - link "New" [ref=f26e112] [cursor=pointer]:
+              - /url: /destinations/new
+        - generic [ref=f26e113]:
+          - button [ref=f26e114]
+          - button [ref=f26e119]
+          - button "User" [ref=f26e124]
+      - main [ref=f26e130]:
+        - generic [ref=f26e131]:
+          - heading "Create New Destination" [level=1] [ref=f26e132]
+          - generic [ref=f26e133]:
+            - generic [ref=f26e134]: Select Type
+            - generic [ref=f26e139]: Configure
+            - generic [ref=f26e145]: Test Connection
+          - generic [ref=f26e178]:
+            - heading "Configure Apache Iceberg Destination" [level=3] [ref=f26e180]
+            - generic [ref=f26e181]:
+              - generic [ref=f26e182]:
+                - text: Destination Name *
+                - textbox "e.g. Data Lake - Iceberg" [ref=f26e183]
+              - generic [ref=f26e184]:
+                - generic [ref=f26e185]:
+                  - heading "Catalog" [level=3] [ref=f26e186]
+                  - generic [ref=f26e187]:
+                    - generic [ref=f26e188]:
+                      - generic [ref=f26e189]: Catalog type *
+                      - combobox [ref=f26e190]:
+                        - generic: Nessie
+                      - paragraph [ref=f26e193]: Glue / REST / Hive / SQL / Nessie / DynamoDB
+                    - generic [ref=f26e194]:
+                      - generic [ref=f26e195]: Catalog name *
+                      - textbox [ref=f26e196]: fusion_cdc
+                    - generic [ref=f26e197]:
+                      - generic [ref=f26e198]: Namespace *
+                      - textbox [ref=f26e199]: fusion
+                      - paragraph [ref=f26e200]: Iceberg namespace / Glue database
+                    - generic [ref=f26e201]:
+                      - generic [ref=f26e202]: Nessie URI *
+                      - textbox "http://nessie:19120/api/v2" [ref=f26e203]
+                    - generic [ref=f26e204]:
+                      - generic [ref=f26e205]: Nessie ref (branch)
+                      - textbox "main" [ref=f26e206]
+                - generic [ref=f26e207]:
+                  - heading "Storage (S3 / MinIO)" [level=3] [ref=f26e208]
+                  - generic [ref=f26e209]:
+                    - generic [ref=f26e210]:
+                      - generic [ref=f26e211]: Warehouse *
+                      - textbox "s3://iceberg-warehouse/fusion-cdc/" [ref=f26e212]
+                      - paragraph [ref=f26e213]: Accepts s3:// or s3a:// (normalized to s3://)
+                    - generic [ref=f26e214]:
+                      - generic [ref=f26e215]: S3 region
+                      - textbox "us-east-1" [ref=f26e216]
+                    - generic [ref=f26e217]:
+                      - generic [ref=f26e218]: S3 endpoint (MinIO / VPC)
+                      - textbox "http://minio:9000" [ref=f26e219]
+                    - generic [ref=f26e220] [cursor=pointer]:
+                      - checkbox "Path-style access (required for MinIO)" [ref=f26e221]
+                      - text: Path-style access (required for MinIO)
+                    - generic [ref=f26e222] [cursor=pointer]:
+                      - checkbox "Force virtual addressing (AWS-hosted buckets only)" [ref=f26e223]
+                      - text: Force virtual addressing (AWS-hosted buckets only)
+                    - generic [ref=f26e224]:
+                      - generic [ref=f26e225]: SSE type
+                      - combobox [ref=f26e226]:
+                        - generic: none
+                    - generic [ref=f26e229]:
+                      - generic [ref=f26e230]: Proxy URI (optional)
+                      - textbox [ref=f26e231]
+                    - generic [ref=f26e232] [cursor=pointer]:
+                      - checkbox "Anonymous (public bucket)" [ref=f26e233]
+                      - text: Anonymous (public bucket)
+                    - generic [ref=f26e234]:
+                      - text: "Azure ADLS / GCS storage:"
+                      - strong [ref=f26e235]: coming soon
+                      - text: (backend not yet implemented).
+                - generic [ref=f26e236]:
+                  - heading "Authentication" [level=3] [ref=f26e237]
+                  - generic [ref=f26e238]:
+                    - generic [ref=f26e239]:
+                      - generic [ref=f26e240] [cursor=pointer]:
+                        - radio "Access keys" [checked] [ref=f26e241]
+                        - text: Access keys
+                      - generic [ref=f26e242] [cursor=pointer]:
+                        - radio "STS assume role" [ref=f26e243]
+                        - text: STS assume role
+                      - generic [ref=f26e244] [cursor=pointer]:
+                        - radio "IRSA / workload identity" [ref=f26e245]
+                        - text: IRSA / workload identity
+                    - generic [ref=f26e246]:
+                      - generic [ref=f26e247]: AWS access key id *
+                      - textbox [ref=f26e248]
+                    - generic [ref=f26e249]:
+                      - generic [ref=f26e250]: AWS secret access key *
+                      - textbox [ref=f26e251]
+                    - generic [ref=f26e252]:
+                      - generic [ref=f26e253]: Session token (optional)
+                      - textbox [ref=f26e254]
+                    - generic [ref=f26e255]:
+                      - generic [ref=f26e256]: AWS region
+                      - textbox [ref=f26e257]: us-east-1
+                    - generic [ref=f26e258]:
+                      - generic [ref=f26e259]: AWS profile (optional)
+                      - textbox [ref=f26e260]
+                    - generic [ref=f26e261] [cursor=pointer]:
+                      - checkbox "Use same creds for catalog + S3 (if off, supply separate S3 keys below)" [checked] [ref=f26e262]
+                      - text: Use same creds for catalog + S3 (if off, supply separate S3 keys below)
+                - generic [ref=f26e263]:
+                  - heading "Table defaults" [level=3] [ref=f26e264]
+                  - generic [ref=f26e265]:
+                    - generic [ref=f26e266]:
+                      - generic [ref=f26e267]: Iceberg format version
+                      - combobox [ref=f26e268]:
+                        - generic: "2"
+                    - generic [ref=f26e271]:
+                      - generic [ref=f26e272]: Parquet compression
+                      - combobox [ref=f26e273]:
+                        - generic: zstd
+                    - generic [ref=f26e276] [cursor=pointer]:
+                      - checkbox "Object-storage layout enabled (hash prefixes — reduces S3 throttling)" [checked] [ref=f26e277]
+                      - text: Object-storage layout enabled (hash prefixes — reduces S3 throttling)
+                    - generic [ref=f26e278] [cursor=pointer]:
+                      - checkbox "Partitioned paths" [checked] [ref=f26e279]
+                      - text: Partitioned paths
+                    - generic [ref=f26e280]:
+                      - generic [ref=f26e281]: CDC apply strategy
+                      - combobox [ref=f26e282]:
+                        - generic: upsert
+                    - generic [ref=f26e285] [cursor=pointer]:
+                      - checkbox "Delete metadata after commit" [ref=f26e286]
+                      - text: Delete metadata after commit
+                - group [ref=f26e287]:
+                  - generic "Advanced (optional / legacy Spark)" [ref=f26e288] [cursor=pointer]
+          - generic [ref=f26e155]:
+            - button "← Back" [ref=f26e289]
+            - button "Next →" [disabled]
+  - region "Notifications (F8)":
+    - list

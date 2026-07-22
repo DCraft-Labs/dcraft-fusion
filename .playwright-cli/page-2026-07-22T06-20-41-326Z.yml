@@ -1,0 +1,144 @@
+- generic [ref=f27e2]:
+  - generic [ref=f27e3]:
+    - complementary [ref=f27e4]:
+      - generic [ref=f27e5]:
+        - generic [ref=f27e6]: DCraft Fusion CDC
+        - button [ref=f27e7]
+      - navigation [ref=f27e11]:
+        - generic [ref=f27e12]:
+          - text: MAIN
+          - generic [ref=f27e13]:
+            - link "Dashboard" [ref=f27e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f27e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f27e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f27e26]:
+            - link "Sources" [ref=f27e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f27e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f27e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f27e43]:
+          - text: PROCESSING
+          - generic [ref=f27e44]:
+            - link "Transformations" [ref=f27e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f27e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f27e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f27e60]:
+            - link "Data Quality" [ref=f27e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f27e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f27e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f27e77]:
+          - text: OPERATIONS
+          - generic [ref=f27e78]:
+            - link "Monitoring" [ref=f27e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f27e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f27e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f27e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f27e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f27e101]:
+      - banner [ref=f27e102]:
+        - generic [ref=f27e103]:
+          - button [ref=f27e104]
+          - link "Monitoring" [ref=f27e108] [cursor=pointer]:
+            - /url: /monitoring
+        - generic [ref=f27e109]:
+          - button [ref=f27e110]
+          - button [ref=f27e115]
+          - button "User" [ref=f27e120]
+      - main [ref=f27e126]:
+        - generic [ref=f27e127]:
+          - generic [ref=f27e128]:
+            - heading "System Monitoring" [level=1] [ref=f27e132]
+            - generic [ref=f27e133]:
+              - generic [ref=f27e134]: Auto-refresh 15s
+              - button "Refresh" [ref=f27e135]
+              - link [ref=f27e141] [cursor=pointer]:
+                - /url: http://localhost:30800/graphql?request=query%7B__typename%7D
+                - button "GraphQL Explorer" [ref=f27e142]
+          - generic [ref=f27e147]:
+            - generic [ref=f27e149]:
+              - paragraph [ref=f27e150]: System Status
+              - generic [ref=f27e151]: —
+            - generic [ref=f27e155]:
+              - paragraph [ref=f27e156]: Active Workers
+              - paragraph [ref=f27e157]:
+                - text: "0"
+                - generic [ref=f27e158]: / 0
+            - generic [ref=f27e160]:
+              - paragraph [ref=f27e161]: Running Pods
+              - paragraph [ref=f27e162]:
+                - text: "0"
+                - generic [ref=f27e163]: / 0
+            - generic [ref=f27e165]:
+              - paragraph [ref=f27e166]: Events Processed
+              - paragraph [ref=f27e167]: "0"
+          - generic [ref=f27e168]:
+            - tablist [ref=f27e169]:
+              - tab "Overview" [selected] [ref=f27e170]
+              - tab "Workers (0)" [ref=f27e171]
+              - tab "Platform Pods (0)" [ref=f27e172]
+              - tab "Live Logs" [ref=f27e173]
+            - tabpanel "Overview" [ref=f27e174]:
+              - generic [ref=f27e175]:
+                - generic [ref=f27e176]:
+                  - heading "Core Services" [level=3] [ref=f27e178]
+                  - generic [ref=f27e183]:
+                    - generic [ref=f27e184]:
+                      - generic [ref=f27e185]: 🐘
+                      - generic [ref=f27e186]:
+                        - paragraph [ref=f27e187]: PostgreSQL (Metadata)
+                        - generic [ref=f27e188]: unknown
+                    - generic [ref=f27e191]:
+                      - generic [ref=f27e192]: 🔴
+                      - generic [ref=f27e193]:
+                        - paragraph [ref=f27e194]: Redis (Cache/Queue)
+                        - generic [ref=f27e195]: unknown
+                    - generic [ref=f27e198]:
+                      - generic [ref=f27e199]: 📨
+                      - generic [ref=f27e200]:
+                        - paragraph [ref=f27e201]: Kafka (Event Bus)
+                        - generic [ref=f27e202]: unknown
+                - generic [ref=f27e205]:
+                  - heading "Worker Summary" [level=3] [ref=f27e207]
+                  - generic [ref=f27e211]:
+                    - generic [ref=f27e212]:
+                      - paragraph [ref=f27e213]: mysql CDC
+                      - paragraph [ref=f27e214]: "0"
+                      - paragraph [ref=f27e215]: 0 total workers
+                    - generic [ref=f27e216]:
+                      - paragraph [ref=f27e217]: postgres CDC
+                      - paragraph [ref=f27e218]: "0"
+                      - paragraph [ref=f27e219]: 0 total workers
+                    - generic [ref=f27e220]:
+                      - paragraph [ref=f27e221]: mongo CDC
+                      - paragraph [ref=f27e222]: "0"
+                      - paragraph [ref=f27e223]: 0 total workers
+                - generic [ref=f27e224]:
+                  - heading "Aggregate Stats" [level=3] [ref=f27e226]
+                  - generic [ref=f27e232]:
+                    - generic [ref=f27e233]:
+                      - paragraph [ref=f27e234]: Total Workers
+                      - paragraph [ref=f27e235]: "0"
+                    - generic [ref=f27e236]:
+                      - paragraph [ref=f27e237]: CPU Usage (all workers)
+                      - paragraph [ref=f27e238]: 0%
+                    - generic [ref=f27e239]:
+                      - paragraph [ref=f27e240]: Memory Usage
+                      - paragraph [ref=f27e241]: 0 MB
+  - region "Notifications (F8)":
+    - list

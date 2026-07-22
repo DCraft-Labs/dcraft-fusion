@@ -1,0 +1,89 @@
+- generic [ref=f25e3]:
+  - complementary "Workspace navigation" [ref=f25e4]:
+    - generic [ref=f25e7]:
+      - heading "DCraft Fusion" [level=1] [ref=f25e8]
+      - paragraph [ref=f25e9]: Control plane
+    - generic [ref=f25e10]:
+      - generic [ref=f25e11]:
+        - strong [ref=f25e12]: Founder Admin
+        - generic [ref=f25e13]: founder@dcraftlabs.com
+      - button "Sign out" [ref=f25e14] [cursor=pointer]
+    - navigation [ref=f25e15]:
+      - link "Command Center" [ref=f25e16] [cursor=pointer]:
+        - /url: /workspace/command-center
+      - link "Integration Hub" [ref=f25e17] [cursor=pointer]:
+        - /url: /workspace/integrations
+      - link "Metadata Explorer" [ref=f25e18] [cursor=pointer]:
+        - /url: /workspace/metadata
+      - link "Workflow Runs" [ref=f25e19] [cursor=pointer]:
+        - /url: /workspace/runs
+      - link "Audit Center" [ref=f25e20] [cursor=pointer]:
+        - /url: /workspace/audit
+      - link "Settings" [ref=f25e21] [cursor=pointer]:
+        - /url: /workspace/settings
+      - link "AI Operator" [ref=f25e22] [cursor=pointer]:
+        - /url: /workspace/ai
+  - main [ref=f25e23]:
+    - generic [ref=f25e24]:
+      - generic [ref=f25e25]:
+        - paragraph [ref=f25e26]: Tenant control plane
+        - heading "Production Data Platform" [level=2] [ref=f25e27]
+      - generic [ref=f25e28]:
+        - generic "Active workspace context" [ref=f25e29]:
+          - generic [ref=f25e30]:
+            - generic [ref=f25e31]: Organization
+            - generic [ref=f25e32]: Commerce Platform Co.
+          - generic [ref=f25e33]:
+            - generic [ref=f25e34]: Tenant
+            - generic [ref=f25e35]: Brand A
+          - generic [ref=f25e36]:
+            - generic [ref=f25e37]: Environment
+            - generic [ref=f25e38]: PROD
+          - generic [ref=f25e39]:
+            - generic [ref=f25e40]: Deployment
+            - generic [ref=f25e41]: customer vpc
+          - generic [ref=f25e42]:
+            - generic [ref=f25e43]: Region
+            - generic [ref=f25e44]: us-east-1
+        - group "Theme" [ref=f25e45]:
+          - button "Dark" [ref=f25e46] [cursor=pointer]
+          - button "Light" [ref=f25e47] [cursor=pointer]
+    - generic [ref=f25e48]:
+      - generic [ref=f25e49]:
+        - heading "Command Center" [level=2] [ref=f25e50]
+        - paragraph [ref=f25e51]: Operational state for the active tenant, environment, and production metadata workflows.
+      - generic [ref=f25e52]:
+        - article [ref=f25e53]:
+          - text: Healthy Connections
+          - paragraph [ref=f25e54]: "2"
+        - article [ref=f25e55]:
+          - text: Datasets
+          - paragraph [ref=f25e56]: "2"
+        - article [ref=f25e57]:
+          - text: Failed Runs
+          - paragraph [ref=f25e58]: "1"
+        - article [ref=f25e59]:
+          - text: AI Drafts
+          - paragraph [ref=f25e60]: "1"
+      - generic [ref=f25e61]:
+        - generic [ref=f25e62]:
+          - heading "Recent Runs" [level=3] [ref=f25e63]
+          - paragraph [ref=f25e64]: Failure and freshness coverage stays visible from the first tenant screen.
+        - table [ref=f25e66]:
+          - rowgroup [ref=f25e67]:
+            - row [ref=f25e68]:
+              - columnheader "Workflow" [ref=f25e69]
+              - columnheader "Status" [ref=f25e70]
+              - columnheader "Environment" [ref=f25e71]
+              - columnheader "Artifact" [ref=f25e72]
+          - rowgroup [ref=f25e73]:
+            - row [ref=f25e74]:
+              - cell "customer_freshness_check" [ref=f25e75]
+              - cell "failed" [ref=f25e76]
+              - cell "production" [ref=f25e77]
+              - cell "airflow://dag/customer_freshness_check/run/2026-05-18" [ref=f25e78]
+            - row [ref=f25e79]:
+              - cell "daily_revenue_snapshot" [ref=f25e80]
+              - cell "succeeded" [ref=f25e81]
+              - cell "production" [ref=f25e82]
+              - cell "airflow://dag/daily_revenue_snapshot/run/2026-05-18" [ref=f25e83]

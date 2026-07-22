@@ -1,0 +1,66 @@
+- generic [ref=f7e2]:
+  - generic [ref=f7e3]:
+    - complementary [ref=f7e4]:
+      - generic [ref=f7e5]:
+        - generic [ref=f7e6]: DCraft Fusion CDC
+        - button [ref=f7e7]
+      - navigation [ref=f7e11]:
+        - generic [ref=f7e12]:
+          - text: MAIN
+          - generic [ref=f7e13]:
+            - link "Dashboard" [ref=f7e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f7e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f7e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f7e26]:
+            - link "Sources" [ref=f7e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f7e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f7e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f7e43]:
+          - text: PROCESSING
+          - generic [ref=f7e44]:
+            - link "Transformations" [ref=f7e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f7e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f7e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f7e60]:
+            - link "Data Quality" [ref=f7e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f7e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f7e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f7e77]:
+          - text: OPERATIONS
+          - generic [ref=f7e78]:
+            - link "Monitoring" [ref=f7e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f7e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f7e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f7e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f7e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f7e101]:
+      - banner [ref=f7e102]:
+        - generic [ref=f7e103]:
+          - button [ref=f7e104]
+          - link "Alerts" [ref=f7e108] [cursor=pointer]:
+            - /url: /alerts
+        - generic [ref=f7e109]:
+          - button [ref=f7e110]
+          - button [ref=f7e115]
+          - button "User" [ref=f7e120]
+      - main [ref=f7e126]:
+        - generic [ref=f7e127]: Loading alerts...
+  - region "Notifications (F8)":
+    - list

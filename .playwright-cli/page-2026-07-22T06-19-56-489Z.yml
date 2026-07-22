@@ -1,0 +1,87 @@
+- generic [ref=f25e2]:
+  - generic [ref=f25e3]:
+    - complementary [ref=f25e4]:
+      - generic [ref=f25e5]:
+        - generic [ref=f25e6]: DCraft Fusion CDC
+        - button [ref=f25e7]
+      - navigation [ref=f25e11]:
+        - generic [ref=f25e12]:
+          - text: MAIN
+          - generic [ref=f25e13]:
+            - link "Dashboard" [ref=f25e14] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Connectors" [ref=f25e21] [cursor=pointer]:
+              - /url: /connectors
+        - generic [ref=f25e25]:
+          - text: DATA PIPELINE
+          - generic [ref=f25e26]:
+            - link "Sources" [ref=f25e27] [cursor=pointer]:
+              - /url: /sources
+            - link "Destinations" [ref=f25e33] [cursor=pointer]:
+              - /url: /destinations
+            - link "Connections" [ref=f25e37] [cursor=pointer]:
+              - /url: /connections
+        - generic [ref=f25e43]:
+          - text: PROCESSING
+          - generic [ref=f25e44]:
+            - link "Transformations" [ref=f25e45] [cursor=pointer]:
+              - /url: /transformations
+            - link "UDFs" [ref=f25e53] [cursor=pointer]:
+              - /url: /udfs
+        - generic [ref=f25e59]:
+          - text: QUALITY & ALERTS
+          - generic [ref=f25e60]:
+            - link "Data Quality" [ref=f25e61] [cursor=pointer]:
+              - /url: /data-quality
+            - link "Alerts" [ref=f25e66] [cursor=pointer]:
+              - /url: /alerts
+            - link "Schema Evolution" [ref=f25e71] [cursor=pointer]:
+              - /url: /schema-evolution
+        - generic [ref=f25e77]:
+          - text: OPERATIONS
+          - generic [ref=f25e78]:
+            - link "Monitoring" [ref=f25e79] [cursor=pointer]:
+              - /url: /monitoring
+            - link "GraphQL Explorer" [ref=f25e83] [cursor=pointer]:
+              - /url: /graphql
+            - link "Dead Letter Queue" [ref=f25e89] [cursor=pointer]:
+              - /url: /dlq
+        - generic [ref=f25e94]:
+          - text: ADMIN
+          - link "Settings" [ref=f25e96] [cursor=pointer]:
+            - /url: /settings
+    - generic [ref=f25e101]:
+      - banner [ref=f25e102]:
+        - generic [ref=f25e103]:
+          - button [ref=f25e104]
+          - link "Destinations" [ref=f25e108] [cursor=pointer]:
+            - /url: /destinations
+        - generic [ref=f25e109]:
+          - button [ref=f25e110]
+          - button [ref=f25e115]
+          - button "User" [ref=f25e120]
+      - main [ref=f25e126]:
+        - generic [ref=f25e127]:
+          - generic [ref=f25e128]:
+            - heading "Destinations" [level=1] [ref=f25e129]
+            - button "New Destination" [ref=f25e130]
+          - generic [ref=f25e132]:
+            - combobox [ref=f25e133]:
+              - generic: All Status
+            - combobox [ref=f25e136]:
+              - generic: All Types
+            - textbox "Search destinations..." [ref=f25e143]
+          - table [ref=f25e147]:
+            - rowgroup [ref=f25e148]:
+              - row [ref=f25e149]:
+                - columnheader [ref=f25e150]
+                - columnheader "Name" [ref=f25e151]
+                - columnheader "Type" [ref=f25e152]
+                - columnheader "Status" [ref=f25e153]
+                - columnheader "Last Test" [ref=f25e154]
+                - columnheader "Actions" [ref=f25e155]
+            - rowgroup [ref=f25e156]:
+              - row [ref=f25e157]:
+                - cell "Loading destinations..." [ref=f25e158]
+  - region "Notifications (F8)":
+    - list
