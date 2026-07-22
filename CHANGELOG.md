@@ -4,6 +4,36 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.15] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.15. This repo
+holds the public Helm charts and local-dev values that reference the CDC
+images, so the chart + image tags move `1.2.14` → `1.2.15` to match the
+Iceberg write-path fixes shipped in `fusion-cdc-engine` v1.2.15
+(`TableNotFound` import drop + `s3fs` dep + catalog-type-aware warehouse
+hint).
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.15`
+  / `appVersion: "1.2.15"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.14` → `1.2.15` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and `--version 1.2.15`
+  in `infra/local-dev/k8s/deploy.ps1` / `infra/helm/README.md`.
+
+### Fixed (in fusion-cdc-engine v1.2.15, referenced here for coordination)
+- Dropped `TableNotFound` from `iceberg_tester.py` imports (does not exist
+  in pyiceberg 0.7.1; only `NoSuchTableError` is used).
+- Added `s3fs==2024.6.1` to `control-plane/requirements.txt` and
+  `transform-worker/requirements.txt` so PyIceberg's fsspec-based S3 FileIO
+  can write to Nessie/REST + MinIO/S3 (previously
+  `ModuleNotFoundError: No module named 's3fs'` on `table.append()`).
+- Catalog-type-aware warehouse hint in the Create Destination form
+  (`frontend/src/lib/iceberg-config.ts` +
+  `IcebergDestinationForm.tsx`): Nessie/REST show the warehouse NAME,
+  Hive/Glue/SQL/DynamoDB show the S3 path.
+
 ## [1.2.14] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.14. Closes the
