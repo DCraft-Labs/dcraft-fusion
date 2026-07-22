@@ -4,6 +4,30 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.12] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.12. This repo
+holds the public Helm charts and local-dev values that reference the CDC
+images, so the chart + image tags move `1.2.11` → `1.2.12` to match the
+CDC fixes shipped in `fusion-cdc-engine` v1.2.12.
+
+### Fixed (in fusion-cdc-engine v1.2.12, referenced here for coordination)
+- Real Iceberg Test Connection (PyIceberg catalog load + namespace list +
+  S3 HeadBucket) in the control plane.
+- Real Iceberg write-permission check (create/insert/delete/drop a test
+  namespace + table).
+- CDC → transform-worker bridge: cdc-worker now LPUSHes `cdc_transform`
+  tasks to `fusion:transforms:normal` so the transform-worker BRPOPs them
+  and writes to Postgres / Iceberg (previously CDC events went to a Redis
+  Stream the transform-worker never read).
+- Seeded Iceberg `auth_mode: "static"` now resolves to the `s3_*` creds.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.12`
+  / `appVersion: "1.2.12"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.11` → `1.2.12` in the values files and
+  `--version 1.2.12` in `deploy.ps1` / `infra/helm/README.md`.
+
 ## [1.2.11] — 2026-07-22
 
 Follow-up to v1.2.10. The v1.2.10 tag shipped corrupted Helm `values.yaml`

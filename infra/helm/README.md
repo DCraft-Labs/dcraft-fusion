@@ -40,14 +40,14 @@ kubectl -n fusion-cdc create secret generic fusion-cdc-secrets \
 
 # â”€â”€ 1. Control plane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 helm install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion \
-  --version 1.2.11 \
+  --version 1.2.12 \
   --namespace dcraft-fusion \
   -f dcraft-fusion/examples/values-minimal.yaml \
   --set externalRedis.addr=redis:6379
 
 # â”€â”€ 2. CDC (image-only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 helm install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc \
-  --version 1.2.11 \
+  --version 1.2.12 \
   --namespace fusion-cdc \
   -f fusion-cdc/examples/values-minimal.yaml
 ```
