@@ -1,4 +1,4 @@
-# Minimal values Ã¢â‚¬â€ CDC image-only smoke test
+# Minimal values â€” CDC image-only smoke test
 # Requires Secret fusion-cdc-secrets (see chart README).
 
 global:
@@ -9,7 +9,7 @@ global:
 controlPlane:
   replicaCount: 1
   image:
-    tag: "1.2.10"
+    tag: "1.2.11"
   hpa:
     enabled: false
   podDisruptionBudget:
@@ -30,9 +30,9 @@ sparkConsumer:
 frontend:
   replicaCount: 1
   image:
-    tag: "1.2.10"
+    tag: "1.2.11"
 
 transformWorker:
   enabled: true
   image:
-    tag: "1.2.10"
+    tag: "1.2.11"

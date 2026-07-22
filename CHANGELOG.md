@@ -4,6 +4,28 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.11] — 2026-07-22
+
+Follow-up to v1.2.10. The v1.2.10 tag shipped corrupted Helm `values.yaml`
+files (a PowerShell re-encode pass introduced UTF-8 mojibake on the em-dash
+and box-drawing comment characters), which made `helm lint` fail in the
+`Publish Helm charts` workflow. v1.2.11 re-applies the v1.2.10 changes with
+UTF-8-safe file writes and re-tags all images/charts to `1.2.11`.
+
+### Fixed
+- Re-encoded `infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, the two `examples/values-minimal.yaml`
+  overlays, `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`,
+  `infra/local-dev/k8s/deploy.ps1`, and `infra/helm/README.md` as UTF-8 (no
+  BOM) so `helm lint` passes. No semantic changes vs v1.2.10 — only the
+  image/chart version tags move from `1.2.10` → `1.2.11`.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.11`
+  / `appVersion: "1.2.11"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.10` → `1.2.11` in the values files and
+  `--version 1.2.11` in `deploy.ps1` / `infra/helm/README.md`.
+
 ## [1.2.10] — 2026-07-22
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.10. v1.2.9
