@@ -4,6 +4,32 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.17] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.17. This repo
+holds the public Helm charts and local-dev values that reference the CDC
+images, so the chart + image tags move `1.2.16` → `1.2.17` to match the
+transform-worker initial-load chunking fix shipped in `fusion-cdc-engine`
+v1.2.17 (PK-bounded chunked fetch + checkpoint resume, fixing the OOM
+regression on 2 GB+ source tables).
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.17`
+  / `appVersion: "1.2.17"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.16` → `1.2.17` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.17` in `infra/local-dev/k8s/deploy.ps1` /
+  `infra/helm/README.md`.
+
+### Fixed (in fusion-cdc-engine v1.2.17, referenced here for coordination)
+- Transform-worker `InitialLoadTask` no longer materializes the entire
+  source table into memory (Postgres/MySQL `fetchall()`, MongoDB
+  `list(find())`). It now loops over PK-bounded chunks of 10000 rows and
+  writes a checkpoint after each chunk, so a 2 GB initial load completes
+  without OOM and resumes from the last PK after a worker restart.
+
 ## [1.2.16] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.16. This repo
