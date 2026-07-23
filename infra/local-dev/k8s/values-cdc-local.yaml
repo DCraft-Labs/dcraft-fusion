@@ -12,7 +12,7 @@ transformWorker:
 
 controlPlane:
   image:
-    tag: "1.2.29"
+    tag: "1.2.30"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -41,7 +41,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.2.29"
+    tag: "1.2.30"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101

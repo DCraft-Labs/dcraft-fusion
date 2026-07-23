@@ -4,6 +4,68 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.30] — 2026-07-23
+
+### Coordinated release with `fusion-cdc-engine` v1.2.30 — parallel-load correctness fix
+This release ships the chart + image-tag bumps that point the public Fusion
+chart at the v1.2.30 CDC engine images, which fix five P0 defects in the
+multi-pod parallel initial load (confirmed live against a 118M-row MySQL
+table — 6 pods, 6 disjoint PK ranges, only 380k rows / 0.32% before
+plateauing with 1 of 6 checkpoints and a fake `progress_pct:100`):
+
+- **Defect A — premature DONE on a short chunk** (`loader.py`): the
+  single-partition-era `if row_count < chunk_size: break` heuristic was
+  replaced with an explicit `last_pk >= pk_end` upper-bound check. A short
+  chunk near a bounded partition's boundary is expected and does NOT end
+  the partition; the loop continues until the boundary is reached (or the
+  range is genuinely exhausted, for the unbounded last partition).
+- **Defect B — missing checkpoints** (`loader.py`): the convert+write block
+  is wrapped in try/except so an exception (e.g. Iceberg "snapshot id
+  changed" conflict from a duplicate-dequeue sibling pod) persists a
+  `state="failed"` checkpoint for the `chunk_seq` before re-raising to the
+  worker retry/dead-letter path. Every exit path (normal, premature-DONE
+  fix, error, exception, fetch-thread failure) now reports a checkpoint.
+- **Defect C — fake `rows_estimated`** (`partitioning.py`, `connections.py`,
+  `internal.py`): the per-partition row estimate is now density-based
+  (`table_rows * span / total_span`, from the instant
+  `information_schema.tables.table_rows` / `pg_class.reltuples` count) and
+  stamped at ENQUEUE time in the task payload. The worker stamps it on the
+  FIRST checkpoint for the partition and the control-plane never overwrites
+  a non-null `rows_estimated`, so `progress_pct = rows_written /
+  rows_estimated * 100` reflects real progress instead of always reading
+  100%.
+- **Defect D — duplicate dequeue** (`worker.py`): replaced the non-atomic
+  `LRANGE` + `LREM` dequeue with `BLMOVE` (atomic) from the main queue to a
+  per-worker in-flight list. Two pods can never dequeue the same `task_id`
+  concurrently. The task is removed from in-flight only on ack (success or
+  dead-letter); during retry/backoff it stays in in-flight (no sibling pod
+  can grab it), then is atomically moved back to the main queue.
+- **Defect E — ProxySQL pooling auth** (`loader.py`): the pooled source
+  connection now uses the EXACT same param extraction as the per-chunk path
+  (`database_name`/`database`, `username`/`user`, `connect_timeout=10`,
+  MySQL `autocommit=True` + `DictCursor`), so ProxySQL no longer rejects
+  the pooled connection with "Access denied" and the worker keeps the
+  pooling win.
+
+### Tests
+Five regression tests added in
+`transform-worker/tests/test_parallel_load_correctness.py` (re-exported
+from `test_v130_correctness.py`):
+1. `test_partition_loop_continues_past_short_chunk` — Defect A.
+2. `test_all_partitions_get_checkpoint` — Defect B (K=4).
+3. `test_rows_estimated_from_partitioning` — Defect C.
+4. `test_no_duplicate_dequeue` — Defect D (two workers, atomic BLMOVE).
+5. `test_premature_done_fix_regression` — Defect A regression (25M-key
+   range, chunk_size 10k, must NOT mark DONE at 50k rows).
+
+### Version
+- `dcraft-fusion` chart: `1.2.30` (`infra/helm/dcraft-fusion/Chart.yaml`).
+- `fusion-cdc` chart: `1.2.30` (`infra/helm/fusion-cdc/Chart.yaml`).
+- Image tags bumped to `"1.2.30"` in both charts' `values.yaml` and
+  `examples/values-minimal.yaml`, the local-dev overrides
+  (`values-cdc-local.yaml`, `values-fusion-local.yaml`), and
+  `infra/local-dev/k8s/deploy.ps1` (`--version 1.2.30`).
+
 ## [1.2.29] — 2026-07-23
 
 ### Coordinated release with `fusion-cdc-engine` v1.2.29
