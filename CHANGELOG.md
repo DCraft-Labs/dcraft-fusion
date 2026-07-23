@@ -4,6 +4,24 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.24] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.24 — CI fix
+for the v1.2.23 `test` job (missing `redis` dep for the transform-worker
+unit tests, which import `loader.py` and `loader.py` does `import redis`
+at module level). The public repo has no source change in this release —
+only chart/image tag bumps to keep the public charts in sync with the
+rebuilt GHCR images.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.24`
+  / `appVersion: "1.2.24"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.23` → `1.2.24` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.24` in `infra/local-dev/k8s/deploy.ps1`.
+
 ## [1.2.23] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.23 — CI fix
