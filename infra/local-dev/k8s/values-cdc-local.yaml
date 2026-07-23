@@ -1,9 +1,9 @@
 # Local Docker Desktop overrides for fusion-cdc (fits ~3Gi VM).
-# Transform worker alone requests 2Gi â€” leave it off locally.
+# Transform worker alone requests 2Gi Ã¢â‚¬â€ leave it off locally.
 transformWorker:
   enabled: false
   # v1.2.28 Task 3: configurable KEDA max scale for initial sync. Local-dev
-  # keeps a small max (4) — production should raise this for large initial
+  # keeps a small max (4) â€” production should raise this for large initial
   # loads (see infra/helm/fusion-cdc/values.yaml transformWorker.keda).
   keda:
     enabled: false
@@ -12,7 +12,7 @@ transformWorker:
 
 controlPlane:
   image:
-    tag: "1.2.35"
+    tag: "1.2.36"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -21,7 +21,7 @@ controlPlane:
     fsGroup: 999
     seccompProfile:
       type: RuntimeDefault
-  # Image default is 4 uvicorn workers â€” OOM under ~384Mi on Docker Desktop.
+  # Image default is 4 uvicorn workers Ã¢â‚¬â€ OOM under ~384Mi on Docker Desktop.
   securityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: false
@@ -41,7 +41,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.2.35"
+    tag: "1.2.36"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101

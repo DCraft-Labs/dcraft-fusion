@@ -1,7 +1,7 @@
 # Local Docker Desktop overrides for dcraft-fusion (fits ~3Gi VM).
 controlPlaneKernel:
   image:
-    tag: "1.2.35"
+    tag: "1.2.36"
   # Local-dev / community: bypass the RS256 JWKS fetch on protected kernel
   # routes. The kernel's auth middleware (services/control-plane-kernel/
   # internal/auth/middleware.go) short-circuits to the next handler when
@@ -24,10 +24,10 @@ controlPlaneKernel:
       cpu: 250m
       memory: 256Mi
 
-# Official nginx image runs as root on port 80 â€” disable non-root for local smoke.
+# Official nginx image runs as root on port 80 Ã¢â‚¬â€ disable non-root for local smoke.
 web:
   image:
-    tag: "1.2.35"
+    tag: "1.2.36"
   podSecurityContext: null
   securityContext: null
   resources:
