@@ -39,7 +39,7 @@ controlPlane:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: "1.2.25"
+    tag: "1.2.26"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -101,6 +101,12 @@ controlPlane:
 
   podSecurityContext:
     runAsNonRoot: true
+    # v1.2.26 Task 8: pin runAsUser/fsGroup so Kubernetes can verify the
+    # image's non-numeric USER directive (the control-plane image runs as
+    # the system user `fusion`, UID 999). Without this the pod can fail with
+    # CreateContainerConfigError on strict admission controllers.
+    runAsUser: 999
+    fsGroup: 999
     seccompProfile:
       type: RuntimeDefault
 
@@ -148,7 +154,7 @@ cdcWorkers:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: "1.2.25"
+    tag: "1.2.26"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -205,6 +211,10 @@ cdcWorkers:
 
   podSecurityContext:
     runAsNonRoot: true
+    # v1.2.26 Task 8: pin runAsUser/fsGroup so Kubernetes can verify
+    # the image's non-numeric USER directive (the cdc-worker image runs as user `fusion` (UID 2000, GID 2000 — see docker/Dockerfile.cdc-worker).)
+    runAsUser: 2000
+    fsGroup: 2000
     seccompProfile:
       type: RuntimeDefault
 
@@ -233,7 +243,7 @@ sparkConsumer:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: "1.2.25"
+    tag: "1.2.26"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -267,6 +277,10 @@ sparkConsumer:
 
   podSecurityContext:
     runAsNonRoot: true
+    # v1.2.26 Task 8: pin runAsUser/fsGroup so Kubernetes can verify
+    # the image's non-numeric USER directive (spark-consumer is disabled by default (Kafka removed in v1.2.25); generic non-root UID 1000 — adjust if you enable it.)
+    runAsUser: 1000
+    fsGroup: 1000
     seccompProfile:
       type: RuntimeDefault
 
@@ -302,7 +316,7 @@ frontend:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: "1.2.25"
+    tag: "1.2.26"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -351,6 +365,10 @@ frontend:
 
   podSecurityContext:
     runAsNonRoot: true
+    # v1.2.26 Task 8: pin runAsUser/fsGroup so Kubernetes can verify
+    # the image's non-numeric USER directive (the frontend image runs as `nginx` (UID 101, GID 101).)
+    runAsUser: 101
+    fsGroup: 101
     seccompProfile:
       type: RuntimeDefault
 
@@ -390,7 +408,7 @@ transformWorker:
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: "1.2.25"
+    tag: "1.2.26"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -449,6 +467,19 @@ transformWorker:
   podLabels: {}
 
   keda:
+    # v1.2.26 Task 3: configurable KEDA max scale for the initial sync.
+    # KEDA scales the transform-worker Deployment from minReplicaCount (idle,
+    # scale-to-zero) up to maxReplicaCount when the
+    # ``fusion:transforms:high`` queue depth grows. Each initial-load task
+    # consumes one PK-range partition (Task 1), so raising maxReplicaCount
+    # lets K concurrent pods process K partitions of the same table in
+    # parallel (true intra-table parallelism). Raise this for large
+    # initial loads (e.g. 50 for a 118M-row load with parallelism=16).
+    # NOTE: KEDA's max is global per ScaledObject — the per-connection
+    # ``parallelism`` (resource_limits.parallelism) controls how many
+    # partitions a single connection enqueues, NOT how many pods KEDA will
+    # spin up across ALL connections. Size maxReplicaCount for the peak
+    # combined parallelism of all concurrent initial loads.
     enabled: false
     minReplicaCount: 0
     maxReplicaCount: 50

@@ -4,6 +4,27 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.26] — 2026-07-23
+
+### Infrastructure
+- **Configurable KEDA max scale for initial sync (Task 3):** documented the
+  `transformWorker.keda.maxReplicaCount` value (already wired through the
+  ScaledObject template) and added a clarifying comment explaining its
+  relationship to the per-connection `resource_limits.parallelism` (K).
+  Local-dev `values-cdc-local.yaml` now ships a `keda` block with
+  `maxReplicaCount: 4` for documentation/local-dev.
+- **Chart podSecurityContext defaults completed (Task 8):** pinned
+  `runAsUser`/`fsGroup` for `controlPlane` (999), `cdcWorkers` (2000),
+  `sparkConsumer` (1000), and `frontend` (101) — `transformWorker` already
+  had them (v1.2.18). Without these, strict admission controllers can reject
+  pods with `CreateContainerConfigError` because Kubernetes cannot verify the
+  image's non-numeric `USER` directive.
+
+### Version
+- Chart version + all image tags bumped to `1.2.26` across `fusion-cdc` and
+  `dcraft-fusion` charts, `values-*-local.yaml`, `deploy.ps1`, and
+  `examples/values-minimal.yaml`.
+
 ## [1.2.25] — 2026-07-23
 
 ### Infrastructure

@@ -12,7 +12,7 @@ externalRedis:
 controlPlaneKernel:
   replicaCount: 1
   image:
-    tag: "1.2.25"
+    tag: "1.2.26"
   resources:
     requests:
       cpu: 50m
@@ -24,7 +24,7 @@ controlPlaneKernel:
 web:
   replicaCount: 1
   image:
-    tag: "1.2.25"
+    tag: "1.2.26"
 
 ingress:
   enabled: false
