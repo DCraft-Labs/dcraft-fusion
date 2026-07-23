@@ -6,9 +6,9 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [1.2.33] — 2026-07-24
 
-### Coordinated release with `fusion-cdc-engine` v1.2.33 — parallel-load contention fixes
+### Coordinated release with `fusion-cdc-engine` v1.2.33 — parallel-load contention + duplicate-row fixes
 This release ships the chart + image-tag bumps that point the public Fusion
-chart at the v1.2.33 CDC engine images, which fix two P0 bugs found in the
+chart at the v1.2.33 CDC engine images, which fix three P0 bugs found in the
 v1.2.32 parallel-load (K=6) test:
 
 - **Bug #20** — unbounded final partition premature DONE due to an adaptive
@@ -21,6 +21,13 @@ v1.2.32 parallel-load (K=6) test:
   Fixed with jittered backoff, a higher `INITIAL_LOAD_MAX_RETRIES=30` budget
   for initial-load tasks, and a per-table Redis commit mutex that serializes
   COMMITS while keeping FETCHES parallel.
+- **Bug #22** — commit-batching + retry-after-conflict produced ~21%
+  duplicate rows (up to 48% in the partitions that retried the most). The
+  checkpoint (`last_pk`) advanced on every buffered chunk, not when the
+  batch's commit succeeded; a retry resumed past durable rows and re-appended
+  them. Fixed by (1) advancing the checkpoint only after commit success,
+  (2) dedup-on-PK (delete-then-append) before each batch append, and
+  (3) defaulting `INITIAL_LOAD_COMMIT_BATCH=1` (one commit per chunk).
 
 See `fusion-cdc-engine` v1.2.33 CHANGELOG for full details. This repo only
 bumps versions: `infra/helm/dcraft-fusion/Chart.yaml`,
