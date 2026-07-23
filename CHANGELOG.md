@@ -4,6 +4,35 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.22] — 2026-07-23
+
+Coordinated release with the private `fusion-cdc-engine` v1.2.22 — critical
+fix release for the transform-worker (Iceberg destination path). The
+public repo has no source change in this release — only chart/image tag
+bumps to keep the public charts in sync with the rebuilt GHCR images.
+
+The v1.2.22 fix set (in the private repo) covers:
+- **Bug A**: all-NULL columns → `pa.null()` → PyIceberg rejects — fixed by
+  fetching the source schema once from `information_schema` and passing
+  it through to `pa.Table.from_pylist(rows, schema=...)`.
+- **Bug B**: DuckDB `$1` binding fails for `list[dict]` — fixed by
+  converting rows to a PyArrow Table and registering it as a view.
+- 3 additional step-handler bugs (date_op on VARCHAR, json_flatten_child
+  `from_json('[]')`, mask hash `sha256(BLOB)`, udf `duckdb.create_function`
+  vs `conn.create_function`).
+- Compute efficiency: source schema fetched ONCE per stream (not per
+  chunk), READ ONLY + autocommit on source fetches so the source DB is
+  not locked across destination writes.
+
+### Changed
+- Bumped `dcraft-fusion` and `fusion-cdc` Helm charts to `version: 1.2.22`
+  / `appVersion: "1.2.22"` (`infra/helm/*/Chart.yaml`).
+- Bumped all image tags from `1.2.21` → `1.2.22` in the values files
+  (`infra/helm/dcraft-fusion/values.yaml`,
+  `infra/helm/fusion-cdc/values.yaml`, `*/examples/values-minimal.yaml`,
+  `infra/local-dev/k8s/values-{cdc,fusion}-local.yaml`) and
+  `--version 1.2.22` in `infra/local-dev/k8s/deploy.ps1`.
+
 ## [1.2.21] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.21 — CI fix
