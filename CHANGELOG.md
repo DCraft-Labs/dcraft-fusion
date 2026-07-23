@@ -4,6 +4,32 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.29] — 2026-07-23
+
+### Coordinated release with `fusion-cdc-engine` v1.2.29
+This release ships the chart + image-tag bumps that point the public Fusion
+chart at the v1.2.29 CDC engine images, which contain the performance,
+observability, and reliability work:
+
+- **DuckDB native scanner for bulk initial load** (Task 1) — direct Arrow
+  reads from MySQL/Postgres, gated by `INITIAL_LOAD_BULK_MODE`.
+- **Per-chunk Prometheus metrics** (Task 2) — `initial_load_*` counters /
+  histograms / gauges on `TRANSFORM_WORKER_PROMETHEUS_PORT`.
+- **CDC streaming idempotency** (Task 4) — `cdc_applied_events` ledger gives
+  exactly-once apply, gated by `CDC_IDEMPOTENCY_ENABLED`.
+- **Source-DB connection pooling per partition** (Task 5).
+- **Backpressure handling** (Task 6) — bounded prefetch queue + depth gauge.
+- **Real-time UI progress + ETA** (Task 3) — new
+  `GET /connections/{id}/initial-load/progress` endpoint + frontend polling.
+
+### Version
+- `dcraft-fusion` chart: `1.2.29` (`infra/helm/dcraft-fusion/Chart.yaml`).
+- `fusion-cdc` chart: `1.2.29` (`infra/helm/fusion-cdc/Chart.yaml`).
+- Image tags bumped to `"1.2.29"` in both charts' `values.yaml` and
+  `examples/values-minimal.yaml`, the local-dev overrides
+  (`values-cdc-local.yaml`, `values-fusion-local.yaml`), and
+  `infra/local-dev/k8s/deploy.ps1` (`--version 1.2.29`).
+
 ## [1.2.28] — 2026-07-23
 
 ### Coordinated release with `fusion-cdc-engine` v1.2.28 (CI fix)
