@@ -105,6 +105,22 @@ data:
   02-fusion-dw.sql: |
     \c fusion_dw
     GRANT ALL ON SCHEMA public TO dw_user;
+  # v1.2.37 §1 + §8 item 1: Nessie persistence — give the Iceberg REST
+  # catalog its own database in the existing infra Postgres so Nessie can
+  # use a JDBC2 backend instead of its default in-memory version store.
+  # Without this, every Nessie pod restart wipes the entire Iceberg catalog
+  # (every table's existence, every snapshot, all commit history) — which
+  # happened live during the v1.2.36 investigation (OOMKill at 512Mi,
+  # `transaction` dropped from 655K rows to ~370-390K, sequence number
+  # reset from 68 to ~42-46). The Nessie deployment below is configured to
+  # use this database via Quarkus datasource env vars; Nessie's bundled
+  # PostgreSQL JDBC driver creates the schema tables on first boot.
+  03-nessie.sql: |
+    -- Nessie JDBC2 backend database. Owned by the existing ``fusion`` user
+    -- so the same credentials work (no extra secret to manage). Nessie
+    -- creates its own schema tables inside this DB on first boot.
+    CREATE DATABASE nessie;
+    GRANT ALL PRIVILEGES ON DATABASE nessie TO fusion;
 ---
 # ─────────────────────────────────────────────────────────────────────────────
 # Postgres durability (local-dev)
@@ -641,6 +657,16 @@ spec:
               echo "bucket iceberg-warehouse ready"
 ---
 # ── Nessie catalog Deployment (Iceberg REST catalog) ─────────────────────────
+# v1.2.37 §1 + §8 item 1: Nessie now uses a persistent JDBC2 backend against
+# the existing infra Postgres (database ``nessie``, created by the
+# ``03-nessie.sql`` init script above) instead of its default in-memory
+# version store. This eliminates the Priority-0 data-loss bug where every
+# Nessie pod restart wiped the entire Iceberg catalog (every table, every
+# snapshot, all commit history). Memory is bumped back to a sane 1Gi now
+# that the catalog state is durable — 512Mi was already OOMKill-prone and
+# 2Gi was a stopgap mitigation; with persistence, 1Gi is comfortable for
+# the local-dev single-node workload. Production should use a managed
+# Postgres (RDS / Cloud SQL) for the Nessie backend, not this local-dev DB.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -667,6 +693,33 @@ spec:
           env:
             - name: QUARKUS_HTTP_PORT
               value: "19120"
+            # v1.2.37: switch from the default in-memory version store to a
+            # persistent JDBC2 backend against the infra Postgres. Nessie's
+            # official image bundles the PostgreSQL JDBC driver, so no extra
+            # driver classpath config is needed.
+            - name: NESSIE_VERSION_STORE_TYPE
+              value: "JDBC"
+            # Quarkus datasource (smallrye config). Nessie reads these via
+            # MicroProfile config source env-var mapping.
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: "jdbc:postgresql://postgres:5432/nessie"
+            - name: QUARKUS_DATASOURCE_JDBC_DRIVER
+              value: "org.postgresql.Driver"
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: "fusion"
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: "fusion_local"
+            # Nessie 0.95+ persistence-jdbc config keys (mirror of the
+            # Quarkus datasource, kept for completeness / older Nessie builds
+            # that read these instead).
+            - name: NESSIE_VERSION_STORE_PERSISTENCE_JDBC_URL
+              value: "jdbc:postgresql://postgres:5432/nessie"
+            - name: NESSIE_VERSION_STORE_PERSISTENCE_JDBC_USER
+              value: "fusion"
+            - name: NESSIE_VERSION_STORE_PERSISTENCE_JDBC_PASSWORD
+              value: "fusion_local"
+            - name: NESSIE_VERSION_STORE_PERSISTENCE_JDBC_DRIVER
+              value: "org.postgresql.Driver"
           startupProbe:
             httpGet:
               path: /api/v1/config
@@ -681,7 +734,7 @@ spec:
             periodSeconds: 5
           resources:
             requests: { cpu: "100m", memory: "256Mi" }
-            limits: { cpu: "500m", memory: "512Mi" }
+            limits: { cpu: "500m", memory: "1Gi" }
 ---
 apiVersion: v1
 kind: Service
