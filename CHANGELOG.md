@@ -4,6 +4,19 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.28] — 2026-07-23
+
+### Coordinated release with `fusion-cdc-engine` v1.2.28 (CI fix)
+v1.2.27's tag pointed to a commit that failed a contract test (the test did a
+static source check for `def _trigger_dag_or_worker(` but v1.2.27 made the
+function `async def`). v1.2.28 re-tags on top of the CI fix. No production code
+changed on the public repo — this is a chart/image-only bump to `1.2.28` so
+the public charts pull the fixed images from GHCR.
+
+- **Chart version + image tags bumped to `1.2.28`** across `fusion-cdc` and
+  `dcraft-fusion` charts, `values-*-local.yaml`, `deploy.ps1`, and
+  `examples/values-minimal.yaml`.
+
 ## [1.2.27] — 2026-07-23
 
 ### Coordinated release with `fusion-cdc-engine` v1.2.27 (P0 partitioning fix)
