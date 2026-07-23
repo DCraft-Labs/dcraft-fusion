@@ -4,6 +4,20 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.27] — 2026-07-23
+
+### Coordinated release with `fusion-cdc-engine` v1.2.27 (P0 partitioning fix)
+This is a chart/image-only release on the public repo — the partitioning fix
+itself lives in the private `fusion-cdc-engine` repo. The public repo bumps
+chart versions + image tags so the public `fusion-cdc` and `dcraft-fusion`
+charts pull the fixed `1.2.27` images from GHCR.
+
+- **Chart version + image tags bumped to `1.2.27`** across `fusion-cdc` and
+  `dcraft-fusion` charts, `values-*-local.yaml`, `deploy.ps1`, and
+  `examples/values-minimal.yaml`. See the private repo's v1.2.27 changelog
+  for the full P0 fix details (non-blocking partitioning: threadpool offload
+  + `information_schema` count + timeout/KILL fallback + async 202 endpoint).
+
 ## [1.2.26] — 2026-07-23
 
 ### Infrastructure

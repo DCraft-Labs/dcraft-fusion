@@ -2,7 +2,7 @@
 # Transform worker alone requests 2Gi â€” leave it off locally.
 transformWorker:
   enabled: false
-  # v1.2.26 Task 3: configurable KEDA max scale for initial sync. Local-dev
+  # v1.2.27 Task 3: configurable KEDA max scale for initial sync. Local-dev
   # keeps a small max (4) — production should raise this for large initial
   # loads (see infra/helm/fusion-cdc/values.yaml transformWorker.keda).
   keda:
@@ -12,7 +12,7 @@ transformWorker:
 
 controlPlane:
   image:
-    tag: "1.2.26"
+    tag: "1.2.27"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -41,7 +41,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.2.26"
+    tag: "1.2.27"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101
