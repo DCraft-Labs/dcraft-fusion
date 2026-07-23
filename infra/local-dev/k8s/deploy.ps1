@@ -75,7 +75,7 @@ Write-Host "==> helm install dcraft-fusion"
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 & $helm upgrade --install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion `
-  --version 1.2.22 `
+  --version 1.2.23 `
   --namespace dcraft-local `
   -f "$root\infra\helm\dcraft-fusion\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-fusion-local.yaml" `
@@ -88,7 +88,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "==> helm install fusion-cdc"
 & $helm upgrade --install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc `
-  --version 1.2.22 `
+  --version 1.2.23 `
   --namespace dcraft-local `
   -f "$root\infra\helm\fusion-cdc\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-cdc-local.yaml" `
