@@ -4,6 +4,30 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.33] — 2026-07-24
+
+### Coordinated release with `fusion-cdc-engine` v1.2.33 — parallel-load contention fixes
+This release ships the chart + image-tag bumps that point the public Fusion
+chart at the v1.2.33 CDC engine images, which fix two P0 bugs found in the
+v1.2.32 parallel-load (K=6) test:
+
+- **Bug #20** — unbounded final partition premature DONE due to an adaptive
+  chunk-size race in `loader.py` (the unbounded branch compared `row_count`
+  against the LIVE `cur_chunk_size`, which the adaptive sizer grows between
+  the fetch and the check). Fixed by capturing `requested_size` before the
+  fetch and comparing against that.
+- **Bug #21** — Iceberg commit contention dead-lettered 4 of 6 partitions in
+  ~6 minutes (optimistic-concurrency losers exhausted the 10-retry budget).
+  Fixed with jittered backoff, a higher `INITIAL_LOAD_MAX_RETRIES=30` budget
+  for initial-load tasks, and a per-table Redis commit mutex that serializes
+  COMMITS while keeping FETCHES parallel.
+
+See `fusion-cdc-engine` v1.2.33 CHANGELOG for full details. This repo only
+bumps versions: `infra/helm/dcraft-fusion/Chart.yaml`,
+`infra/local-dev/k8s/values-cdc-local.yaml`,
+`infra/local-dev/k8s/values-fusion-local.yaml`, and
+`infra/local-dev/k8s/deploy.ps1`.
+
 ## [1.2.30] — 2026-07-23
 
 ### Coordinated release with `fusion-cdc-engine` v1.2.30 — parallel-load correctness fix
