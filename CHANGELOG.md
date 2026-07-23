@@ -4,6 +4,26 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.2.25] — 2026-07-23
+
+### Infrastructure
+- **Remove Kafka (Task 1):** Kafka was unused dead infrastructure in the
+  `fusion-cdc` Helm chart — the CDC engine uses Redis Streams (XADD/XREADGROUP)
+  and KEDA scales on Redis list depth, not Kafka. Removed:
+  - `templates/kafka.yaml` (deleted)
+  - `kafka` keyword from `Chart.yaml` (replaced with `redis-streams`)
+  - `kafka:` block from `values.yaml` and `values.schema.json`
+  - `fusion-cdc.kafkaBootstrapServers` helper from `templates/_helpers.tpl`
+  - `KAFKA_BOOTSTRAP_SERVERS` env injection from `templates/cdc-workers.yaml`,
+    `templates/spark-consumer.yaml`, `templates/control-plane.yaml`
+  - `kafka:` override block from `infra/local-dev/k8s/values-cdc-local.yaml`
+  This frees ~480Mi of cluster RAM and removes a dead dependency.
+
+### Version
+- Chart version + all image tags bumped to `1.2.25` across `fusion-cdc` and
+  `dcraft-fusion` charts, `values-*-local.yaml`, `deploy.ps1`, and
+  `examples/values-minimal.yaml`.
+
 ## [1.2.24] — 2026-07-23
 
 Coordinated release with the private `fusion-cdc-engine` v1.2.24 — CI fix

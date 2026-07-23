@@ -5,12 +5,12 @@ description: >
   CDC engine source is proprietary; this chart deploys pre-built GHCR images only.
   Bring your own Postgres and Redis (no bundled databases).
 type: application
-version: 1.2.24
-appVersion: "1.2.24"
+version: 1.2.25
+appVersion: "1.2.25"
 keywords:
   - cdc
   - change-data-capture
-  - kafka
+  - redis-streams
   - streaming
   - multi-tenant
 home: https://github.com/DCraft-Labs/dcraft-fusion

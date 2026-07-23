@@ -5,7 +5,7 @@ transformWorker:
 
 controlPlane:
   image:
-    tag: "1.2.24"
+    tag: "1.2.25"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -34,7 +34,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.2.24"
+    tag: "1.2.25"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101
@@ -76,26 +76,3 @@ cdcWorkers:
     enabled: false
   mongodb:
     enabled: false
-
-# In-cluster Kafka for local-dev CDC pipeline (cdc-workers â†’ Kafka â†’
-# spark-consumer). Single broker, KRaft mode, small heap to fit the Docker
-# Desktop VM. Production should set kafka.enabled=false and provide
-# KAFKA_BOOTSTRAP_SERVERS via cdcWorkers.env / sparkConsumer.env.
-kafka:
-  enabled: true
-  replicas: 1
-  numPartitions: 1
-  replicationFactor: 1
-  externalNodePort: 30092
-  heapOpts: "-Xmx384m -Xms192m"
-  initHeapOpts: "-Xmx192m -Xms96m"
-  storage:
-    size: 2Gi
-    storageClass: ""
-  resources:
-    requests:
-      cpu: 200m
-      memory: 384Mi
-    limits:
-      cpu: 1000m
-      memory: 768Mi

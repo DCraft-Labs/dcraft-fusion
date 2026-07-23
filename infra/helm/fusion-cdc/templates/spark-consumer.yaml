@@ -96,11 +96,6 @@ spec:
             - name: REDIS_URL
               value: {{ .Values.externalRedis.url | quote }}
             {{- end }}
-            {{- $kafkaBs := include "fusion-cdc.kafkaBootstrapServers" . -}}
-            {{- if $kafkaBs }}
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: {{ $kafkaBs | quote }}
-            {{- end }}
             {{- include "fusion-cdc.renderEnv" (dict "env" .Values.sparkConsumer.env "extraEnv" .Values.sparkConsumer.extraEnv) | nindent 12 }}
           resources:
             {{- toYaml .Values.sparkConsumer.resources | nindent 12 }}

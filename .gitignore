@@ -13,6 +13,7 @@ packages/*/dist/
 
 tools/
 .tmp/
+.playwright-cli/
 .idea/
 .vscode/
 .private/

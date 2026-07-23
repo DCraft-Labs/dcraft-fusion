@@ -95,11 +95,6 @@ spec:
               value: {{ .Values.externalRedis.url | quote }}
               {{- end }}
             {{- end }}
-            {{- $kafkaBs := include "fusion-cdc.kafkaBootstrapServers" . -}}
-            {{- if $kafkaBs }}
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: {{ $kafkaBs | quote }}
-            {{- end }}
             {{- include "fusion-cdc.renderEnv" (dict "env" .Values.controlPlane.env "extraEnv" .Values.controlPlane.extraEnv) | nindent 12 }}
           {{- if .Values.controlPlane.livenessProbe.enabled }}
           livenessProbe:
