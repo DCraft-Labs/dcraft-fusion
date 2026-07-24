@@ -1,4 +1,4 @@
-# Fusion CDC â€” image-only chart (public)
+# Fusion CDC Ã¢â‚¬â€ image-only chart (public)
 # CDC engine source is proprietary. This chart deploys official DCraft Labs images from GHCR.
 # Never commit real passwords. Prefer global.secrets.existingSecret.
 
@@ -32,14 +32,14 @@ externalRedis:
   url: ""
 
 
-# â”€â”€ Control Plane â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Control Plane Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 controlPlane:
   enabled: true
   replicaCount: 2
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-control-plane
-    tag: "1.2.30"
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -148,13 +148,13 @@ controlPlane:
             pathType: Prefix
     tls: []
 
-# â”€â”€ CDC Workers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ CDC Workers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 cdcWorkers:
   enabled: true
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-worker
-    tag: "1.2.30"
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -212,7 +212,7 @@ cdcWorkers:
   podSecurityContext:
     runAsNonRoot: true
     # v1.2.28 Task 8: pin runAsUser/fsGroup so Kubernetes can verify
-    # the image's non-numeric USER directive (the cdc-worker image runs as user `fusion` (UID 2000, GID 2000 — see docker/Dockerfile.cdc-worker).)
+    # the image's non-numeric USER directive (the cdc-worker image runs as user `fusion` (UID 2000, GID 2000 â€” see docker/Dockerfile.cdc-worker).)
     runAsUser: 2000
     fsGroup: 2000
     seccompProfile:
@@ -236,14 +236,14 @@ cdcWorkers:
   podAnnotations: {}
   podLabels: {}
 
-# â”€â”€ Spark Consumer (optional) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Spark Consumer (optional) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 sparkConsumer:
   enabled: false
   replicaCount: 1
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-spark-consumer
-    tag: "1.2.30"
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -278,7 +278,7 @@ sparkConsumer:
   podSecurityContext:
     runAsNonRoot: true
     # v1.2.28 Task 8: pin runAsUser/fsGroup so Kubernetes can verify
-    # the image's non-numeric USER directive (spark-consumer is disabled by default (Kafka removed in v1.2.25); generic non-root UID 1000 — adjust if you enable it.)
+    # the image's non-numeric USER directive (spark-consumer is disabled by default (Kafka removed in v1.2.25); generic non-root UID 1000 â€” adjust if you enable it.)
     runAsUser: 1000
     fsGroup: 1000
     seccompProfile:
@@ -309,14 +309,14 @@ sparkConsumer:
   podAnnotations: {}
   podLabels: {}
 
-# â”€â”€ Frontend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Frontend Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 frontend:
   enabled: true
   replicaCount: 1
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-frontend
-    tag: "1.2.30"
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -401,14 +401,14 @@ frontend:
             pathType: Prefix
     tls: []
 
-# â”€â”€ Transform Worker (DuckDB landing â€” preferred over Spark) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Transform Worker (DuckDB landing Ã¢â‚¬â€ preferred over Spark) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 transformWorker:
   enabled: true
   replicaCount: 1
 
   image:
     repository: ghcr.io/dcraft-labs/fusion-cdc-transform-worker
-    tag: "1.2.30"
+    tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
 
@@ -433,7 +433,7 @@ transformWorker:
   podSecurityContext:
     runAsNonRoot: true
     # v1.2.18: the transform-worker image runs as user `transform` (UID 2001,
-    # GID 2001 — see docker/Dockerfile.transform-worker). Without explicit
+    # GID 2001 â€” see docker/Dockerfile.transform-worker). Without explicit
     # runAsUser/fsGroup Kubernetes cannot verify the non-numeric USER
     # directive in the image and the pod fails with
     # CreateContainerConfigError. Pin both to 2001 so the pod starts cleanly.
@@ -475,7 +475,7 @@ transformWorker:
     # lets K concurrent pods process K partitions of the same table in
     # parallel (true intra-table parallelism). Raise this for large
     # initial loads (e.g. 50 for a 118M-row load with parallelism=16).
-    # NOTE: KEDA's max is global per ScaledObject — the per-connection
+    # NOTE: KEDA's max is global per ScaledObject â€” the per-connection
     # ``parallelism`` (resource_limits.parallelism) controls how many
     # partitions a single connection enqueues, NOT how many pods KEDA will
     # spin up across ALL connections. Size maxReplicaCount for the peak
@@ -486,7 +486,7 @@ transformWorker:
     cooldownPeriod: 120
     pollingInterval: 5
 
-# â”€â”€ Monitoring (optional Prometheus Operator) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Ã¢â€â‚¬Ã¢â€â‚¬ Monitoring (optional Prometheus Operator) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 monitoring:
   serviceMonitor:
     enabled: false

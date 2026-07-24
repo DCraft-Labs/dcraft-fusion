@@ -48,7 +48,7 @@ spec:
       {{- end }}
       containers:
         - name: transform-worker
-          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.transformWorker.image) }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.transformWorker.image "ctx" .) }}
           imagePullPolicy: {{ .Values.transformWorker.image.pullPolicy }}
           {{- with .Values.transformWorker.securityContext }}
           securityContext:

@@ -45,7 +45,7 @@ spec:
       {{- end }}
       containers:
         - name: frontend
-          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.frontend.image) }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.frontend.image "ctx" .) }}
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           {{- with .Values.frontend.securityContext }}
           securityContext:

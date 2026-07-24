@@ -54,7 +54,7 @@ spec:
       {{- end }}
       containers:
         - name: cdc-worker
-          image: {{ include "fusion-cdc.image" (dict "global" $root.Values.global "image" $root.Values.cdcWorkers.image) }}
+          image: {{ include "fusion-cdc.image" (dict "global" $root.Values.global "image" $root.Values.cdcWorkers.image "ctx" $root) }}
           imagePullPolicy: {{ $root.Values.cdcWorkers.image.pullPolicy }}
           {{- with $root.Values.cdcWorkers.securityContext }}
           securityContext:

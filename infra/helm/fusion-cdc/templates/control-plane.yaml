@@ -46,7 +46,7 @@ spec:
       {{- end }}
       containers:
         - name: control-plane
-          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.controlPlane.image) }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.controlPlane.image "ctx" .) }}
           imagePullPolicy: {{ .Values.controlPlane.image.pullPolicy }}
           {{- with .Values.controlPlane.securityContext }}
           securityContext:

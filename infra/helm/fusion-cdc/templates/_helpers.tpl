@@ -44,6 +44,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{/*
 Image helper: registry + repository + tag or digest.
+v1.3.1 Fix 3: the tag is rendered with ``tpl`` against the chart context
+so values.yaml can default ``image.tag`` to ``{{ .Chart.AppVersion }}``
+and have the chart default track the app version without a stale
+hardcoded number. Plain tags (e.g. ``latest``) pass through unchanged.
 */}}
 {{- define "fusion-cdc.image" -}}
 {{- $registry := .global.imageRegistry | default "" -}}
@@ -56,6 +60,9 @@ Image helper: registry + repository + tag or digest.
 {{- end -}}
 {{- else -}}
 {{- $tag := .image.tag | default "latest" -}}
+{{- if .ctx -}}
+{{- $tag = tpl $tag .ctx -}}
+{{- end -}}
 {{- if $registry -}}
 {{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repo $tag -}}
 {{- else -}}

@@ -61,7 +61,7 @@ spec:
       {{- end }}
       containers:
         - name: spark-consumer
-          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.sparkConsumer.image) }}
+          image: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.sparkConsumer.image "ctx" .) }}
           imagePullPolicy: {{ .Values.sparkConsumer.image.pullPolicy }}
           {{- with .Values.sparkConsumer.securityContext }}
           securityContext:
