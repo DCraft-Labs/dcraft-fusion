@@ -36,6 +36,24 @@ spec:
       maxLimitRequestRatio:
         memory: "8"
 ---
+# v1.3.5 Fix 2 — dcraft-local-pod-cap ResourceQuota.
+#
+# The previous quota of 20 pods was too low for rolling upgrades: transient
+# old+new pod overlap (Deployment strategy RollingUpdate) plus the v1.3.4
+# committer-runner pods (one Deployment per active (conn, table) target)
+# tipped the count over 20 and new pods sat Pending. Raised to 26 to give
+# rolling-upgrade headroom + committer pods. This is committed durably
+# (previously the bump to 26 was only a live `kubectl patch` workaround
+# that got wiped on `kubectl apply -f 00-infra.yaml`).
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: dcraft-local-pod-cap
+  namespace: dcraft-local
+spec:
+  hard:
+    pods: "26"
+---
 apiVersion: v1
 kind: Secret
 metadata:

@@ -502,6 +502,12 @@ committer:
   enabled: false
   replicaCount: 1
   metricsPort: 8081
+  # v1.3.5 Fix 5: startupProbe waits for Nessie's /api/v1/config endpoint
+  # before the main committer process starts (cold-start race mitigation).
+  # This is an image-only chart (bring your own Nessie), so the URL is
+  # configurable here. Default matches the brief example.
+  startupProbe:
+    nessieUrl: "http://nessie:19120/api/v1/config"
   # Drain-lag thresholds (pending-files list length) for the exec probes.
   readinessLagThreshold: 1000
   livenessLagThreshold: 5000
