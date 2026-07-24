@@ -4,6 +4,22 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.3.6] — 2026-07-24
+
+### Fix-forward: `dcraft-fusion` chart version + default image tags
+Phase B had already published OCI `fusion-cdc:1.3.6` (committer `drainBatch: 300`,
+2000m/2048Mi) and retagged local-dev / `deploy.ps1` to 1.3.6, but
+`infra/helm/dcraft-fusion/Chart.yaml` was still `1.2.35` and default
+`values.yaml` image tags were still `1.2.30`. The publish workflow overrode
+the chart *version* to 1.3.6 at package time, so GHCR looked correct while
+a plain `helm install … --version 1.3.6` would still pull stale kernel/web
+images.
+
+- Bumped `dcraft-fusion` `Chart.yaml` to `version` / `appVersion` `1.3.6`.
+- Bumped default + minimal example image tags to `1.3.6`.
+- Re-published both OCI charts under `v1.3.6` (same tag move pattern as
+  the v1.3.5 provenance fix-forward).
+
 ## [1.2.33] — 2026-07-24
 
 ### Coordinated release with `fusion-cdc-engine` v1.2.33 — parallel-load contention + duplicate-row fixes
