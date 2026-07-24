@@ -1,6 +1,10 @@
 # Deploy DCraft Fusion + Fusion CDC to local Docker Desktop Kubernetes.
 # Prerequisites: Docker Desktop running with Kubernetes enabled.
 $ErrorActionPreference = "Stop"
+# Pin chart versions at the top (v1.3.6 / Bug #10 landmine). Never leave a
+# stale hardcoded --version deep in the helm upgrade calls below.
+$DcraftFusionChartVersion = "1.3.6"
+$FusionCdcChartVersion = "1.3.6"
 $helm = if (Test-Path "$env:TEMP\helm\windows-amd64\helm.exe") {
   "$env:TEMP\helm\windows-amd64\helm.exe"
 } else {
@@ -71,11 +75,11 @@ foreach ($rel in @("fusion", "fusion-cdc")) {
 $ErrorActionPreference = $prevEap
 
 
-Write-Host "==> helm install dcraft-fusion"
+Write-Host "==> helm install dcraft-fusion (chart $DcraftFusionChartVersion)"
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 & $helm upgrade --install fusion oci://ghcr.io/dcraft-labs/charts/dcraft-fusion `
-  --version 1.3.5 `
+  --version $DcraftFusionChartVersion `
   --namespace dcraft-local `
   -f "$root\infra\helm\dcraft-fusion\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-fusion-local.yaml" `
@@ -86,9 +90,9 @@ if ($LASTEXITCODE -ne 0) {
   Write-Host "WARN: fusion helm wait incomplete (exit $LASTEXITCODE) â€” continuing"
 }
 
-Write-Host "==> helm install fusion-cdc"
+Write-Host "==> helm install fusion-cdc (chart $FusionCdcChartVersion)"
 & $helm upgrade --install fusion-cdc oci://ghcr.io/dcraft-labs/charts/fusion-cdc `
-  --version 1.3.5 `
+  --version $FusionCdcChartVersion `
   --namespace dcraft-local `
   -f "$root\infra\helm\fusion-cdc\examples\values-minimal.yaml" `
   -f "$PSScriptRoot\values-cdc-local.yaml" `

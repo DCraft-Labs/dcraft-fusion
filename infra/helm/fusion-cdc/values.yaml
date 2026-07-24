@@ -513,7 +513,9 @@ committer:
   livenessLagThreshold: 5000
   # Tunables forwarded to the committer via env vars (see iceberg_committer.py).
   lockTtlS: 30
-  drainBatch: 100
+  # v1.3.6: raised from 100 — fewer, larger Iceberg transactions amortize
+  # per-commit metadata/manifest overhead under multi-partition staging.
+  drainBatch: 300
   drainTimeoutMs: 5000
   idleSleepS: 5.0
   image:
@@ -521,13 +523,15 @@ committer:
     tag: "{{ .Chart.AppVersion }}"
     digest: ""
     pullPolicy: IfNotPresent
+  # v1.3.6: Bug #9 — committer was CPU-throttled at tighter limits under
+  # K=6 parallel producers; requests/limits sized for durable drain.
   resources:
     requests:
-      cpu: 200m
+      cpu: 250m
       memory: 512Mi
     limits:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 2000m
+      memory: 2048Mi
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 2001

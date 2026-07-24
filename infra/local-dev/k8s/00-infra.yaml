@@ -269,6 +269,11 @@ spec:
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 6
+          # Explicit resources (was inheriting LimitRange 1Gi default).
+          # Observed usage ~100MB; 640Mi frees headroom for transformWorker.
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits: { cpu: "500m", memory: "640Mi" }
       volumes:
         - name: init
           configMap:
@@ -314,6 +319,10 @@ spec:
               command: ["redis-cli", "ping"]
             initialDelaySeconds: 3
             periodSeconds: 5
+          # Explicit resources — same rationale as postgres above.
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits: { cpu: "500m", memory: "640Mi" }
 ---
 apiVersion: v1
 kind: Service
@@ -567,6 +576,9 @@ spec:
       targetPort: 27017
 ---
 # ── MinIO PersistentVolumeClaim ──────────────────────────────────────────────
+# v1.3.6: 120Gi for ~100GB-class Iceberg tables. Docker Desktop's hostpath
+# provisioner does not hard-enforce this as a real quota (ceiling is host
+# disk); sized for large local soak tables, not a hard guarantee.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -576,7 +588,7 @@ spec:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 2Gi
+      storage: 120Gi
 ---
 # ── MinIO Deployment (S3-compatible object storage for Iceberg) ───────────────
 apiVersion: apps/v1
@@ -647,7 +659,11 @@ spec:
       port: 9001
       targetPort: 9001
 ---
-# ── MinIO bucket init Job (creates `iceberg-warehouse` bucket on first run) ──
+# ── MinIO bucket init Job ────────────────────────────────────────────────────
+# Creates both `iceberg-warehouse` (legacy) and `icebergwarehouse` (no dash).
+# The no-dash name is required by Nessie's SmallRye env-var mapping — a dash
+# in the warehouse key silently fails to register (see Nessie catalog env
+# below). Keep both so older catalogConfigs keep working.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -673,6 +689,8 @@ spec:
               done
               mc mb --ignore-existing local/iceberg-warehouse || true
               echo "bucket iceberg-warehouse ready"
+              mc mb --ignore-existing local/icebergwarehouse || true
+              echo "bucket icebergwarehouse ready"
 ---
 # ── Nessie catalog Deployment (Iceberg REST catalog) ─────────────────────────
 # v1.2.37 §1 + §8 item 1: Nessie now uses a persistent JDBC2 backend against
@@ -719,6 +737,8 @@ spec:
               value: "JDBC"
             # Quarkus datasource (smallrye config). Nessie reads these via
             # MicroProfile config source env-var mapping.
+            - name: QUARKUS_DATASOURCE_DB_KIND
+              value: "postgresql"
             - name: QUARKUS_DATASOURCE_JDBC_URL
               value: "jdbc:postgresql://postgres:5432/nessie"
             - name: QUARKUS_DATASOURCE_JDBC_DRIVER
@@ -738,6 +758,31 @@ spec:
               value: "fusion_local"
             - name: NESSIE_VERSION_STORE_PERSISTENCE_JDBC_DRIVER
               value: "org.postgresql.Driver"
+            # v1.3.6: Iceberg REST catalog personality (warehouse + S3/MinIO).
+            # Warehouse name is deliberately `icebergwarehouse` with NO dash —
+            # SmallRye Config's env-var-to-property reverse mapping for
+            # indexed/map keys can't disambiguate underscore-was-dash vs
+            # underscore-was-dot when <name> itself contains a dash, so
+            # NESSIE_CATALOG_WAREHOUSES_ICEBERG_WAREHOUSE_LOCATION silently
+            # failed to register. Access keys use Quarkus secret refs.
+            - name: NESSIE_CATALOG_DEFAULT_WAREHOUSE
+              value: "icebergwarehouse"
+            - name: NESSIE_CATALOG_WAREHOUSES_ICEBERGWAREHOUSE_LOCATION
+              value: "s3://icebergwarehouse/"
+            - name: NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ENDPOINT
+              value: "http://minio:9000"
+            - name: NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_PATH_STYLE_ACCESS
+              value: "true"
+            - name: NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_REGION
+              value: "us-east-1"
+            - name: NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_AUTH_TYPE
+              value: "STATIC"
+            - name: NESSIE_CATALOG_SERVICE_S3_DEFAULT_OPTIONS_ACCESS_KEY
+              value: "urn:nessie-secret:quarkus:minio-creds"
+            - name: minio-creds.name
+              value: "minioadmin"
+            - name: minio-creds.secret
+              value: "minioadmin"
           startupProbe:
             httpGet:
               path: /api/v1/config
