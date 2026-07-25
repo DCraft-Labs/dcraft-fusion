@@ -3,8 +3,8 @@
 $ErrorActionPreference = "Stop"
 # Pin chart versions at the top (v1.3.6 / Bug #10 landmine). Never leave a
 # stale hardcoded --version deep in the helm upgrade calls below.
-$DcraftFusionChartVersion = "1.3.6"
-$FusionCdcChartVersion = "1.3.6"
+$DcraftFusionChartVersion = "1.3.7"
+$FusionCdcChartVersion = "1.3.7"
 $helm = if (Test-Path "$env:TEMP\helm\windows-amd64\helm.exe") {
   "$env:TEMP\helm\windows-amd64\helm.exe"
 } else {

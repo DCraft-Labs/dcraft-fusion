@@ -130,7 +130,8 @@ controlPlane:
     create: true
     name: ""
     annotations: {}
-    automountServiceAccountToken: false
+    # v1.3.7 Bug #5: required for in-cluster committer auto-provisioning
+    automountServiceAccountToken: true
 
   podAnnotations: {}
   podLabels: {}

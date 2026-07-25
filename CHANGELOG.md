@@ -4,6 +4,30 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+
+## [1.3.7] — 2026-07-25
+
+### Coordinated release with usion-cdc-engine v1.3.7 — post-rollout bugfixes
+Points charts + local-dev pins at the v1.3.7 CDC engine images that fix the
+post-v1.3.6 rollout issues (DynamoDB/IRSA auth, auto bulk_mode, dynamic
+committer provisioning, CDC blocking/sanitize/retry, Iceberg bootstrap race,
+zero-row loader deadlock, batched dd_files, PK coercion, etc.).
+
+### Helm (usion-cdc)
+- Per-target drainBatch override for committer env (Bug #4).
+- Control-plane env: RELEASE_NAME, TRANSFORM_WORKER_IMAGE,
+  COMMITTER_SERVICE_ACCOUNT for auto-provisioning (Bug #5).
+- Control-plane Role/RoleBinding for secrets/services/deployments CRUD;
+  utomountServiceAccountToken: true by default (Bug #5).
+- Chart.yaml / appVersion / local-dev image tags → 1.3.7.
+
+### Helm (dcraft-fusion)
+- Chart.yaml / appVersion / default + minimal example image tags → 1.3.7.
+
+### Local-dev
+- deploy.ps1, alues-cdc-local.yaml, alues-fusion-local.yaml pinned to
+  1.3.7.
+
 ## [1.3.6] — 2026-07-24
 
 ### Fix-forward: `dcraft-fusion` chart version + default image tags

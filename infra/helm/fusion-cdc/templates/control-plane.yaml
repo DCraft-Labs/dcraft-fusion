@@ -64,6 +64,20 @@ spec:
               value: {{ .Values.controlPlane.config.corsOrigins | quote }}
             - name: CONTROL_PLANE_URL
               value: {{ include "fusion-cdc.controlPlaneURL" . | quote }}
+            {{/*
+              committer_provisioner.py (v1.3.7 Bug #5): RELEASE_NAME must match
+              the committer Deployment naming prefix used by iceberg-committer.yaml
+              (`{fullname}-committer-{hash}`). TRANSFORM_WORKER_IMAGE is the image
+              the dynamically-provisioned committer runs (iceberg_committer.py
+              ships in the transform-worker image). COMMITTER_SERVICE_ACCOUNT is
+              the SA assigned to those committer pods (IRSA / ambient identity).
+            */}}
+            - name: RELEASE_NAME
+              value: {{ include "fusion-cdc.fullname" . | quote }}
+            - name: TRANSFORM_WORKER_IMAGE
+              value: {{ include "fusion-cdc.image" (dict "global" .Values.global "image" .Values.transformWorker.image "ctx" .) | quote }}
+            - name: COMMITTER_SERVICE_ACCOUNT
+              value: {{ include "fusion-cdc.cdcWorkers.serviceAccountName" . | quote }}
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
