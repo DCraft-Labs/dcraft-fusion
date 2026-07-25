@@ -5,6 +5,21 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
 
+## [1.4.0] — 2026-07-26
+
+### Coordinated release with fusion-cdc-engine v1.4.0 — Bugs #23/#24 + bridge visibility
+
+Points charts + local-dev pins at the v1.4.0 CDC engine images that fix
+MySQL binlog UnicodeDecodeError hard-stops (Bug #23), restore
+`cdc_batch_mode=per_batch` by shipping `httpx` in transform-worker
+(Bug #24), and surface transform-bridge 0-push / exception cases in logs.
+
+### Helm (fusion-cdc / dcraft-fusion)
+- Chart.yaml / appVersion / default + minimal example image tags → 1.4.0.
+
+### Local-dev / infra
+- deploy.ps1, values-cdc-local.yaml, values-fusion-local.yaml pinned to 1.4.0.
+
 ## [1.3.9] — 2026-07-26
 
 ### Coordinated release with fusion-cdc-engine v1.3.9 — Streams CDC + Bug #22
