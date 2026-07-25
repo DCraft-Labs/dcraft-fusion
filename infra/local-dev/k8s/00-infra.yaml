@@ -320,9 +320,11 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 5
           # Explicit resources — same rationale as postgres above.
+          # v1.3.8 Bug #21 ops: Redis OOMKill at 640Mi under CDC+TW load;
+          # bumped request 512Mi / limit 2Gi.
           resources:
-            requests: { cpu: "100m", memory: "128Mi" }
-            limits: { cpu: "500m", memory: "640Mi" }
+            requests: { cpu: "100m", memory: "512Mi" }
+            limits: { cpu: "1000m", memory: "2Gi" }
 ---
 apiVersion: v1
 kind: Service

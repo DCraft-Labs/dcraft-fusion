@@ -5,6 +5,24 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
 
+## [1.3.8] — 2026-07-25
+
+### Coordinated release with fusion-cdc-engine v1.3.8 — Bug #21 bridge fallback
+
+Points charts + local-dev pins at the v1.3.8 CDC engine images that durably
+buffer transform-bridge LPUSH failures during Redis outages (previously
+events were permanently dropped on the Iceberg-writing path).
+
+### Helm (fusion-cdc / dcraft-fusion)
+- Chart.yaml / appVersion / default + minimal example image tags → 1.3.8.
+
+### Local-dev / infra
+- deploy.ps1, values-cdc-local.yaml, values-fusion-local.yaml pinned to 1.3.8.
+- Redis memory bumped to request 512Mi / limit 2Gi in
+  `infra/local-dev/k8s/00-infra.yaml` and `infra/kubernetes/redis.yaml`
+  (operational finding from the same Redis OOMKill that exposed Bug #21).
+
+
 ## [1.3.7] — 2026-07-25
 
 ### Coordinated release with usion-cdc-engine v1.3.7 — post-rollout bugfixes
