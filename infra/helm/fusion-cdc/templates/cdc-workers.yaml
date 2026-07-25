@@ -89,6 +89,11 @@ spec:
             - name: REDIS_URL
               value: {{ $root.Values.externalRedis.url | quote }}
             {{- end }}
+            # v1.3.9 §3: pin Bug #21 SQLite fallback onto the StatefulSet PVC
+            # (/var/lib/cdc) so bridge tasks survive cdc-worker reschedule,
+            # not only Redis-down-while-pod-alive.
+            - name: FALLBACK_DB_PATH
+              value: {{ $root.Values.cdcWorkers.fallbackDbPath | default "/var/lib/cdc/fallback.db" | quote }}
             {{- include "fusion-cdc.renderEnv" (dict "env" $root.Values.cdcWorkers.env "extraEnv" $root.Values.cdcWorkers.extraEnv) | nindent 12 }}
           livenessProbe:
             httpGet:

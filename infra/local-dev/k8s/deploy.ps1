@@ -3,8 +3,8 @@
 $ErrorActionPreference = "Stop"
 # Pin chart versions at the top (v1.3.6 / Bug #10 landmine). Never leave a
 # stale hardcoded --version deep in the helm upgrade calls below.
-$DcraftFusionChartVersion = "1.3.8"
-$FusionCdcChartVersion = "1.3.8"
+$DcraftFusionChartVersion = "1.3.9"
+$FusionCdcChartVersion = "1.3.9"
 $helm = if (Test-Path "$env:TEMP\helm\windows-amd64\helm.exe") {
   "$env:TEMP\helm\windows-amd64\helm.exe"
 } else {
@@ -20,26 +20,32 @@ kubectl cluster-info | Select-Object -First 3
 kubectl get nodes
 
 Write-Host "==> applying infra (postgres/redis/secrets)"
-# Render 00-infra.yaml with the DCRAFT_PGDATA_HOSTPATH placeholder substituted
-# from the environment. Default to the Docker Desktop Linux VM path that works
-# cross-platform; operators can override (e.g. to a Windows host bind path)
-# by setting DCRAFT_PGDATA_HOSTPATH before running this script.
+# Render 00-infra.yaml with hostPath placeholders substituted from the
+# environment. Defaults are Docker Desktop Linux VM paths that work
+# cross-platform; operators can override by setting the env vars below
+# before running this script.
 $pgDataHostPath = if ($env:DCRAFT_PGDATA_HOSTPATH) {
   $env:DCRAFT_PGDATA_HOSTPATH
 } else {
   "/var/dcraft-local/postgres-data"
 }
-Write-Host "    hostPath: $pgDataHostPath (override via DCRAFT_PGDATA_HOSTPATH)"
+$redisDataHostPath = if ($env:DCRAFT_REDISDATA_HOSTPATH) {
+  $env:DCRAFT_REDISDATA_HOSTPATH
+} else {
+  "/var/dcraft-local/redis-data"
+}
+Write-Host "    postgres hostPath: $pgDataHostPath (override via DCRAFT_PGDATA_HOSTPATH)"
+Write-Host "    redis hostPath:    $redisDataHostPath (override via DCRAFT_REDISDATA_HOSTPATH)"
 $infraTemplate = Get-Content -Raw -Path "$PSScriptRoot\00-infra.yaml"
-$infraRendered = $infraTemplate.Replace('${DCRAFT_PGDATA_HOSTPATH}', $pgDataHostPath)
+$infraRendered = $infraTemplate.Replace('${DCRAFT_PGDATA_HOSTPATH}', $pgDataHostPath).Replace('${DCRAFT_REDISDATA_HOSTPATH}', $redisDataHostPath)
 $infraRenderedPath = Join-Path $env:TEMP "dcraft-00-infra-rendered.yaml"
 Set-Content -Path $infraRenderedPath -Value $infraRendered -Encoding ascii
 kubectl apply -f $infraRenderedPath
-if ($LASTEXITCODE -ne 0) { throw "kubectl apply 00-infra.yaml failed (exit $LASTEXITCODE) â€” aborting deploy" }
+if ($LASTEXITCODE -ne 0) { throw "kubectl apply 00-infra.yaml failed (exit $LASTEXITCODE) — aborting deploy" }
 kubectl -n dcraft-local rollout status deploy/postgres --timeout=180s
-if ($LASTEXITCODE -ne 0) { throw "postgres rollout failed (exit $LASTEXITCODE) â€” aborting deploy" }
+if ($LASTEXITCODE -ne 0) { throw "postgres rollout failed (exit $LASTEXITCODE) — aborting deploy" }
 kubectl -n dcraft-local rollout status deploy/redis --timeout=120s
-if ($LASTEXITCODE -ne 0) { throw "redis rollout failed (exit $LASTEXITCODE) â€” aborting deploy" }
+if ($LASTEXITCODE -ne 0) { throw "redis rollout failed (exit $LASTEXITCODE) — aborting deploy" }
 
 # Ensure CDC metadata DB exists (init may have raced)
 # PowerShell: keep kubectl args on one line (backslash is NOT a line continuation)

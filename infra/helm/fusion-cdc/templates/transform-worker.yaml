@@ -80,6 +80,8 @@ spec:
               value: {{ .Values.transformWorker.config.highPriorityQueue | quote }}
             - name: NORMAL_PRIORITY_QUEUE
               value: {{ .Values.transformWorker.config.normalPriorityQueue | quote }}
+            - name: CDC_CONSUMER_CONCURRENCY
+              value: {{ .Values.transformWorker.config.cdcConsumerConcurrency | default "4" | quote }}
             - name: DUCKDB_THREADS
               value: {{ .Values.transformWorker.config.duckdbThreads | quote }}
             - name: DUCKDB_MEMORY_LIMIT
@@ -138,15 +140,12 @@ spec:
   cooldownPeriod: {{ .Values.transformWorker.keda.cooldownPeriod }}
   pollingInterval: {{ .Values.transformWorker.keda.pollingInterval }}
   triggers:
+    # v1.3.9: only the initial-load List remains list-shaped. CDC work is on
+    # per-connection Streams; do not scale on fusion:transforms:normal.
     - type: redis
       metadata:
         address: {{ regexReplaceAll "^redis://([^/]+).*$" (include "fusion-cdc.redisUrl" .) "${1}" | default "redis:6379" }}
         listName: {{ .Values.transformWorker.config.highPriorityQueue }}
         listLength: "1"
-    - type: redis
-      metadata:
-        address: {{ regexReplaceAll "^redis://([^/]+).*$" (include "fusion-cdc.redisUrl" .) "${1}" | default "redis:6379" }}
-        listName: {{ .Values.transformWorker.config.normalPriorityQueue }}
-        listLength: "5"
 {{- end }}
 {{- end }}

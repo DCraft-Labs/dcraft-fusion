@@ -5,6 +5,36 @@ This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
 
+## [1.3.9] — 2026-07-26
+
+### Coordinated release with fusion-cdc-engine v1.3.9 — Streams CDC + Bug #22
+
+Points charts + local-dev pins at the v1.3.9 CDC engine images that migrate
+the CDC→transform-worker path to per-connection Redis Streams, add
+consumer-side batching / PK compaction / IcebergWriter caching, and fix
+Bug #22 (`TransformRoute` missing `source` field).
+
+### Helm (fusion-cdc / dcraft-fusion)
+- Chart.yaml / appVersion / default + minimal example image tags → 1.3.9
+  (also fixed stale `fusion-cdc` minimal example pins still on 1.2.30).
+- `transformWorker.config.cdcConsumerConcurrency` → `CDC_CONSUMER_CONCURRENCY`
+  (intra-pod Streams consumer dial; default 4).
+- KEDA ScaledObject now watches only `fusion:transforms:high` (initial-load
+  List). Removed the obsolete `fusion:transforms:normal` list trigger — CDC
+  work is on `fusion:transforms:stream:{connection_id}`; lag-based KEDA for
+  those streams remains deferred.
+- `cdcWorkers.fallbackDbPath` → `FALLBACK_DB_PATH=/var/lib/cdc/fallback.db`
+  so Bug #21 SQLite fallback lands on the StatefulSet PVC.
+
+### Local-dev / infra
+- deploy.ps1, values-cdc-local.yaml, values-fusion-local.yaml pinned to 1.3.9.
+- Redis persistence (§3): hostPath PVC + AOF in `00-infra.yaml` (and AOF +
+  2Gi PVC in `infra/kubernetes/redis.yaml`) so OOMKill/restart no longer
+  wipes Streams / queue state.
+- Trino single-node coordinator (§5) in `00-infra.yaml` for ad-hoc Iceberg
+  SQL against the local Nessie + MinIO warehouse (`trino:8080`).
+
+
 ## [1.3.8] — 2026-07-25
 
 ### Coordinated release with fusion-cdc-engine v1.3.8 — Bug #21 bridge fallback

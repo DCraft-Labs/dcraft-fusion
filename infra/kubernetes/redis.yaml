@@ -16,6 +16,8 @@ spec:
       containers:
         - name: redis
           image: redis:8-alpine
+          # v1.3.9 §3: AOF+RDB under /data so restarts reload Streams state.
+          args: ["redis-server", "--appendonly", "yes", "--dir", "/data"]
           ports:
             - containerPort: 6379
           volumeMounts:
@@ -43,7 +45,8 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 512Mi
+      # v1.3.9: raised from 512Mi — Streams + AOF need headroom under CDC load.
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: Service

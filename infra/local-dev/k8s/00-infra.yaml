@@ -294,6 +294,39 @@ spec:
     - port: 5432
       targetPort: 5432
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-data-pv
+  namespace: dcraft-local
+  labels:
+    app: redis
+    dcraft.io/role: local-dev-storage
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: ${DCRAFT_REDISDATA_HOSTPATH}
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: dcraft-local
+  labels:
+    app: redis
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: ""
+  volumeName: redis-data-pv
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -312,6 +345,10 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          # v1.3.9 §3: persist RDB+AOF under /data so OOMKill / restart
+          # does not wipe fusion:transforms:* Streams and fallback drain
+          # state (Bug #21 root enabler was ephemeral Redis).
+          args: ["redis-server", "--appendonly", "yes", "--dir", "/data"]
           ports:
             - containerPort: 6379
           readinessProbe:
@@ -325,6 +362,13 @@ spec:
           resources:
             requests: { cpu: "100m", memory: "512Mi" }
             limits: { cpu: "1000m", memory: "2Gi" }
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data
 ---
 apiVersion: v1
 kind: Service
@@ -816,3 +860,123 @@ spec:
     - name: mgmt
       port: 19121
       targetPort: 19121
+---
+# ── Trino (ad-hoc Iceberg SQL reads) ─────────────────────────────────────────
+# v1.3.9 §5: single-node coordinator for browsing Iceberg tables written by
+# transform-worker / committer. Points at the same Nessie REST catalog +
+# MinIO warehouse as the CDC pipeline. Lightweight local-dev tool only —
+# full-table aggregates on large tables may time out (resource-capped).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trino-catalog
+  namespace: dcraft-local
+  labels:
+    app: trino
+data:
+  iceberg.properties: |
+    connector.name=iceberg
+    iceberg.catalog.type=rest
+    iceberg.rest-catalog.uri=http://nessie:19120/iceberg/
+    iceberg.rest-catalog.warehouse=icebergwarehouse
+    fs.native-s3.enabled=true
+    s3.endpoint=http://minio:9000
+    s3.path-style-access=true
+    s3.aws-access-key=minioadmin
+    s3.aws-secret-key=minioadmin
+    s3.region=us-east-1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trino-config
+  namespace: dcraft-local
+  labels:
+    app: trino
+data:
+  config.properties: |
+    coordinator=true
+    node-scheduler.include-coordinator=true
+    http-server.http.port=8080
+    discovery.uri=http://localhost:8080
+  jvm.config: |
+    -server
+    -Xmx1G
+    -XX:+UseG1GC
+    -XX:MaxGCPauseMillis=500
+    -XX:+ExplicitGCInvokesConcurrent
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:+ExitOnOutOfMemoryError
+  node.properties: |
+    node.environment=dcraft-local
+    node.data-dir=/data/trino
+    plugin.dir=/usr/lib/trino/plugin
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trino
+  namespace: dcraft-local
+  labels:
+    app: trino
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trino
+  template:
+    metadata:
+      labels:
+        app: trino
+    spec:
+      containers:
+        - name: trino
+          image: trinodb/trino:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: trino-config
+              mountPath: /etc/trino/config.properties
+              subPath: config.properties
+            - name: trino-config
+              mountPath: /etc/trino/jvm.config
+              subPath: jvm.config
+            - name: trino-config
+              mountPath: /etc/trino/node.properties
+              subPath: node.properties
+            - name: trino-catalog
+              mountPath: /etc/trino/catalog/iceberg.properties
+              subPath: iceberg.properties
+          readinessProbe:
+            httpGet:
+              path: /v1/info
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: { cpu: "250m", memory: "1Gi" }
+            limits: { cpu: "1000m", memory: "2Gi" }
+      volumes:
+        - name: trino-config
+          configMap:
+            name: trino-config
+        - name: trino-catalog
+          configMap:
+            name: trino-catalog
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trino
+  namespace: dcraft-local
+  labels:
+    app: trino
+spec:
+  selector:
+    app: trino
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
