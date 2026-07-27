@@ -10,7 +10,7 @@ transformWorker:
     minReplicaCount: 0
     maxReplicaCount: 4
   image:
-    tag: "1.4.0"
+    tag: "1.5.0"
   env:
     # 2026-07-24: verbose observability for clean re-test — DEBUG level
     # plus unbuffered stdout (a plain logging.basicConfig(stdout) handler
@@ -22,7 +22,7 @@ transformWorker:
 
 controlPlane:
   image:
-    tag: "1.4.0"
+    tag: "1.5.0"
   podDisruptionBudget:
     enabled: false
   podSecurityContext:
@@ -51,7 +51,7 @@ controlPlane:
 
 frontend:
   image:
-    tag: "1.4.0"
+    tag: "1.5.0"
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101
@@ -104,7 +104,7 @@ committer:
   replicaCount: 1
   drainBatch: 300
   image:
-    tag: "1.4.0"
+    tag: "1.5.0"
   env:
     LOG_LEVEL: "DEBUG"
     PYTHONUNBUFFERED: "1"

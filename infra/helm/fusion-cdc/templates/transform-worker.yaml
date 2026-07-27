@@ -78,8 +78,11 @@ spec:
                   fieldPath: metadata.name
             - name: HIGH_PRIORITY_QUEUE
               value: {{ .Values.transformWorker.config.highPriorityQueue | quote }}
-            - name: NORMAL_PRIORITY_QUEUE
-              value: {{ .Values.transformWorker.config.normalPriorityQueue | quote }}
+            {{/*
+              v1.5.0 Phase 3b: NORMAL_PRIORITY_QUEUE removed — retired since
+              v1.3.9 (CDC uses per-connection Redis Streams). Replica scaling
+              is owned by control-plane transform_scaler.py, not KEDA.
+            */}}
             - name: CDC_CONSUMER_CONCURRENCY
               value: {{ .Values.transformWorker.config.cdcConsumerConcurrency | default "4" | quote }}
             - name: DUCKDB_THREADS
@@ -122,6 +125,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{/*
+  v1.5.0 Phase 3b: prefer control-plane transform_scaler.py for replica
+  ownership (initial-load List + CDC Streams pending). Optional KEDA below
+  remains for operators who explicitly enable it; default is off.
+*/}}
 {{- if .Values.transformWorker.keda.enabled }}
 ---
 apiVersion: keda.sh/v1alpha1
@@ -140,8 +148,7 @@ spec:
   cooldownPeriod: {{ .Values.transformWorker.keda.cooldownPeriod }}
   pollingInterval: {{ .Values.transformWorker.keda.pollingInterval }}
   triggers:
-    # v1.3.9: only the initial-load List remains list-shaped. CDC work is on
-    # per-connection Streams; do not scale on fusion:transforms:normal.
+    # Initial-load List only. CDC Streams lag is handled by transform_scaler.
     - type: redis
       metadata:
         address: {{ regexReplaceAll "^redis://([^/]+).*$" (include "fusion-cdc.redisUrl" .) "${1}" | default "redis:6379" }}

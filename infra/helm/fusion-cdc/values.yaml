@@ -455,14 +455,8 @@ transformWorker:
 
   config:
     highPriorityQueue: fusion:transforms:high
-    # v1.3.9: CDC tasks no longer use this List — they land on per-connection
-    # Streams ``fusion:transforms:stream:{connection_id}``. Kept as an env
-    # pin for any leftover list consumers / docs; do not point KEDA at it
-    # for CDC lag (pending-based listLength would also mis-fire under
-    # per_batch intentional delay — see keda notes below).
-    normalPriorityQueue: fusion:transforms:normal
-    # Intra-pod concurrency for CDCStreamConsumer (dial 1). Inter-pod KEDA
-    # lag scaling (dial 2) is deferred — see V1.3.9_PENDING_FIXES §2.
+    # v1.5.0: normalPriorityQueue retired (CDC on Streams since v1.3.9).
+    # Replica scaling is owned by control-plane transform_scaler.py.
     cdcConsumerConcurrency: "4"
     duckdbThreads: "2"
     duckdbMemoryLimit: 3GB
@@ -480,27 +474,9 @@ transformWorker:
   podLabels: {}
 
   keda:
-    # v1.2.28 Task 3: configurable KEDA max scale for the initial sync.
-    # KEDA scales the transform-worker Deployment from minReplicaCount (idle,
-    # scale-to-zero) up to maxReplicaCount when the
-    # ``fusion:transforms:high`` queue depth grows. Each initial-load task
-    # consumes one PK-range partition (Task 1), so raising maxReplicaCount
-    # lets K concurrent pods process K partitions of the same table in
-    # parallel (true intra-table parallelism). Raise this for large
-    # initial loads (e.g. 50 for a 118M-row load with parallelism=16).
-    # NOTE: KEDA's max is global per ScaledObject — the per-connection
-    # ``parallelism`` (resource_limits.parallelism) controls how many
-    # partitions a single connection enqueues, NOT how many pods KEDA will
-    # spin up across ALL connections. Size maxReplicaCount for the peak
-    # combined parallelism of all concurrent initial loads.
-    #
-    # v1.3.9: CDC path moved off ``fusion:transforms:normal`` onto
-    # per-connection Redis Streams. The ScaledObject below therefore only
-    # watches the initial-load List. Lag-based (not pending-based) scaling
-    # across ``fusion:transforms:stream:*`` + CPU/memory multi-triggers is
-    # designed in V1.3.9_PENDING_FIXES §2 but not implemented yet (KEDA
-    # operator install + per-connection ScaledObject vs custom external
-    # scaler still open).
+    # v1.5.0 Phase 3b: default off — control-plane transform_scaler.py owns
+    # transform-worker replicas (initial-load List + CDC Streams pending).
+    # Leave enabled=true only if you intentionally want KEDA instead.
     enabled: false
     minReplicaCount: 0
     maxReplicaCount: 50
@@ -512,7 +488,7 @@ transformWorker:
 # (iceberg_committer.py) but nothing in the shipped system runs it. This
 # Deployment renders one committer pod per (connection, table) target listed
 # below; each pod runs python iceberg_committer.py --connection-id <id>
-# --table <table> --namespace <ns> which drains the pending-files Redis list
+# --tables <table> --namespace <ns> which drains the pending-files Redis list
 # and registers staged Parquet files in a single Iceberg commit via
 # table.transaction().add_files(). Set committer.enabled=true to render the
 # runner; add one target per active staged (conn, table) pair. Liveness and

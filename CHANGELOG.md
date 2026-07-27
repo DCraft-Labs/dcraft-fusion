@@ -4,6 +4,29 @@ All notable changes to DCraft Fusion (public repo) are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/) and
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] — 2026-07-28
+
+### Coordinated release with fusion-cdc-engine v1.5.0 — Phase 0–3c
+
+Points charts + local-dev pins at the v1.5.0 CDC engine images that ship
+resource admission-control (tiered pools + Redis ledger), CDC worker
+source-assignment / direct StatefulSet autoscaling, control-plane-owned
+transform-worker replica scaling (replacing the stale KEDA path), and live
+Iceberg committer CPU/memory resize.
+
+### Helm (fusion-cdc)
+- Chart.yaml / appVersion / example image tags → 1.5.0.
+- Iceberg committer manual targets: `--table` → `--tables` (matches
+  engine committer CLI).
+- Transform-worker: document control-plane `transform_scaler` ownership;
+  keep KEDA opt-in default off; drop obsolete `NORMAL_PRIORITY_QUEUE` env.
+
+### Helm (dcraft-fusion)
+- Chart.yaml / appVersion / default image tags → 1.5.0.
+
+### Local-dev / infra
+- deploy.ps1, values-cdc-local.yaml, values-fusion-local.yaml pinned to 1.5.0.
+
 
 ## [1.4.0] — 2026-07-26
 

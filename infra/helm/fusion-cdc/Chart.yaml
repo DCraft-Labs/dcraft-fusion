@@ -5,8 +5,8 @@ description: >
   CDC engine source is proprietary; this chart deploys pre-built GHCR images only.
   Bring your own Postgres and Redis (no bundled databases).
 type: application
-version: 1.4.0
-appVersion: "1.4.0"
+version: 1.5.0
+appVersion: "1.5.0"
 keywords:
   - cdc
   - change-data-capture

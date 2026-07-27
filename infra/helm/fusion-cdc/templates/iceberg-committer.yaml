@@ -11,7 +11,7 @@ worker.py has zero references to IcebergCommitter, so workers stage
 Parquet files and RPUSH pending-list entries forever and nothing drains
 the list or calls add_files(). This template renders one Deployment per
 (connection, table) target listed in .Values.committer.targets, each
-running `python iceberg_committer.py --connection-id <id> --table <table>
+running `python iceberg_committer.py --connection-id <id> --tables <table>
 --namespace <ns>`. The committer's run_loop() drains the pending list
 and registers staged files in a single Iceberg commit.
 
@@ -166,7 +166,13 @@ spec:
             # here would break the committer's Redis key lookups.
             - --connection-id
             - {{ $tgt.connectionId | quote }}
-            - --table
+            {{/*
+              v1.5.0 Phase 1: iceberg_committer.py CLI takes --tables
+              (comma-separated) instead of singular --table. Manual
+              per-target Helm path still renders one Deployment per
+              (connection, table), so this passes a single-entry list.
+            */}}
+            - --tables
             - {{ $tgt.table | quote }}
             - --namespace
             - {{ $tgt.namespace | default "fusion" | quote }}
